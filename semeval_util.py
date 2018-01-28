@@ -58,4 +58,13 @@ class xmlextract(object):
         """
         return [q.find('OrgQSubject') for q in self.get_org_questions()]
 
+    def get_org_bodies(self):
+        """Retrieve the bodies of the original questions.
         
+        Returns
+        -------
+        out : list of ET.Element
+            The list of the bodies of the original questions.
+        
+        """
+        return [q.find('OrgQBody') for q in self.get_org_questions()]
