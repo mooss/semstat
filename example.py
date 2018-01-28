@@ -13,6 +13,6 @@ source_filename = sys.argv[1]
 
 extractor = xmlextract(source_filename)
 
-for subject in extractor.getorgsubjects():
-    print('\t', subject.text )
+for subject in extractor.get_org_subjects():
+    print('\t', subject.text)
     

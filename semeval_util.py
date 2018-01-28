@@ -28,7 +28,7 @@ class xmlextract(object):
         self.tree = ET.parse(self.source)
         self.root = self.tree.getroot()
 
-    def getorgquestions(self):
+    def get_org_questions(self):
         """Retrieve the original questions.
         
         Returns
@@ -47,14 +47,15 @@ class xmlextract(object):
 
         return result;
 
-    def getorgsubjects(self):
+    def get_org_subjects(self):
         """Retrieve the subjects of the original questions.
         
         Returns
         -------
         out : list of ET.element
-            The list of the subjects of the original questions
+            The list of the subjects of the original questions.
         
         """
-        return [ q.find('OrgQSubject') for q in self.getorgquestions() ]
+        return [q.find('OrgQSubject') for q in self.get_org_questions()]
+
         
