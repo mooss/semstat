@@ -16,3 +16,5 @@ extractor = xmlextract(source_filename)
 for subject in extractor.get_org_subjects():
     print('\t', subject.text)
     
+for body in extractor.get_org_bodies():
+    print('\t\t', body.text)
