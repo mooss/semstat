@@ -88,3 +88,26 @@ class xmlextract(object):
             The list of the bodies of the original questions.
         """
         return [q.find('OrgQBody') for q in self.get_org_questions_uniq()]
+
+    def get_rel_comments_from_org_id(self, org_id):
+        """Retrieve the related comments from an original question ID.
+        
+        Parameters
+        ----------
+        org_id : str
+           The ID of the original question.
+        
+        Returns
+        -------
+        out : list of ET.Element
+            The list of the related comments to the original question.
+        """
+        all_org_questions = self.get_org_questions_all()
+        result = list()
+
+        for question in all_org_questions:
+            if question.attrib['ORGQ_ID'] == org_id:
+                result.extend( question.findall('./Thread/RelComment') ) # using xpath support to easily extract all related comments
+
+        return result
+            

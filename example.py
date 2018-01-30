@@ -21,3 +21,6 @@ for body in extractor.get_org_bodies():
 
 for iden in extractor.get_org_questions_ids():
     print('\t', iden)
+
+for relc in extractor.get_rel_comments_from_org_id('Q268'):
+    print('\trelated comment id:', relc.attrib['RELC_ID'])
