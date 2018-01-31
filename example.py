@@ -13,14 +13,16 @@ source_filename = sys.argv[1]
 
 extractor = xmlextract(source_filename)
 
-for subject in extractor.get_org_subjects():
-    print('\t', subject.text)
+# for subject in extractor.get_org_subjects():
+#     print('\t', subject.text)
     
-for body in extractor.get_org_bodies():
-    print('\t', body.text)
+# for body in extractor.get_org_bodies():
+#     print('\t', body.text)
 
-for iden in extractor.get_org_questions_ids():
-    print('\t', iden)
+# for iden in extractor.get_org_questions_ids():
+#     print('\t', iden)
 
-for relc in extractor.get_rel_comments_from_org_id('Q268'):
-    print('\trelated comment id:', relc.attrib['RELC_ID'])
+# for relc in extractor.get_rel_comments_from_org_id('Q268'):
+#     print('\trelated comment id:', relc.attrib['RELC_ID'])
+
+print( len( extractor.get_all_text() ), ' lines of text')

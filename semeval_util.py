@@ -89,6 +89,7 @@ class xmlextract(object):
         """
         return [q.find('OrgQBody') for q in self.get_org_questions_uniq()]
 
+
     def get_rel_comments_from_org_id(self, org_id):
         """Retrieve the related comments from an original question ID.
         
@@ -111,3 +112,38 @@ class xmlextract(object):
 
         return result
             
+
+    def get_all_text(self):
+        """Retrieve all the textual contents from the source file.
+        
+        This includes :
+         - The original subject.
+         - The original body.
+         - The related subject.
+         - The related body.
+         - The related comments.
+
+        Returns
+        -------
+        out : list of str
+            The list of all the textual contents.
+        """
+        result = list()
+
+        # first we add the original subject and the original body, to avoid duplication
+        for question in self.get_org_questions_uniq():
+            result.append( question.find('OrgQSubject').text )
+            result.append( question.find('OrgQBody').text )
+
+        # then we add the rest
+        for path in [ './OrgQuestion/Thread/RelQuestion/RelQSubject',
+                      './OrgQuestion/Thread/RelQuestion/RelQBody',
+                      './OrgQuestion/Thread/RelComment/']:
+            result.extend([
+                element.text for element in self.root.findall( path )
+            ]) # extract text from each element matching the path
+
+        # There is certainly a more performant/elegant/idiomatic solution to this problem.
+        # I'll come back to it eventually.
+
+        return result;
