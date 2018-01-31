@@ -2,6 +2,7 @@
 
 import sys
 from semeval_util import xmlextract
+from textstat import frequency_analysis
 
 usage = "usage: " + sys.argv[0] + " file.xml"
 
@@ -25,4 +26,21 @@ extractor = xmlextract(source_filename)
 # for relc in extractor.get_rel_comments_from_org_id('Q268'):
 #     print('\trelated comment id:', relc.attrib['RELC_ID'])
 
-print( len( extractor.get_all_text() ), ' lines of text')
+fulltext = extractor.get_all_text()
+
+print( len(fulltext), ' entries')
+
+freq =  frequency_analysis( ''.join(fulltext) )
+
+cardinal = 20
+
+print('here are the ', cardinal, ' most common words from ', source_filename, ':')
+
+count=1
+
+for el in sorted(freq, key=freq.__getitem__, reverse=True):
+    if count <= cardinal:
+        print('\t', el, '\t --> ', freq[el], ' occurences')
+        count += 1
+    else:
+        break
