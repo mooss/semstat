@@ -6,7 +6,7 @@ except ImportError:
 class xmlextract(object):
     """Open an xml from semeval and allow to easily extract informations from it.
     
-    Most methods in this module return an ElementTree object, with the notable exception of the ids methods.
+    Most methods in this module return an ElementTree object, with the notable exception of the *ids methods and of get_all_text.
     """
 
 
@@ -140,7 +140,7 @@ class xmlextract(object):
                       './OrgQuestion/Thread/RelQuestion/RelQBody',
                       './OrgQuestion/Thread/RelComment/']:
             result.extend([
-                element.text for element in self.root.findall( path )
+                element.text if element.text != None else '' for element in self.root.findall( path )
             ]) # extract text from each element matching the path
 
         # There is certainly a more performant/elegant/idiomatic solution to this problem.
