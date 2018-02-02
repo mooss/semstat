@@ -1,3 +1,5 @@
+from nltk.tokenize import word_tokenize
+
 from collections import defaultdict # dictionary with Perl-like autovivification feature
 
 def frequency_analysis(source, word_separators=set([' ', '\t', '\n']) ):
@@ -14,6 +16,7 @@ def frequency_analysis(source, word_separators=set([' ', '\t', '\n']) ):
     Returns
     -------
     out : dict of str: int
+        Individuals words associated with the number of their apparitions in text.        
     """
     result = defaultdict(int)
     strbuffer=list()
@@ -24,5 +27,26 @@ def frequency_analysis(source, word_separators=set([' ', '\t', '\n']) ):
             strbuffer=list()
         else:
             strbuffer.append(char)
+
+    return result
+
+
+def nltk_frequency_analysis(source):
+    """Analyses the frequency of words in text using nltk's word_tokenize
+
+    Parameters
+    ----------
+    source : str
+        Text to be analysed.
+    
+    Returns
+    -------
+    out : dict of str: int
+        Individuals words associated with the number of their apparitions in text.
+    """
+    result = defaultdict(int)
+
+    for word in word_tokenize(source):
+        result[word] += 1
 
     return result
