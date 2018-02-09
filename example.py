@@ -30,8 +30,17 @@ lost=[4,8,15,16,23,42]
 my_selection = [ extractor.find_path_from_org_id('.', question_ids[offset] ) for offset in lost ]
 
 for question in my_selection:
-    print( question.find('./OrgQSubject').text,
-           '\n\t', question.find('./OrgQBody').text, '\n' )
+    question_id = question.attrib['ORGQ_ID']
+    print( '#', question.find('./OrgQSubject').text,
+           '# ID:', question_id,
+           '\n\t', question.find('./OrgQBody').text, '\n' , sep='')
+    related_questions = extractor.findall_path_from_org_id('./Thread/RelQuestion', question_id) # forced to use this because original questions are duplicated in the tree structure chosen by SemEval
+    for rel in related_questions:
+        print( '\t#', rel.find('./RelQSubject').text,
+               '# ID:', rel.attrib['RELQ_ID'],
+               ', ', rel.attrib['RELQ_RELEVANCE2ORGQ'],
+               '\n\t\t', rel.find('./RelQBody').text, '\n', sep='')
+    
 
 # for relc in extractor.get_rel_comments_from_org_id('Q268'):
 #     print('\trelated comment id:', relc.attrib['RELC_ID'])
