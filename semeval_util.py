@@ -3,6 +3,47 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
+from enum import Enum
+
+import re
+
+id_classification = Enum('id_classification', 'org rel comment none')
+
+def classify_id(identifier):
+    """Gives information about an id.
+
+    Parameters
+    ----------
+    identifier : str
+        The identifier to classify.
+    
+    Returns
+    -------
+    out : tuple
+        The classification of the identifier,
+        the first element being the classification proper and
+        the next three elements are the org fragment (ex Q268),
+        the rel fragment (ex _R4), and
+        the comment fragment (ex _C2).
+    """
+    match = re.match( r'(Q[0-9]+)(_R[0-9]+)?(_C[0-9]+)?', identifier)
+    if match:
+        result = match.groups()
+        group_number = 0
+        for i in result:
+            if i is not None:
+                group_number += 1 # there must be a better way to get the number of non None elements in a tuple
+            
+        if group_number == 1:
+            return (id_classification.org, ) + result
+        if group_number == 2:
+            return (id_classification.rel, ) + result
+        if group_number == 3:
+            return (id_classification.comment, ) + result
+    
+    return (id_classification.none,)
+
+    
 class xmlextract(object):
     """Open an xml from semeval and allow to easily extract informations from it.
     
@@ -115,6 +156,8 @@ class xmlextract(object):
             if question.attrib['ORGQ_ID'] == org_id:
                 return question
 
+        return None
+
     ###########################
     # extracting path from id #
     ###########################
@@ -162,6 +205,8 @@ class xmlextract(object):
                 extraction = org_question.find(path)
                 if extraction is not None:
                     return extraction # only returns if a path was found
+
+        return None
 
     ###################
     # text extraction #
