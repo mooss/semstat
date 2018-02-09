@@ -111,8 +111,66 @@ class xmlextract(object):
                 result.extend( question.findall('./Thread/RelComment') ) # using xpath support to easily extract all related comments
 
         return result
-            
 
+    def get_org_question_from_org_id(self, org_id):
+        """Retrieve an original question using its id.
+        
+        Parameters
+        ----------
+        org_id : srt
+            The ID of the original question.
+        
+        Returns
+        -------
+        out : ET.Element
+            The original question.
+        """
+        all_org_questions = self.get_org_questions_all()
+
+        for question in all_org_questions:
+            if question.attrib['ORGQ_ID'] == org_id:
+                return question
+
+    def findall_path_from_org_id(self, path, org_id):
+        """Retrieve instances of an xml path from the tree of an original question, identified by its ID.
+        
+        Parameters
+        ----------
+        path : str
+            XML path to extract.
+        
+        org_id : str
+            ID of the original question.
+        
+        Returns
+        -------
+        out : list of ET.Element
+            The list of elements matching the path and the original question ID.
+        """
+        for org_question in self.root.iter('OrgQuestion'):
+            if org_question.attrib['ORGQ_ID'] == org_id:
+                return org_question.findall(path)
+
+    def find_path_from_org_id(self, path, org_id):
+        """Retrieve the first xml path from the tree of an original question, identified by its ID.
+        
+        Parameters
+        ----------
+        path : str
+            XML path to extract.
+        
+        org_id : str
+            ID of the original question.
+        
+        Returns
+        -------
+        out : ET.Element
+            The first element matching the path and the original question ID.
+        """
+        for org_question in self.root.iter('OrgQuestion'):
+            if org_question.attrib['ORGQ_ID'] == org_id:
+                return org_question.find(path)
+            
     def get_all_text(self):
         """Retrieve all the textual contents from the source file.
         
