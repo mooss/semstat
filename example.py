@@ -8,39 +8,60 @@ from textstat import *
 
 parser = argparse.ArgumentParser(description='Parse, explore and make statistics on a SemEval xml file from task 3')
 
-# positionnal arguments
-parser.add_argument('source', metavar='source.xml', type=str, nargs=1,
+# positional arguments
+parser.add_argument('source',
+                    metavar='source.xml',
+                    type=str, nargs=1,
                     help='the file to explore or analyse')
 
-# optionnal arguments
+# optional arguments
 parser.add_argument('--display',
                     choices=['related', 'original', 'comments'],
                     default='original',
-                    help="choose what will be displayed")
+                    help='choose what will be displayed')
+
+
+# element selection
+selection = parser.add_mutually_exclusive_group()
+selection.add_argument('--indexes',
+                       type=int, nargs='+',
+                       help='list of the 0-based indexes of the desired *original* questions')
+
+# selection.add_argument('--ids',
+#                        type=str, nargs='+',
+#                        help='list of the ids of the desired elements')
+
+selection.add_argument('--lost', action='store_true',
+                       help='equivalent to `--indexes 4 8 15 16 23 42`')
 
 arguments = parser.parse_args()
 
+# parameters initialisation
 source_filename = arguments.source[0]
 tabulator='   '
 
-print('source:', source_filename)
-
 extractor = xmlextract(source_filename)
 
-
-
-# for subject in extractor.get_org_subjects():
-#     print('\t', subject.text)
-    
-# for body in extractor.get_org_bodies():
-#     print('\t', body.text)
-
 question_ids=extractor.get_org_questions_ids()
-print("number of ids:", len(question_ids))
 
-lost=[4,8,15,16,23,42]
-my_selection = [ extractor.find_path_from_org_id('.', question_ids[offset] ) for offset in lost ]
+######################
+# question selection #
+######################
+# indexes
+index_list=[]
+if arguments.indexes is not None:
+    index_list = arguments.indexes
+if arguments.lost:
+    index_list = [4,8,15,16,23,42]
 
+my_selection = [
+    extractor.find_path_from_org_id('.', question_ids[offset])
+    for offset in index_list
+]
+
+#####################
+# display functions #
+#####################
 def display_related(related_thread, tabulator):
     """Display the related questions.
     
@@ -71,13 +92,14 @@ def display_comments(related_thread, tabulator):
               ', ', comment.attrib['RELC_RELEVANCE2RELQ'], ' to rel',
               '\n', tabulator*3, comment.find('./RelCText').text, '\n', sep='')
 
-
+########################
+# selection displaying #
+########################
 for question in my_selection:
     question_id = question.attrib['ORGQ_ID']
     print( '#', question.find('./OrgQSubject').text,
            '# ID:', question_id,
            '\n', tabulator, question.find('./OrgQBody').text, '\n' , sep='')
-
     # related questions
     if arguments.display == 'related' or arguments.display == 'comments':
         related_questions = extractor.findall_path_from_org_id(
