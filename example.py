@@ -1,17 +1,29 @@
 #!/usr/bin/python3
 
-import nltk
 import sys
+import argparse
+import nltk
 from semeval_util import xmlextract
 from textstat import *
 
-usage = "usage: " + sys.argv[0] + " file.xml"
+parser = argparse.ArgumentParser(description='Parse, explore and make statistics on a SemEval xml file from task 3')
 
-if len(sys.argv) != 2:
-    print(usage)
-    quit()
+# positionnal arguments
+parser.add_argument('source', metavar='source.xml', type=str, nargs=1,
+                    help='the file to explore or analyse')
 
-source_filename = sys.argv[1]
+# optionnal arguments
+parser.add_argument('--display',
+                    choices=['related', 'original', 'comments'],
+                    default='original',
+                    help="choose what will be displayed")
+
+arguments = parser.parse_args()
+
+source_filename = arguments.source[0]
+tabulator='   '
+
+print('source:', source_filename)
 
 extractor = xmlextract(source_filename)
 
@@ -29,17 +41,52 @@ print("number of ids:", len(question_ids))
 lost=[4,8,15,16,23,42]
 my_selection = [ extractor.find_path_from_org_id('.', question_ids[offset] ) for offset in lost ]
 
+def display_related(related_thread, tabulator):
+    """Display the related questions.
+    
+    Parameters
+    ----------
+    related_thread : ET.Element
+        Element tree to display.
+    """
+    relquestion = related_thread.find('./RelQuestion')
+    print( tabulator, '#', relquestion.find('./RelQSubject').text,
+           '# ID:', relquestion.attrib['RELQ_ID'],
+           ', ', relquestion.attrib['RELQ_RELEVANCE2ORGQ'],
+           '\n', tabulator*2, relquestion.find('./RelQBody').text, '\n', sep='')
+
+def display_comments(related_thread, tabulator):
+    """Display the related comments.
+    
+    Parameters
+    ----------
+    related_thread : ET.Element
+        Element tree to display.
+    """
+    comments = related_thread.findall('./RelComment')
+    for comment in comments:
+        print(tabulator*3, '# ID:',
+              comment.attrib['RELC_ID'],
+              ', ', comment.attrib['RELC_RELEVANCE2ORGQ'], ' to org',
+              ', ', comment.attrib['RELC_RELEVANCE2RELQ'], ' to rel',
+              '\n', tabulator*3, comment.find('./RelCText').text, '\n', sep='')
+
+
 for question in my_selection:
     question_id = question.attrib['ORGQ_ID']
     print( '#', question.find('./OrgQSubject').text,
            '# ID:', question_id,
-           '\n\t', question.find('./OrgQBody').text, '\n' , sep='')
-    related_questions = extractor.findall_path_from_org_id('./Thread/RelQuestion', question_id) # forced to use this because original questions are duplicated in the tree structure chosen by SemEval
-    for rel in related_questions:
-        print( '\t#', rel.find('./RelQSubject').text,
-               '# ID:', rel.attrib['RELQ_ID'],
-               ', ', rel.attrib['RELQ_RELEVANCE2ORGQ'],
-               '\n\t\t', rel.find('./RelQBody').text, '\n', sep='')
+           '\n', tabulator, question.find('./OrgQBody').text, '\n' , sep='')
+
+    # related questions
+    if arguments.display == 'related' or arguments.display == 'comments':
+        related_questions = extractor.findall_path_from_org_id(
+            './Thread', question_id)
+        # forced to use the extractor because original questions are duplicated in the tree structure chosen by SemEval
+        for rel in related_questions:
+            display_related(rel, tabulator)
+            if(arguments.display == 'comments'):
+                display_comments(rel, tabulator)
     
 
 # for relc in extractor.get_rel_comments_from_org_id('Q268'):
