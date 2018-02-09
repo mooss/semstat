@@ -66,30 +66,14 @@ class xmlextract(object):
             The list of the original questions IDs.
         """
         return [q.attrib['ORGQ_ID'] for q in self.get_org_questions_uniq()]
-
-
-    def get_org_subjects(self):
-        """Retrieve the subjects of the original questions.
-        
-        Returns
-        -------
-        out : list of ET.element
-            The list of the subjects of the original questions.
-        """
-        return [q.find('OrgQSubject') for q in self.get_org_questions_uniq()]
-
-
-    def get_org_bodies(self):
-        """Retrieve the bodies of the original questions.
-        
-        Returns
-        -------
-        out : list of ET.Element
-            The list of the bodies of the original questions.
-        """
-        return [q.find('OrgQBody') for q in self.get_org_questions_uniq()]
-
-
+    
+    #################################
+    # retrieve elements from any id #
+    #################################
+    
+    #################################
+    # retrieve elements from org id #
+    #################################
     def get_rel_comments_from_org_id(self, org_id):
         """Retrieve the related comments from an original question ID.
         
@@ -131,6 +115,9 @@ class xmlextract(object):
             if question.attrib['ORGQ_ID'] == org_id:
                 return question
 
+    ###########################
+    # extracting path from id #
+    ###########################
     def findall_path_from_org_id(self, path, org_id):
         """Retrieve instances of an xml path from the tree of an original question, identified by its ID.
         
@@ -175,7 +162,10 @@ class xmlextract(object):
                 extraction = org_question.find(path)
                 if extraction is not None:
                     return extraction # only returns if a path was found
-            
+
+    ###################
+    # text extraction #
+    ###################
     def get_all_text(self):
         """Retrieve all the textual contents from the source file.
         
@@ -209,4 +199,4 @@ class xmlextract(object):
         # There is certainly a more performant/elegant/idiomatic solution to this problem.
         # I'll come back to it eventually.
 
-        return result;
+        return result;    
