@@ -147,9 +147,12 @@ class xmlextract(object):
         out : list of ET.Element
             The list of elements matching the path and the original question ID.
         """
+        result=list()
         for org_question in self.root.iter('OrgQuestion'):
             if org_question.attrib['ORGQ_ID'] == org_id:
-                return org_question.findall(path)
+                result.extend( org_question.findall(path) )
+
+        return result
 
     def find_path_from_org_id(self, path, org_id):
         """Retrieve the first xml path from the tree of an original question, identified by its ID.
@@ -169,7 +172,9 @@ class xmlextract(object):
         """
         for org_question in self.root.iter('OrgQuestion'):
             if org_question.attrib['ORGQ_ID'] == org_id:
-                return org_question.find(path)
+                extraction = org_question.find(path)
+                if extraction is not None:
+                    return extraction # only returns if a path was found
             
     def get_all_text(self):
         """Retrieve all the textual contents from the source file.
