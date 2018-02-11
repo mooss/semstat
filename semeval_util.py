@@ -62,6 +62,7 @@ class xmlextract(object):
         self.source = xml_filename
         self.tree = ET.parse(self.source)
         self.root = self.tree.getroot()
+        self.merge_original_questions()
 
     def merge_original_questions(self):
         """Merges together the subtrees of original questions sharing the same IDs.
@@ -126,40 +127,6 @@ class xmlextract(object):
                 self.root.remove(org_question)
         self.merged_tree._setroot(self.merged_root)
         
-    def get_org_questions_all(self):
-        """Retrieve *all* the original questions.
-        
-        Returns
-        -------
-        out : list of ET.Element
-            The list of *all* original questions.
-        """
-        result = list()
-        for org_question in self.root.iter('OrgQuestion'):
-            result.append(org_question)
-        return result
-        
-
-    def get_org_questions_uniq(self):
-        """Retrieve the original questions, uniq version.
-        
-        Returns
-        -------
-        out : list of ET.Element
-            The list of original questions, without duplicate.
-        """
-        id_set = set() # this is for keeping track of the IDs
-        result = list()
-
-        for org_question in self.root.iter('OrgQuestion'):
-            org_id = org_question.attrib['ORGQ_ID']
-            if org_id not in id_set: # making sure there is no repetition
-                id_set.add(org_id)
-                result.append(org_question)
-
-        return result;
-
-
     def get_org_questions_ids(self):
         """Retrieve the original questions' IDs.
         
@@ -168,7 +135,7 @@ class xmlextract(object):
         out : list of str
             The list of the original questions IDs.
         """
-        return [q.attrib['ORGQ_ID'] for q in self.get_org_questions_uniq()]
+        return [q.attrib['ORGQ_ID'] for q in self.merged_root.findall('OrgQuestion')]
     
     #################################
     # retrieve elements from any id #
@@ -190,7 +157,7 @@ class xmlextract(object):
         out : list of ET.Element
             The list of the related comments to the original question.
         """
-        all_org_questions = self.get_org_questions_all()
+        all_org_questions = self.merged_root.findall('OrgQuestion')
         result = list()
 
         for question in all_org_questions:
@@ -212,7 +179,7 @@ class xmlextract(object):
         out : ET.Element
             The original question.
         """
-        all_org_questions = self.get_org_questions_all()
+        all_org_questions = self.merged_root.findall('OrgQuestion')
 
         for question in all_org_questions:
             if question.attrib['ORGQ_ID'] == org_id:
@@ -239,12 +206,13 @@ class xmlextract(object):
         out : list of ET.Element
             The list of elements matching the path and the original question ID.
         """
-        result=list()
-        for org_question in self.root.iter('OrgQuestion'):
+        for org_question in self.merged_root.iter('OrgQuestion'):
             if org_question.attrib['ORGQ_ID'] == org_id:
-                result.extend( org_question.findall(path) )
+                extraction = org_question.findall(path)
+                if len(extraction) != 0:
+                    return extraction
 
-        return result
+        return list()
 
     def find_path_from_org_id(self, path, org_id):
         """Retrieve the first xml path from the tree of an original question, identified by its ID.
@@ -262,7 +230,7 @@ class xmlextract(object):
         out : ET.Element
             The first element matching the path and the original question ID.
         """
-        for org_question in self.root.iter('OrgQuestion'):
+        for org_question in self.merged_root.iter('OrgQuestion'):
             if org_question.attrib['ORGQ_ID'] == org_id:
                 extraction = org_question.find(path)
                 if extraction is not None:
@@ -291,7 +259,7 @@ class xmlextract(object):
         result = list()
 
         # first we add the original subject and the original body, to avoid duplication
-        for question in self.get_org_questions_uniq():
+        for question in self.merged_root.findall('OrgQuestion'):
             result.append( question.find('OrgQSubject').text )
             result.append( question.find('OrgQBody').text )
 
@@ -300,7 +268,7 @@ class xmlextract(object):
                       './OrgQuestion/Thread/RelQuestion/RelQBody',
                       './OrgQuestion/Thread/RelComment/']:
             result.extend([
-                element.text if element.text != None else '' for element in self.root.findall( path )
+                element.text if element.text != None else '' for element in self.merged_root.findall( path )
             ]) # extract text from each element matching the path
 
         # There is certainly a more performant/elegant/idiomatic solution to this problem.
