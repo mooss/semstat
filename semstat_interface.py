@@ -8,18 +8,21 @@ from textstat import *
 
 parser = argparse.ArgumentParser(description='Parse, explore and make statistics on a SemEval xml file from task 3')
 
-# positional arguments
+########################
+# positional arguments #
+########################
 parser.add_argument('source',
                     metavar='source.xml',
                     type=str, nargs=1,
                     help='the file to explore or analyse')
 
-# optional arguments
+######################
+# optional arguments #
+######################
 parser.add_argument('--display',
-                    choices=['related', 'original', 'comments'],
+                    choices=['original', 'related', 'comments', 'dump_text'],
                     default='original',
                     help='choose what will be displayed')
-
 
 # element selection
 selection = parser.add_mutually_exclusive_group()
@@ -41,6 +44,11 @@ source_filename = arguments.source[0]
 tabulator='   '
 
 extractor = xmlextract(source_filename)
+
+
+# extractor.merge_original_questions()
+# extractor.merged_tree.write("merged_tree.xml")
+# exit()
 
 question_ids=extractor.get_org_questions_ids()
 
@@ -95,21 +103,24 @@ def display_comments(related_thread, tabulator):
 ########################
 # selection displaying #
 ########################
-for question in my_selection:
-    question_id = question.attrib['ORGQ_ID']
-    print( '#', question.find('./OrgQSubject').text,
-           '# ID:', question_id,
-           '\n', tabulator, question.find('./OrgQBody').text, '\n' , sep='')
-    # related questions
-    if arguments.display == 'related' or arguments.display == 'comments':
-        related_questions = extractor.findall_path_from_org_id(
-            './Thread', question_id)
-        # forced to use the extractor because original questions are duplicated in the tree structure chosen by SemEval
-        for rel in related_questions:
-            display_related(rel, tabulator)
-            if(arguments.display == 'comments'):
-                display_comments(rel, tabulator)
-    
+if arguments.display in ['original', 'related', 'comments']:
+    for question in my_selection:
+        question_id = question.attrib['ORGQ_ID']
+        print( '#', question.find('./OrgQSubject').text,
+               '# ID:', question_id,
+               '\n', tabulator, question.find('./OrgQBody').text, '\n' , sep='')
+        # related questions
+        if arguments.display == 'related' or arguments.display == 'comments':
+            related_questions = extractor.findall_path_from_org_id(
+                './Thread', question_id)
+            # forced to use the extractor because original questions are duplicated in the tree structure chosen by SemEval
+            for rel in related_questions:
+                display_related(rel, tabulator)
+                if(arguments.display == 'comments'):
+                    display_comments(rel, tabulator)
+else: # dump_text
+    print( '\n'.join(extractor.get_all_text()) )
+                
 
 # for relc in extractor.get_rel_comments_from_org_id('Q268'):
 #     print('\trelated comment id:', relc.attrib['RELC_ID'])
