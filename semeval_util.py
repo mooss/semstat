@@ -63,7 +63,69 @@ class xmlextract(object):
         self.tree = ET.parse(self.source)
         self.root = self.tree.getroot()
 
+    def merge_original_questions(self):
+        """Merges together the subtrees of original questions sharing the same IDs.
+        
+        The original structure looks like
 
+        Root
+        |
+        |__OrgQuestion<Org_ID1>
+        |  |
+        |  |__(subject and body)
+        |  |
+        |  |__Thread<Thread_ID1>
+        |     |
+        |     |__RelQuestion
+        |     |  |
+        |     |  |__...
+        |     |
+        |     |__RelComment +
+        |        |__...
+        |
+        |__OrgQuestion<Org_ID1> # Same original question
+        |  |
+        | ...
+        |  |
+        |  |__Thread<Thread_ID2> # New thread
+        |     |
+       ...   ...
+
+        The merged structure looks like
+        
+        Root
+        |
+        |__Orgquestion<ID1>
+        |  |
+        |  |__(subject and body)
+        |  |
+        |  |__Thread<Thread_ID1>
+        |  |  |
+        |  | ...
+        |  |
+        |  |__Thread<Thread_ID2> # The threads are now gathered at the same level
+        |  |  |
+        |  | ...
+        | ...
+        |
+        |__OrgQuestion<ID2> # Next original question
+        |  |
+        | ...
+       ...
+        """
+        self.merged_tree = ET.ElementTree()
+        self.merged_root = self.root
+        ids_encountered = set()
+        for org_question in self.merged_root.findall('./OrgQuestion'):
+            org_id = org_question.attrib['ORGQ_ID']
+            if org_id not in ids_encountered:
+                current_subtree = org_question # works because assignment has reference semantics
+                ids_encountered.add(org_id)
+            else:
+                current_subtree.append( org_question.find('./Thread') )
+                self.root.remove(org_question)
+        self.merged_tree._setroot(self.merged_root)
+        
     def get_org_questions_all(self):
         """Retrieve *all* the original questions.
         
