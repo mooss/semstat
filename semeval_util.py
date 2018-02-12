@@ -9,6 +9,9 @@ import re
 
 id_classification = Enum('id_classification', 'org rel comment none')
 
+##################################
+# helper functions to xmlextract #
+##################################
 def classify_id(identifier):
     """Gives information about an id.
 
@@ -43,7 +46,6 @@ def classify_id(identifier):
     
     return (id_classification.none,)
 
-    
 class xmlextract(object):
     """Open an xml from semeval and allow to easily extract informations from it.
     
@@ -179,9 +181,7 @@ class xmlextract(object):
         out : ET.Element
             The original question.
         """
-        all_org_questions = self.merged_root.findall('OrgQuestion')
-
-        for question in all_org_questions:
+        for question in self.merged_root.iter('OrgQuestion'):
             if question.attrib['ORGQ_ID'] == org_id:
                 return question
 
