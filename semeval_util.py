@@ -7,8 +7,23 @@ from enum import Enum
 
 import re
 
-id_classification = Enum('id_classification', 'org rel comment none')
+id_classification = Enum('id_classification', 'org rel com none')
 
+#############################
+# defining pseudo constants #
+#############################
+"""The following regex, though hard to look at, perform the simple task of capturing:
+ - the original id,
+ - the related id,
+ - and the comment id.
+
+Examples:
+ - 'Q4'         matches the groups ('Q4', None, None)
+ - 'Q4_R8'      matches the groups ('Q4', 'R8', None)
+ - 'Q4_R8_C154' matches the groups ('Q4', 'R8', 'C154')
+ - 'R8'         does not match
+"""
+ID_EXTRACTION_REGEX = r'(Q[0-9]+)(?:_(R[0-9]+)(?:_(C[0-9]))?)?'
 ##################################
 # helper functions to xmlextract #
 ##################################
@@ -29,7 +44,7 @@ def classify_id(identifier):
         the rel fragment (ex _R4), and
         the comment fragment (ex _C2).
     """
-    match = re.match( r'(Q[0-9]+)(_R[0-9]+)?(_C[0-9]+)?', identifier)
+    match = re.match( ID_EXTRACTION_REGEX, identifier)
     if match:
         result = match.groups()
         group_number = 0
@@ -42,7 +57,7 @@ def classify_id(identifier):
         if group_number == 2:
             return (id_classification.rel, ) + result
         if group_number == 3:
-            return (id_classification.comment, ) + result
+            return (id_classification.com, ) + result
     
     return (id_classification.none,)
 
@@ -139,52 +154,116 @@ class xmlextract(object):
         """
         return [q.attrib['ORGQ_ID'] for q in self.merged_root.findall('OrgQuestion')]
     
-    #################################
-    # retrieve elements from any id #
-    #################################
-    
-    #################################
-    # retrieve elements from org id #
-    #################################
-    def get_rel_comments_from_org_id(self, org_id):
-        """Retrieve the related comments from an original question ID.
-        
-        Parameters
-        ----------
-        org_id : str
-           The ID of the original question.
-        
-        Returns
-        -------
-        out : list of ET.Element
-            The list of the related comments to the original question.
-        """
-        all_org_questions = self.merged_root.findall('OrgQuestion')
-        result = list()
-
-        for question in all_org_questions:
-            if question.attrib['ORGQ_ID'] == org_id:
-                result.extend( question.findall('./Thread/RelComment') ) # using xpath support to easily extract all related comments
-
-        return result
-
-    def get_org_question_from_org_id(self, org_id):
+    #######################################
+    # retrieve specific elements from ids #
+    #######################################
+    def get_org_question(self, org_id):
         """Retrieve an original question using its id.
         
         Parameters
         ----------
-        org_id : srt
+        org_id : str
             The ID of the original question.
         
         Returns
         -------
         out : ET.Element
-            The original question.
+            The original question element if found, None otherwise.
         """
         for question in self.merged_root.iter('OrgQuestion'):
             if question.attrib['ORGQ_ID'] == org_id:
                 return question
+        return None
 
+    def get_rel_thread(self, org_id, rel_id):
+        """Retrieve a related thread using its original ID and its related ID.
+        
+        Parameters
+        ----------
+        org_id : str
+           The original ID of the thread.
+        
+        rel_id : str
+           The related ID of the thread.
+        
+        Returns
+        -------
+        out : ET.Element
+            The related thread element if found, None otherwise.
+        """
+        for thread in self.get_org_question(org_id).iter('Thread'):
+            if thread.attrib['THREAD_SEQUENCE'] == org_id + "_" + rel_id:
+                return thread
+        return None
+
+    def get_rel_question(self, org_id, rel_id):
+        """Retrieve a related question using its original ID and its related ID.
+        
+        Parameters
+        ----------
+        org_id : str
+           The original ID of the question.
+        
+        rel_id : str
+           The related ID of the question.
+        
+        Returns
+        -------
+        out : ET.Element
+            The related question element if found, None otherwise.
+        """
+        return self.get_rel_thread(org_id, rel_id).find('./RelQuestion')
+
+    def get_rel_comment(self, org_id, rel_id, com_id):
+        """Retrieve a related comment using its original ID, its related ID and its comment ID.
+        
+        Parameters
+        ----------
+        org_id : str
+            The original ID of the comment.
+
+        rel_id : str
+            The related ID of the comment.
+
+        com_id : str
+            The comment ID of the comment.
+
+        Returns
+        -------
+        out : ET.Element
+            The related comment element if found, None otherwise.
+        """
+        for comment in self.get_rel_thread(org_id, rel_id).iter('RelComment'):
+            if comment.attrib['RELC_ID'] == org_id + '_' + rel_id + '_' + com_id:
+                return comment
+        return None
+        
+    
+    #################################
+    # retrieve any element from ids #
+    #################################
+    def get_element_from_id(self, identifier):
+        """Retrieve an element from its ID.
+
+        The element in question can either be an original question, a related question or a related comment.
+
+        Parameters
+        ----------
+        identifier : str
+            ID of the element (corresponding to an ORGQ_ID, RELQ_ID or RELC_ID).
+
+        Returns
+        -------
+        out : ET.Element
+            The asked-for element if it was found, None otherwise.
+        """
+        classification, org, rel, com = classify_id(identifier)
+        if classification == id_classification.org:
+            return self.get_org_question(org)
+        elif classification == id_classification.rel:
+            return self.get_rel_question(org, rel)
+        elif classification == id_classification.com:
+            return self.get_rel_comment(org, rel, com)
         return None
 
     ###########################
