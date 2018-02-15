@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 
 import argparse
+from nltk.tokenize import word_tokenize
 from semeval_util import xmlextract
-# from textstat import *
+from textstat import *
 
 parser = argparse.ArgumentParser(
     description='Parse, explore and make statistics on a SemEval xml file from task 3')
+
+tokenizer_dispatcher = {'delimiter_tokenizer': delimiter_tokenizer,
+                        'nltk_tokenizer': word_tokenize}
 
 ########################
 # positional arguments #
@@ -18,10 +22,24 @@ parser.add_argument('source',
 ######################
 # optional arguments #
 ######################
-parser.add_argument('--display',
+parser.add_argument('--stat',
+                    choices=['wordfreq'],
+                    nargs='+',
+                    help='statistics to show about the selection')
+
+parser.add_argument('--tokenizer',
+                    choices=tokenizer_dispatcher.keys(),
+                    default='delimiter_tokenizer',
+                    type=str, nargs=1,
+                    help='tokenizer function to use')
+
+# todo: add filter option (like remove errors, ignore articles...)
+
+parser.add_argument('--print',
                     choices=['original', 'related', 'comments', 'dump_text'],
                     default='original',
-                    help='choose what will be displayed')
+                    nargs=1,
+                    help='choose what will be printed')
 
 # element selection
 selection = parser.add_mutually_exclusive_group()
@@ -40,15 +58,11 @@ arguments = parser.parse_args()
 
 # parameters initialisation
 source_filename = arguments.source[0]
+printstyle = arguments.print
 tabulator = '   '
+tokenizer_function = tokenizer_dispatcher[arguments.tokenizer]
 
 extractor = xmlextract(source_filename)
-
-
-# extractor.merge_original_questions()
-# extractor.merged_tree.write("merged_tree.xml")
-# exit()
-
 question_ids = extractor.get_org_questions_ids()
 
 ######################
@@ -66,18 +80,18 @@ my_selection = [
     for offset in index_list
 ]
 
-#####################
-# display functions #
-#####################
+###################
+# print functions #
+###################
 
 
-def display_related(related_thread, tabulator):
-    """Display the related questions.
+def print_related(related_thread, tabulator):
+    """Print the related questions.
 
     Parameters
     ----------
     related_thread : ET.Element
-        Element tree to display.
+        Element tree to print.
     """
     relquestion = related_thread.find('./RelQuestion')
     print(tabulator, '#', relquestion.find('./RelQSubject').text,
@@ -86,13 +100,13 @@ def display_related(related_thread, tabulator):
           '\n', tabulator * 2, relquestion.find('./RelQBody').text, '\n', sep='')
 
 
-def display_comments(related_thread, tabulator):
-    """Display the related comments.
+def print_comments(related_thread, tabulator):
+    """Print the related comments.
 
     Parameters
     ----------
     related_thread : ET.Element
-        Element tree to display.
+        Element tree to print.
     """
     comments = related_thread.findall('./RelComment')
     for comment in comments:
@@ -103,25 +117,46 @@ def display_comments(related_thread, tabulator):
               '\n', tabulator * 3, comment.find('./RelCText').text, '\n', sep='')
 
 
-########################
-# selection displaying #
-########################
-if arguments.display in ['original', 'related', 'comments']:
+#########################
+# statistics processing #
+#########################
+print(arguments)
+
+if arguments.stat is not None:
+    printstyle = None
+
+if 'wordfreq' in arguments.stat:
+    txt = '\n'.join(extractor.get_all_text())
+    tokens = tokenizer_function(txt)
+
+    patterns = count_patterns(
+        tokens,
+        lambda x: x)
+
+    for pattern in sorted_dict(patterns)[:20]:
+        print(pattern, '-->', patterns[pattern])
+
+######################
+# selection printing #
+######################
+
+if printstyle in ['original', 'related', 'comments']:
+    print(printstyle)
     for question in my_selection:
         question_id = question.attrib['ORGQ_ID']
         print('#', question.find('./OrgQSubject').text,
               '# ID:', question_id,
               '\n', tabulator, question.find('./OrgQBody').text, '\n', sep='')
         # related questions
-        if arguments.display == 'related' or arguments.display == 'comments':
+        if printstyle == 'related' or printstyle == 'comments':
             related_questions = extractor.findall_path_from_org_id(
                 './Thread', question_id)
             # forced to use the extractor because original questions are duplicated in the tree structure chosen by SemEval
             for rel in related_questions:
-                display_related(rel, tabulator)
-                if(arguments.display == 'comments'):
-                    display_comments(rel, tabulator)
-else:  # dump_text
+                print_related(rel, tabulator)
+                if(printstyle == 'comments'):
+                    print_comments(rel, tabulator)
+if printstyle == 'dump_text':
     print('\n'.join(extractor.get_all_text()))
 
 
