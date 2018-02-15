@@ -27,6 +27,8 @@ ID_EXTRACTION_REGEX = r'(Q[0-9]+)(?:_(R[0-9]+)(?:_(C[0-9]))?)?'
 ##################################
 # helper functions to xmlextract #
 ##################################
+
+
 def classify_id(identifier):
     """Gives information about an id.
 
@@ -34,7 +36,7 @@ def classify_id(identifier):
     ----------
     identifier : str
         The identifier to classify.
-    
+
     Returns
     -------
     out : tuple
@@ -44,33 +46,34 @@ def classify_id(identifier):
         the rel fragment (ex _R4), and
         the comment fragment (ex _C2).
     """
-    match = re.match( ID_EXTRACTION_REGEX, identifier)
+    match = re.match(ID_EXTRACTION_REGEX, identifier)
     if match:
         result = match.groups()
         group_number = 0
         for i in result:
             if i is not None:
-                group_number += 1 # there must be a better way to get the number of non None elements in a tuple
-            
+                # there must be a better way to get the number of non None elements in a tuple
+                group_number += 1
+
         if group_number == 1:
             return (id_classification.org, ) + result
         if group_number == 2:
             return (id_classification.rel, ) + result
         if group_number == 3:
             return (id_classification.com, ) + result
-    
+
     return (id_classification.none,)
+
 
 class xmlextract(object):
     """Open an xml from semeval and allow to easily extract informations from it.
-    
+
     Most methods in this module return an ElementTree object, with the notable exception of the *ids methods and of get_all_text.
     """
 
-
     def __init__(self, xml_filename):
         """Initialize the extractor.
-        
+
         Parameters
         ----------
         xml_filename : str
@@ -83,7 +86,7 @@ class xmlextract(object):
 
     def merge_original_questions(self):
         """Merges together the subtrees of original questions sharing the same IDs.
-        
+
         The original structure looks like
 
         Root
@@ -110,7 +113,7 @@ class xmlextract(object):
        ...   ...
 
         The merged structure looks like
-        
+
         Root
         |
         |__Orgquestion<ID1>
@@ -137,34 +140,34 @@ class xmlextract(object):
         for org_question in self.merged_root.findall('./OrgQuestion'):
             org_id = org_question.attrib['ORGQ_ID']
             if org_id not in ids_encountered:
-                current_subtree = org_question # works because assignment has reference semantics
+                current_subtree = org_question  # works because assignment has reference semantics
                 ids_encountered.add(org_id)
             else:
-                current_subtree.append( org_question.find('./Thread') )
+                current_subtree.append(org_question.find('./Thread'))
                 self.root.remove(org_question)
         self.merged_tree._setroot(self.merged_root)
-        
+
     def get_org_questions_ids(self):
         """Retrieve the original questions' IDs.
-        
+
         Returns
         -------
         out : list of str
             The list of the original questions IDs.
         """
         return [q.attrib['ORGQ_ID'] for q in self.merged_root.findall('OrgQuestion')]
-    
+
     #######################################
     # retrieve specific elements from ids #
     #######################################
     def get_org_question(self, org_id):
         """Retrieve an original question using its id.
-        
+
         Parameters
         ----------
         org_id : str
             The ID of the original question.
-        
+
         Returns
         -------
         out : ET.Element
@@ -177,15 +180,15 @@ class xmlextract(object):
 
     def get_rel_thread(self, org_id, rel_id):
         """Retrieve a related thread using its original ID and its related ID.
-        
+
         Parameters
         ----------
         org_id : str
            The original ID of the thread.
-        
+
         rel_id : str
            The related ID of the thread.
-        
+
         Returns
         -------
         out : ET.Element
@@ -198,15 +201,15 @@ class xmlextract(object):
 
     def get_rel_question(self, org_id, rel_id):
         """Retrieve a related question using its original ID and its related ID.
-        
+
         Parameters
         ----------
         org_id : str
            The original ID of the question.
-        
+
         rel_id : str
            The related ID of the question.
-        
+
         Returns
         -------
         out : ET.Element
@@ -216,7 +219,7 @@ class xmlextract(object):
 
     def get_rel_comment(self, org_id, rel_id, com_id):
         """Retrieve a related comment using its original ID, its related ID and its comment ID.
-        
+
         Parameters
         ----------
         org_id : str
@@ -237,8 +240,7 @@ class xmlextract(object):
             if comment.attrib['RELC_ID'] == org_id + '_' + rel_id + '_' + com_id:
                 return comment
         return None
-        
-    
+
     #################################
     # retrieve any element from ids #
     #################################
@@ -271,15 +273,15 @@ class xmlextract(object):
     ###########################
     def findall_path_from_org_id(self, path, org_id):
         """Retrieve instances of an xml path from the tree of an original question, identified by its ID.
-        
+
         Parameters
         ----------
         path : str
             XML path to extract.
-        
+
         org_id : str
             ID of the original question.
-        
+
         Returns
         -------
         out : list of ET.Element
@@ -295,15 +297,15 @@ class xmlextract(object):
 
     def find_path_from_org_id(self, path, org_id):
         """Retrieve the first xml path from the tree of an original question, identified by its ID.
-        
+
         Parameters
         ----------
         path : str
             XML path to extract.
-        
+
         org_id : str
             ID of the original question.
-        
+
         Returns
         -------
         out : ET.Element
@@ -313,7 +315,7 @@ class xmlextract(object):
             if org_question.attrib['ORGQ_ID'] == org_id:
                 extraction = org_question.find(path)
                 if extraction is not None:
-                    return extraction # only returns if a path was found
+                    return extraction  # only returns if a path was found
 
         return None
 
@@ -322,7 +324,7 @@ class xmlextract(object):
     ###################
     def get_all_text(self):
         """Retrieve all the textual contents from the source file.
-        
+
         This includes :
          - The original subject.
          - The original body.
@@ -339,18 +341,18 @@ class xmlextract(object):
 
         # first we add the original subject and the original body, to avoid duplication
         for question in self.merged_root.findall('OrgQuestion'):
-            result.append( question.find('OrgQSubject').text )
-            result.append( question.find('OrgQBody').text )
+            result.append(question.find('OrgQSubject').text)
+            result.append(question.find('OrgQBody').text)
 
         # then we add the rest
-        for path in [ './OrgQuestion/Thread/RelQuestion/RelQSubject',
-                      './OrgQuestion/Thread/RelQuestion/RelQBody',
-                      './OrgQuestion/Thread/RelComment/']:
+        for path in ['./OrgQuestion/Thread/RelQuestion/RelQSubject',
+                     './OrgQuestion/Thread/RelQuestion/RelQBody',
+                     './OrgQuestion/Thread/RelComment/']:
             result.extend([
-                element.text if element.text != None else '' for element in self.merged_root.findall( path )
-            ]) # extract text from each element matching the path
+                element.text if element.text is not None else '' for element in self.merged_root.findall(path)
+            ])  # extract text from each element matching the path
 
         # There is certainly a more performant/elegant/idiomatic solution to this problem.
         # I'll come back to it eventually.
 
-        return result;    
+        return result

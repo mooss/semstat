@@ -1,12 +1,11 @@
 #!/usr/bin/python3
 
-import sys
 import argparse
-import nltk
 from semeval_util import xmlextract
-from textstat import *
+# from textstat import *
 
-parser = argparse.ArgumentParser(description='Parse, explore and make statistics on a SemEval xml file from task 3')
+parser = argparse.ArgumentParser(
+    description='Parse, explore and make statistics on a SemEval xml file from task 3')
 
 ########################
 # positional arguments #
@@ -41,7 +40,7 @@ arguments = parser.parse_args()
 
 # parameters initialisation
 source_filename = arguments.source[0]
-tabulator='   '
+tabulator = '   '
 
 extractor = xmlextract(source_filename)
 
@@ -50,17 +49,17 @@ extractor = xmlextract(source_filename)
 # extractor.merged_tree.write("merged_tree.xml")
 # exit()
 
-question_ids=extractor.get_org_questions_ids()
+question_ids = extractor.get_org_questions_ids()
 
 ######################
 # question selection #
 ######################
 # indexes
-index_list=[]
+index_list = []
 if arguments.indexes is not None:
     index_list = arguments.indexes
 if arguments.lost:
-    index_list = [4,8,15,16,23,42]
+    index_list = [4, 8, 15, 16, 23, 42]
 
 my_selection = [
     extractor.find_path_from_org_id('.', question_ids[offset])
@@ -70,23 +69,26 @@ my_selection = [
 #####################
 # display functions #
 #####################
+
+
 def display_related(related_thread, tabulator):
     """Display the related questions.
-    
+
     Parameters
     ----------
     related_thread : ET.Element
         Element tree to display.
     """
     relquestion = related_thread.find('./RelQuestion')
-    print( tabulator, '#', relquestion.find('./RelQSubject').text,
-           '# ID:', relquestion.attrib['RELQ_ID'],
-           ', ', relquestion.attrib['RELQ_RELEVANCE2ORGQ'],
-           '\n', tabulator*2, relquestion.find('./RelQBody').text, '\n', sep='')
+    print(tabulator, '#', relquestion.find('./RelQSubject').text,
+          '# ID:', relquestion.attrib['RELQ_ID'],
+          ', ', relquestion.attrib['RELQ_RELEVANCE2ORGQ'],
+          '\n', tabulator * 2, relquestion.find('./RelQBody').text, '\n', sep='')
+
 
 def display_comments(related_thread, tabulator):
     """Display the related comments.
-    
+
     Parameters
     ----------
     related_thread : ET.Element
@@ -94,11 +96,12 @@ def display_comments(related_thread, tabulator):
     """
     comments = related_thread.findall('./RelComment')
     for comment in comments:
-        print(tabulator*3, '# ID:',
+        print(tabulator * 3, '# ID:',
               comment.attrib['RELC_ID'],
               ', ', comment.attrib['RELC_RELEVANCE2ORGQ'], ' to org',
               ', ', comment.attrib['RELC_RELEVANCE2RELQ'], ' to rel',
-              '\n', tabulator*3, comment.find('./RelCText').text, '\n', sep='')
+              '\n', tabulator * 3, comment.find('./RelCText').text, '\n', sep='')
+
 
 ########################
 # selection displaying #
@@ -106,9 +109,9 @@ def display_comments(related_thread, tabulator):
 if arguments.display in ['original', 'related', 'comments']:
     for question in my_selection:
         question_id = question.attrib['ORGQ_ID']
-        print( '#', question.find('./OrgQSubject').text,
-               '# ID:', question_id,
-               '\n', tabulator, question.find('./OrgQBody').text, '\n' , sep='')
+        print('#', question.find('./OrgQSubject').text,
+              '# ID:', question_id,
+              '\n', tabulator, question.find('./OrgQBody').text, '\n', sep='')
         # related questions
         if arguments.display == 'related' or arguments.display == 'comments':
             related_questions = extractor.findall_path_from_org_id(
@@ -118,9 +121,9 @@ if arguments.display in ['original', 'related', 'comments']:
                 display_related(rel, tabulator)
                 if(arguments.display == 'comments'):
                     display_comments(rel, tabulator)
-else: # dump_text
-    print( '\n'.join(extractor.get_all_text()) )
-                
+else:  # dump_text
+    print('\n'.join(extractor.get_all_text()))
+
 
 # for relc in extractor.get_rel_comments_from_org_id('Q268'):
 #     print('\trelated comment id:', relc.attrib['RELC_ID'])
