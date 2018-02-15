@@ -24,6 +24,7 @@ Examples:
  - 'R8'         does not match
 """
 ID_EXTRACTION_REGEX = r'(Q[0-9]+)(?:_(R[0-9]+)(?:_(C[0-9]))?)?'
+
 ##################################
 # helper functions to xmlextract #
 ##################################
@@ -339,20 +340,13 @@ class xmlextract(object):
         """
         result = list()
 
-        # first we add the original subject and the original body, to avoid duplication
-        for question in self.merged_root.findall('OrgQuestion'):
-            result.append(question.find('OrgQSubject').text)
-            result.append(question.find('OrgQBody').text)
-
-        # then we add the rest
-        for path in ['./OrgQuestion/Thread/RelQuestion/RelQSubject',
+        for path in ['./OrgQuestion/OrgQSubject',
+                     './OrgQuestion/OrgQBody',
+                     './OrgQuestion/Thread/RelQuestion/RelQSubject',
                      './OrgQuestion/Thread/RelQuestion/RelQBody',
                      './OrgQuestion/Thread/RelComment/']:
             result.extend([
                 element.text if element.text is not None else '' for element in self.merged_root.findall(path)
             ])  # extract text from each element matching the path
-
-        # There is certainly a more performant/elegant/idiomatic solution to this problem.
-        # I'll come back to it eventually.
 
         return result
