@@ -16,7 +16,7 @@ tokenizer_dispatcher = {'delimiter_tokenizer': delimiter_tokenizer,
 ########################
 parser.add_argument('source',
                     metavar='source.xml',
-                    type=str, nargs=1,
+                    type=str,
                     help='the file to explore or analyse')
 
 ######################
@@ -30,7 +30,7 @@ parser.add_argument('--stat',
 parser.add_argument('--tokenizer',
                     choices=tokenizer_dispatcher.keys(),
                     default='delimiter_tokenizer',
-                    type=str, nargs=1,
+                    type=str,
                     help='tokenizer function to use')
 
 # todo: add filter option (like remove errors, ignore articles...)
@@ -38,7 +38,6 @@ parser.add_argument('--tokenizer',
 parser.add_argument('--print',
                     choices=['original', 'related', 'comments', 'dump_text'],
                     default='original',
-                    nargs=1,
                     help='choose what will be printed')
 
 # element selection
@@ -57,7 +56,7 @@ selection.add_argument('--lost', action='store_true',
 arguments = parser.parse_args()
 
 # parameters initialisation
-source_filename = arguments.source[0]
+source_filename = arguments.source
 printstyle = arguments.print
 tabulator = '   '
 tokenizer_function = tokenizer_dispatcher[arguments.tokenizer]
