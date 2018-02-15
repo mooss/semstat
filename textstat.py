@@ -3,14 +3,18 @@ from nltk.tokenize import word_tokenize
 # dictionary with Perl-like autovivification feature
 from collections import defaultdict
 
+def sorted_dict(dictionary, reverse=True):
+    """Sort a dictionnary (transforming it into a list), in reverse ofder by default.
+    """
+    return sorted(dictionary, key=dictionary.__getitem__, reverse=reverse)
 
-def delimiter_tokeniser(source, word_delimiters=set([' ', '\t', '\n'])):
+def delimiter_tokenizer(source, word_delimiters=set([' ', '\t', '\n'])):
     """Tokenize the text using characters delimiters.
 
     Parameters
     ----------
     source : str
-        The text to tokenise.
+        The text to tokenize.
 
     word_delimiters : Container of str, optional
         The word delimiters.
@@ -18,7 +22,7 @@ def delimiter_tokeniser(source, word_delimiters=set([' ', '\t', '\n'])):
     Returns
     -------
     out : list of str
-        The text, tokenised according to the delimiters.
+        The text, tokenized according to the delimiters.
     """
     result = list()
     strbuffer = list()
