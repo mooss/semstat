@@ -67,7 +67,9 @@ def classify_id(identifier):
 
 
 def get_semeval_content(element):
-    """Retrieve the text from a semeval element.
+    """Retrieve the content of a semeval element.
+
+    That is to say the textual content of the both the subject and the body.
 
     Parameters
     ----------
@@ -83,6 +85,7 @@ def get_semeval_content(element):
     if element.tag == 'OrgQuestion':
         return '\n'.join(
             [element.find(tag).text
+             if element.find(tag).text is not None else ''
              for tag in ['OrgQSubject', 'OrgQBody']
              ]
         )
@@ -90,6 +93,7 @@ def get_semeval_content(element):
     if element.tag == 'RelQuestion':
         return '\n'.join(
             [element.find(tag).text
+             if element.find(tag).text is not None else ''
              for tag in ['RelQSubject', 'RelQBody']
              ]
         )
@@ -97,6 +101,30 @@ def get_semeval_content(element):
     if element.tag == 'RelComment':
         return element.find('RelCText').text
 
+    return None
+
+
+def get_semeval_id(element):
+    """Retrieve the id of a semeval element.
+
+    Parameters
+    ----------
+
+    element : ET.Element
+        The original question, related question or related comment from which to extract the id.
+
+    Returns
+    -------
+
+    out : str
+        The id of the element.
+    """
+    translation = {'OrgQuestion': 'ORGQ_ID',
+                   'RelQuestion': 'RELQ_ID',
+                   'RelComment': 'RELC_ID'}
+
+    if element.tag in translation.keys():
+        return element.attrib[translation[element.tag]]
     return None
 
 
