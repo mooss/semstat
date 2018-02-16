@@ -7,9 +7,9 @@ from textstat import *
 from helper_functions import *
 
 parser = argparse.ArgumentParser(
-    description='Parse, explore and make statistics on a SemEval xml file from task 3')
+    description='Parse, explore and make statistics on a SemEval xml file from task 3.')
 
-tokenizer_dispatcher = {'delimiter_tokenizer': delimiter_tokenizer,
+tokenizer_dispatcher = {'delimiter_tokenizer': lambda x: delimiter_tokenizer(x).split(),
                         'nltk_tokenizer': word_tokenize}
 
 
@@ -122,26 +122,9 @@ if arguments.stat is not None:
                 for el in splitted_relqs[key]
             ]
 
-        # relevance_translation = {'PerfectMatch': 'perf',
-        #                          'Relevant': 'rlvt',
-        #                          'Irrelevant': 'irlvt'}
-
-        # print('question', get_semeval_id(orgq), '\t',
-        #       {relevance_translation[i]:
-        #        normalizer_function(org_score, average(splitted_scores[i]))
-        #        for i in splitted_scores.keys()})
-
         score_accumulator[get_semeval_id(orgq)] = splitted_scores
 
     # computing the stats
-
-    # stat_accumulator = {
-    #     orgq_id: {
-    #         relevance: average(score_accumulator[orgq_id][relevance])
-    #         for relevance in score_accumulator[orgq_id],
-    #     }
-    #     for orgq_id in score_accumulator
-    # }
 
     stat_accumulator = {}
     normalized_accumulator = {}
@@ -159,20 +142,21 @@ if arguments.stat is not None:
 
     def pretty_print_stat(dic, id, tag):
         if tag in dic[id]:
-            return ' %0.2f |' % dic[id][tag]
-        return '       |'
+            return ' %6.2f |' % dic[id][tag]
+        return '        |'
 
     for org_id in stat_accumulator:
-        print(org_id, ':', "%-8s|" % org_scores[org_id],
-              pretty_print_stat(stat_accumulator, org_id, 'PerfectMatch'),
-              pretty_print_stat(stat_accumulator, org_id, 'Relevant'),
-              pretty_print_stat(stat_accumulator, org_id, 'Irrelevant'),
-              '||',
-              pretty_print_stat(normalized_accumulator,
-                                org_id, 'PerfectMatch'),
-              pretty_print_stat(normalized_accumulator, org_id, 'Irrelevant'),
-              pretty_print_stat(normalized_accumulator, org_id, 'Relevant'),
-              )
+        print(
+            org_id, ': ', "%-5s|" % org_scores[org_id],
+            pretty_print_stat(stat_accumulator, org_id, 'PerfectMatch'),
+            pretty_print_stat(stat_accumulator, org_id, 'Relevant'),
+            pretty_print_stat(stat_accumulator, org_id, 'Irrelevant'),
+            '|',
+            pretty_print_stat(normalized_accumulator, org_id, 'PerfectMatch'),
+            pretty_print_stat(normalized_accumulator, org_id, 'Relevant'),
+            pretty_print_stat(normalized_accumulator, org_id, 'Irrelevant'),
+            sep=''
+        )
 
     def access_if_exists(container, key, otherwise):
         if key in container:
@@ -193,7 +177,8 @@ if arguments.stat is not None:
                     normalized_accumulator[id][relevance])
 
     for relevance in merged_normalized_accumulator:
-        print(relevance, ':', average(merged_normalized_accumulator[relevance]))
+        print(relevance, ':', average(
+            merged_normalized_accumulator[relevance]))
 
     quit()
     if 'wordfreq' in arguments.stat:
@@ -244,41 +229,3 @@ if printstyle in ['original', 'related', 'comments']:
                     print_comments(rel, tabulator)
 if printstyle == 'dump_text':
     print('\n'.join(extractor.get_all_text()))
-
-
-# for relc in extractor.get_rel_comments_from_org_id('Q268'):
-#     print('\trelated comment id:', relc.attrib['RELC_ID'])
-
-# fulltext = extractor.get_all_text()
-# joined_text = ''.join(fulltext)
-
-# print( len(fulltext), ' entries')
-# freq =  frequency_analysis( joined_text )
-
-# #print( "number of tokens found :\n\tby naive frequency analysis\t|\tby nltk's word_tokenize\n\t\t", len(freq), "\t\t\t|\t\t", len( nltk_frequency_analysis(joined_text) ))
-
-# cardinal = 20
-# print('here are the ', cardinal, ' most common words from ', source_filename, ':')
-
-# count=1
-# for el in sorted(freq, key=freq.__getitem__, reverse=True):
-#     if count <= cardinal:
-#         print('\t', el, '\t --> ', freq[el], ' occurences')
-#         count += 1
-#     else:
-#         break
-
-# print("tokenizing...", end='')
-# sys.stdout.flush()
-# tokens = word_tokenize(joined_text)
-# print("done\npos tagging...", end='')
-# sys.stdout.flush()
-# tagged_text = nltk.pos_tag( tokens )
-# print('done')
-# tag_counter = defaultdict(int)
-# for (word, tag) in tagged_text:
-#     tag_counter[tag] += 1
-
-# print('\noccurence of tags:')
-# for el in sorted(tag_counter, key=tag_counter.__getitem__, reverse=True):
-#     print('\t', el, '\t --> ', tag_counter[el])
