@@ -3,10 +3,12 @@ from nltk.tokenize import word_tokenize
 # dictionary with Perl-like autovivification feature
 from collections import defaultdict
 
+
 def sorted_dict(dictionary, reverse=True):
     """Sort a dictionnary (transforming it into a list), in reverse ofder by default.
     """
     return sorted(dictionary, key=dictionary.__getitem__, reverse=reverse)
+
 
 def delimiter_tokenizer(source, word_delimiters=set([' ', '\t', '\n'])):
     """Tokenize the text using characters delimiters.
@@ -106,3 +108,22 @@ def count_patterns(data, pattern_classifier):
         result[pattern_classifier(el)] += 1
 
     return result
+
+
+def average(collection, score_function=lambda x: x):
+    """Compute the average of a score on a collection.
+
+    Parameters
+    ----------
+    collection : Container of a
+        The container of elements to average.
+
+    score_function : function(a) -> Number, optional
+        Function computing the score to average.
+
+    Returns
+    -------
+    out : float
+        The mean of the scores returned by the score function on the elements.
+    """
+    return sum([score_function(el) for el in collection]) / len(collection)
