@@ -10,7 +10,7 @@ def sorted_dict(dictionary, reverse=True):
     return sorted(dictionary, key=dictionary.__getitem__, reverse=reverse)
 
 
-def delimiter_tokenizer(source, word_delimiters=set([' ', '\t', '\n'])):
+def delimiter_tokenizer(source, word_delimiters='.,?!:/\\_-'):
     """Tokenize the text using characters delimiters.
 
     Parameters
@@ -18,24 +18,32 @@ def delimiter_tokenizer(source, word_delimiters=set([' ', '\t', '\n'])):
     source : str
         The text to tokenize.
 
-    word_delimiters : Container of str, optional
+    word_delimiters : str, optional
         The word delimiters.
 
     Returns
     -------
-    out : list of str
+    out : str
         The text, tokenized according to the delimiters.
     """
-    result = list()
+    resultbuffer = list()
     strbuffer = list()
+
+    if ' ' in word_delimiters:
+        word_delimiters -= ' '
 
     for char in source:
         if char in word_delimiters:
-            result.append(''.join(strbuffer))
+            resultbuffer.append(''.join(strbuffer))
+            resultbuffer.append(char)
             strbuffer = list()
         else:
             strbuffer.append(char)
-    return result
+
+    if len(strbuffer):
+        resultbuffer.append(''.join(strbuffer))
+
+    return ' '.join(resultbuffer)
 
 
 def frequency_analysis(source, word_separators=set([' ', '\t', '\n'])):
