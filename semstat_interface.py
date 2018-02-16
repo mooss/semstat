@@ -123,24 +123,27 @@ print(arguments)
 
 if arguments.stat is not None:
     printstyle = None
+    if 'wordfreq' in arguments.stat:
+        txt = '\n'.join(extractor.get_all_text())
+        tokens = tokenizer_function(txt)
 
-if 'wordfreq' in arguments.stat:
-    txt = '\n'.join(extractor.get_all_text())
-    tokens = tokenizer_function(txt)
+        patterns = count_patterns(
+            tokens,
+            lambda x: x)
 
-    patterns = count_patterns(
-        tokens,
-        lambda x: x)
+        for pattern in sorted_dict(patterns)[:20]:
+            print(pattern, '-->', patterns[pattern])
 
-    for pattern in sorted_dict(patterns)[:20]:
-        print(pattern, '-->', patterns[pattern])
+    if 'org2rel_len' in arguments.stat:
+        orgquestions = extractor.merged_root.findall('OrgQuestion')
+        for orgq in orgquestions:
+            
 
 ######################
 # selection printing #
 ######################
 
 if printstyle in ['original', 'related', 'comments']:
-    print(printstyle)
     for question in my_selection:
         question_id = question.attrib['ORGQ_ID']
         print('#', question.find('./OrgQSubject').text,
