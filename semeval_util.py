@@ -66,6 +66,40 @@ def classify_id(identifier):
     return (id_classification.none,)
 
 
+def get_semeval_content(element):
+    """Retrieve the text from a semeval element.
+
+    Parameters
+    ----------
+    element : ET.Element
+        The original question, related question or related comment to get the text from.
+
+    Returns
+    -------
+    out : str
+        The text of the element.
+
+    """
+    if element.tag == 'OrgQuestion':
+        return '\n'.join(
+            [element.find(tag).text
+             for tag in ['OrgQSubject', 'OrgQBody']
+             ]
+        )
+
+    if element.tag == 'RelQuestion':
+        return '\n'.join(
+            [element.find(tag).text
+             for tag in ['RelQSubject', 'RelQBody']
+             ]
+        )
+
+    if element.tag == 'RelComment':
+        return element.find('RelCText').text
+
+    return None
+
+
 class xmlextract(object):
     """Open an xml from semeval and allow to easily extract informations from it.
 
