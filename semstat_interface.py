@@ -2,14 +2,19 @@
 
 import argparse
 from nltk.tokenize import word_tokenize
-from semeval_util import xmlextract
+from semeval_util import xmlextract, get_semeval_content, get_semeval_id
 from textstat import *
+from helper_functions import *
 
 parser = argparse.ArgumentParser(
     description='Parse, explore and make statistics on a SemEval xml file from task 3')
 
 tokenizer_dispatcher = {'delimiter_tokenizer': delimiter_tokenizer,
                         'nltk_tokenizer': word_tokenize}
+
+
+normalizer_dispatcher = {'normalize': normalized_ratio,
+                         'off': lambda x, y: x / y}
 
 ########################
 # positional arguments #
@@ -23,15 +28,20 @@ parser.add_argument('source',
 # optional arguments #
 ######################
 parser.add_argument('--stat',
-                    choices=['wordfreq'],
+                    choices=['wordfreq', 'org2rel_len'],
                     nargs='+',
                     help='statistics to show about the selection')
 
-parser.add_argument('--tokenizer',
+parser.add_argument('--tokenization',
                     choices=tokenizer_dispatcher.keys(),
                     default='delimiter_tokenizer',
                     type=str,
-                    help='tokenizer function to use')
+                    help='tokenization function to use')
+
+parser.add_argument('--normalization',
+                    choices=normalizer_dispatcher.keys(),
+                    default='normalize',
+                    help='normalization function to use')
 
 # todo: add filter option (like remove errors, ignore articles...)
 
@@ -59,7 +69,8 @@ arguments = parser.parse_args()
 source_filename = arguments.source
 printstyle = arguments.print
 tabulator = '   '
-tokenizer_function = tokenizer_dispatcher[arguments.tokenizer]
+tokenizer_function = tokenizer_dispatcher[arguments.tokenization]
+normalizer_function = normalizer_dispatcher[arguments.normalization]
 
 extractor = xmlextract(source_filename)
 question_ids = extractor.get_org_questions_ids()
@@ -78,43 +89,6 @@ my_selection = [
     extractor.find_path_from_org_id('.', question_ids[offset])
     for offset in index_list
 ]
-
-###################
-# print functions #
-###################
-
-
-def print_related(related_thread, tabulator):
-    """Print the related questions.
-
-    Parameters
-    ----------
-    related_thread : ET.Element
-        Element tree to print.
-    """
-    relquestion = related_thread.find('./RelQuestion')
-    print(tabulator, '#', relquestion.find('./RelQSubject').text,
-          '# ID:', relquestion.attrib['RELQ_ID'],
-          ', ', relquestion.attrib['RELQ_RELEVANCE2ORGQ'],
-          '\n', tabulator * 2, relquestion.find('./RelQBody').text, '\n', sep='')
-
-
-def print_comments(related_thread, tabulator):
-    """Print the related comments.
-
-    Parameters
-    ----------
-    related_thread : ET.Element
-        Element tree to print.
-    """
-    comments = related_thread.findall('./RelComment')
-    for comment in comments:
-        print(tabulator * 3, '# ID:',
-              comment.attrib['RELC_ID'],
-              ', ', comment.attrib['RELC_RELEVANCE2ORGQ'], ' to org',
-              ', ', comment.attrib['RELC_RELEVANCE2RELQ'], ' to rel',
-              '\n', tabulator * 3, comment.find('./RelCText').text, '\n', sep='')
-
 
 #########################
 # statistics processing #
@@ -136,8 +110,19 @@ if arguments.stat is not None:
 
     if 'org2rel_len' in arguments.stat:
         orgquestions = extractor.merged_root.findall('OrgQuestion')
+        org2rel_lens = list()
         for orgq in orgquestions:
-            
+            orglen = len(tokenizer_function(get_semeval_content(orgq)))
+
+            rellens = [
+                len(tokenizer_function(get_semeval_content(relq)))
+                for relq in orgq.findall('./Thread/RelQuestion')
+            ]
+            org2rel_lens.append(
+                normalizer_function(orglen, sum(rellens) / len(rellens)))
+            print('len ratio for question', get_semeval_id(
+                orgq), '=', org2rel_lens[-1])
+        print('mean len ratio =', (sum(org2rel_lens) / len(org2rel_lens)))
 
 ######################
 # selection printing #
