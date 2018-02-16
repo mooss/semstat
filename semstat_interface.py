@@ -2,7 +2,7 @@
 
 import argparse
 from nltk.tokenize import word_tokenize
-from semeval_util import xmlextract, get_semeval_content, get_semeval_id
+from semeval_util import *
 from textstat import *
 from helper_functions import *
 
@@ -96,7 +96,106 @@ my_selection = [
 print(arguments)
 
 if arguments.stat is not None:
-    printstyle = None
+    printstyle = None  # don't print raw text if stats were demanded
+
+    score_function = len
+    split_function = get_semeval_relevance_orgq
+    stat_roots = extractor.merged_root.findall('OrgQuestion')
+
+    score_accumulator = dict()
+    org_scores = {}
+
+    for orgq in stat_roots:
+        org_scores[get_semeval_id(orgq)] = score_function(
+            tokenizer_function(get_semeval_content(orgq)))
+
+        splitted_relqs = split_container(
+            orgq.findall('./Thread/RelQuestion'),
+            split_function
+        )
+
+        # calculating the scores
+        splitted_scores = {}
+        for key in splitted_relqs.keys():
+            splitted_scores[key] = [
+                score_function(tokenizer_function(get_semeval_content(el)))
+                for el in splitted_relqs[key]
+            ]
+
+        # relevance_translation = {'PerfectMatch': 'perf',
+        #                          'Relevant': 'rlvt',
+        #                          'Irrelevant': 'irlvt'}
+
+        # print('question', get_semeval_id(orgq), '\t',
+        #       {relevance_translation[i]:
+        #        normalizer_function(org_score, average(splitted_scores[i]))
+        #        for i in splitted_scores.keys()})
+
+        score_accumulator[get_semeval_id(orgq)] = splitted_scores
+
+    # computing the stats
+
+    # stat_accumulator = {
+    #     orgq_id: {
+    #         relevance: average(score_accumulator[orgq_id][relevance])
+    #         for relevance in score_accumulator[orgq_id],
+    #     }
+    #     for orgq_id in score_accumulator
+    # }
+
+    stat_accumulator = {}
+    normalized_accumulator = {}
+
+    for orgq_id in score_accumulator:
+        stat_accumulator[orgq_id] = {}
+        normalized_accumulator[orgq_id] = {}
+
+        for relevance in score_accumulator[orgq_id]:
+            stat_accumulator[orgq_id][relevance] = average(
+                score_accumulator[orgq_id][relevance])
+
+            normalized_accumulator[orgq_id][relevance] = normalizer_function(
+                stat_accumulator[orgq_id][relevance], org_scores[orgq_id])
+
+    def pretty_print_stat(dic, id, tag):
+        if tag in dic[id]:
+            return ' %0.2f |' % dic[id][tag]
+        return '       |'
+
+    for org_id in stat_accumulator:
+        print(org_id, ':', "%-8s|" % org_scores[org_id],
+              pretty_print_stat(stat_accumulator, org_id, 'PerfectMatch'),
+              pretty_print_stat(stat_accumulator, org_id, 'Relevant'),
+              pretty_print_stat(stat_accumulator, org_id, 'Irrelevant'),
+              '||',
+              pretty_print_stat(normalized_accumulator,
+                                org_id, 'PerfectMatch'),
+              pretty_print_stat(normalized_accumulator, org_id, 'Irrelevant'),
+              pretty_print_stat(normalized_accumulator, org_id, 'Relevant'),
+              )
+
+    def access_if_exists(container, key, otherwise):
+        if key in container:
+            return container[key]
+        else:
+            return otherwise
+
+    print('moyenne globale:')
+    perfect_values = []
+    relevant_values = []
+    irrelevant_values = []
+
+    merged_normalized_accumulator = defaultdict(list)
+    for id in normalized_accumulator:
+        for relevance in ['PerfectMatch', 'Relevant', 'Irrelevant']:
+            if relevance in normalized_accumulator[id]:
+                merged_normalized_accumulator[relevance].append(
+                    normalized_accumulator[id][relevance])
+
+    for relevance in merged_normalized_accumulator:
+        print(relevance, ':', average(merged_normalized_accumulator[relevance]))
+
+    quit()
     if 'wordfreq' in arguments.stat:
         txt = '\n'.join(extractor.get_all_text())
         tokens = tokenizer_function(txt)
