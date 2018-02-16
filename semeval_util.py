@@ -128,6 +128,27 @@ def get_semeval_id(element):
     return None
 
 
+def get_semeval_relevance_orgq(element):
+    """Retrieve the relevance of a semeval element.
+
+    Parameters
+    ----------
+    element : ET.Element
+        The related question or related comment from which to get the relevance.
+
+    Returns
+    -------
+    out : str
+        The relevance of the element.
+
+    """
+    if element.tag == 'RelQuestion':
+        return element.attrib['RELQ_RELEVANCE2ORGQ']
+    if element.tag == 'RelComment':
+        return element.attrib['RELQ_RELEVANCE2ORGQ']
+    return None
+
+
 class xmlextract(object):
     """Open an xml from semeval and allow to easily extract informations from it.
 
