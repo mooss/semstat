@@ -15,6 +15,29 @@ def normalized_ratio(x, y):
     return min([x, y]) / max([x, y])
 
 
+def merge_dict_in_place(modified_dict, other_dict, merge_value_function):
+    """Merges two dictionaries according to a merge function.
+
+    Parameters
+    ----------
+    modified_dict : dict of a
+        The dictionary that will receive the merged elements.
+
+    other_dict : dict of a
+        The dictionary that will add new elements.
+
+    merge_value_function : function(a, a)
+        The function that will be used to merge the values.
+        It must alter its first argument.
+        This means that merge_dict_in_place cannot be used to merge dictionaries of immutable objects.
+    """
+    for key in other_dict:
+        if key in modified_dict:
+            merge_value_function(modified_dict[key], other_dict[key])
+        else:
+            modified_dict[key] = other_dict[key]
+
+
 def split_container(container, criterion):
     """Split a container into a dict of containers according to a criterion funtion.
 
@@ -26,7 +49,7 @@ def split_container(container, criterion):
 
     Returns
     -------
-    out : dict of Container of a
+    out : dict of list of a
 
     """
     result = {}
@@ -34,7 +57,7 @@ def split_container(container, criterion):
     for el in container:
         tag = criterion(el)
         if tag not in result.keys():
-            result[tag] = type(container)  # creation of a new entry
+            result[tag] = list()  # creation of a new entry
         result[tag].append(el)
     return result
 
