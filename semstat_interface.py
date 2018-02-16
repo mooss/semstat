@@ -2,7 +2,7 @@
 
 import argparse
 from nltk.tokenize import word_tokenize
-from semeval_util import *
+from semeval_xml import *
 from textstat import *
 from helper_functions import *
 
