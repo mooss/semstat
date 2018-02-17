@@ -43,9 +43,10 @@ def classify_id(identifier):
     out : tuple
         The classification of the identifier,
         the first element being the classification proper and
-        the next three elements are the org fragment (ex Q268),
-        the rel fragment (ex _R4), and
-        the comment fragment (ex _C2).
+        the next three elements are:
+         - the org fragment (ex Q268),
+         - the rel fragment (ex _R4), and
+         - the comment fragment (ex _C2).
     """
     match = re.match(ID_EXTRACTION_REGEX, identifier)
     if match:
