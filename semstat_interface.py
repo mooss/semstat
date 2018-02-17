@@ -1,20 +1,11 @@
 #!/usr/bin/python3
 
 import argparse
-from nltk.tokenize import word_tokenize
-from semeval_xml import *
-from textstat import *
-from helper_functions import *
+from semstat import *
 
 parser = argparse.ArgumentParser(
     description='Parse, explore and make statistics on a SemEval xml file from task 3.')
 
-tokenizer_dispatcher = {'delimiter_tokenizer': lambda x: delimiter_tokenizer(x).split(),
-                        'nltk_tokenizer': word_tokenize}
-
-
-normalizer_dispatcher = {'normalize': normalized_ratio,
-                         'off': lambda x, y: x / y}
 
 ########################
 # positional arguments #
@@ -33,13 +24,13 @@ parser.add_argument('--stat',
                     help='statistics to show about the selection')
 
 parser.add_argument('--tokenization',
-                    choices=tokenizer_dispatcher.keys(),
-                    default='delimiter_tokenizer',
+                    choices=funcstat.tokenizers.keys(),
+                    default='delim',
                     type=str,
                     help='tokenization function to use')
 
-parser.add_argument('--normalization',
-                    choices=normalizer_dispatcher.keys(),
+parser.add_argument('--comparison',
+                    choices=funcstat.comparators.keys(),
                     default='normalize',
                     help='normalization function to use')
 
@@ -69,8 +60,8 @@ arguments = parser.parse_args()
 source_filename = arguments.source
 printstyle = arguments.print
 tabulator = '   '
-tokenizer_function = tokenizer_dispatcher[arguments.tokenization]
-normalizer_function = normalizer_dispatcher[arguments.normalization]
+tokenizer_function = funcstat.tokenizers[arguments.tokenization]
+normalizer_function = funcstat.comparators[arguments.comparison]
 
 extractor = xmlextract(source_filename)
 question_ids = extractor.get_org_questions_ids()
