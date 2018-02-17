@@ -4,12 +4,6 @@ from nltk.tokenize import word_tokenize
 from collections import defaultdict
 
 
-def sorted_dict(dictionary, reverse=True):
-    """Sort a dictionnary (transforming it into a list), in reverse ofder by default.
-    """
-    return sorted(dictionary, key=dictionary.__getitem__, reverse=reverse)
-
-
 def delimiter_tokenizer(source, word_delimiters='.,?!:/\\_-'):
     """Tokenize the text using characters delimiters.
 

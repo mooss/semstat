@@ -1,3 +1,9 @@
+def sorted_dict(dictionary, reverse=True):
+    """Sort a dictionnary (transforming it into a list), in reverse ofder by default.
+    """
+    return sorted(dictionary, key=dictionary.__getitem__, reverse=reverse)
+
+
 def normalized_ratio(x, y):
     """Divises the smallest argument by the greatest.
 
