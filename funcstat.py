@@ -16,7 +16,7 @@ class funcstat(object):
     This class takes a functional approach, by identifying some orthogonal functions, each resolving a part of the problem :
      - scorer
      - data_tagger
-     - content_fetcher
+     - data_fetcher TODO: think about wether this has any use
      - stat_mesurer
      - comparator
 
@@ -35,7 +35,7 @@ class funcstat(object):
     def __init__(self,
                  scorer,
                  data_tagger,
-                 content_fetcher=lambda x: x,
+                 data_fetcher=lambda x: x,
                  stat_mesurer=average,
                  comparator=normalized_ratio):
         """Initialize the criterions on which the stats will be made.
@@ -54,7 +54,7 @@ class funcstat(object):
             An exemple of tagger would be a function that will tag an integer as even
             or odd.
 
-        content_fetcher : function(raw_data) -> data
+        data_fetcher : function(raw_data) -> data
             The function that will transform the data in order to make it ready for
             the other functions to use.
 
@@ -66,12 +66,12 @@ class funcstat(object):
         """
         self.scorer = scorer
         self.data_tagger = data_tagger
-        self.content_fetcher = content_fetcher
+        self.data_fetcher = data_fetcher
         self.stat_mesurer = stat_mesurer
         self.comparator = comparator
 
     def split_data(self, source, data_tagger=None,
-                   content_fetcher=None):
+                   data_fetcher=None):
         """Split the source data into categories according to the preset data tagger or to a custom one.
 
         Parameters
@@ -88,12 +88,12 @@ class funcstat(object):
             A dictionary associating a tags with the list of data corresponding to this tag.
         """
         data_tagger = data_tagger or self.data_tagger
-        content_fetcher = content_fetcher or self.content_fetcher
+        data_fetcher = data_fetcher or self.data_fetcher
 
-        return split_container(content_fetcher(source), data_tagger)
+        return tag_container(data_tagger, data_fetcher(source))
 
     def getscores(self, source, scorer=None, data_tagger=None,
-                  content_fetcher=None):
+                  data_fetcher=None):
         """Compute the score of the source data.
 
         Parameters
@@ -105,31 +105,21 @@ class funcstat(object):
         -------
         out : dict{tag: list of score}
             The tagged scores.
-
         """
         scorer = scorer or self.scorer
         data_tagger = data_tagger or self.data_tagger
-        content_fetcher = content_fetcher or self.content_fetcher
+        data_fetcher = data_fetcher or self.data_fetcher
 
-        # result = {}
-        # for tag, datalist in self.split_data(
-        #         source,
-        #         data_tagger=data_tagger,
-        #         content_fetcher=content_fetcher).items():
-        #     result[tag] = [
-        #         scorer(data)
-        #         for data in datalist
-        #     ]
         return {
             tag: [scorer(data) for data in datalist]
             for tag, datalist in self.split_data(
                 source,
                 data_tagger=data_tagger,
-                content_fetcher=content_fetcher).items()}
+                data_fetcher=data_fetcher).items()}
         return result
 
     def getmesures(self, source, scorer=None, data_tagger=None,
-                   content_fetcher=None, stat_mesurer=None):
+                   data_fetcher=None, stat_mesurer=None):
         """Compute the statistical mesure of the source data.
 
         Parameters
@@ -140,10 +130,11 @@ class funcstat(object):
         Returns
         -------
         out : dict{tag: mesure}
+            The mesure data.
         """
         scorer = scorer or self.scorer
         data_tagger = data_tagger or self.data_tagger
-        content_fetcher = content_fetcher or self.content_fetcher
+        data_fetcher = data_fetcher or self.data_fetcher
         stat_mesurer = stat_mesurer or self.stat_mesurer
 
         return {
@@ -152,4 +143,4 @@ class funcstat(object):
                 source,
                 scorer=scorer,
                 data_tagger=data_tagger,
-                content_fetcher=content_fetcher).items()}
+                data_fetcher=data_fetcher).items()}

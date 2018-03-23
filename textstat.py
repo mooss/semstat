@@ -37,7 +37,6 @@ def delimiter_tokenizer(source, word_delimiters='.,?!:/\\_-'):
 
     return ' '.join(resultbuffer)
 
-
 def count_patterns(data, pattern_classifier):
     """Count the occurence of patterns according to a pattern classification function.
 

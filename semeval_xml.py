@@ -67,6 +67,9 @@ def classify_id(identifier):
     return (id_classification.none,)
 
 
+##############################
+# semeval element retrievers #
+##############################
 def get_semeval_content(element):
     """Retrieve the content of a semeval element.
 

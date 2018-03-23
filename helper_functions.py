@@ -44,14 +44,14 @@ def merge_dict_in_place(modified_dict, other_dict, merge_value_function):
             modified_dict[key] = other_dict[key]
 
 
-def split_container(container, criterion):
+def tag_container(criterion, container):
     """Split a container into a dict of containers according to a criterion funtion.
 
     Parameters
     ----------
-    container : Container of a
-
     criterion : function(a) -> b
+
+    container : Container of a
 
     Returns
     -------
