@@ -4,8 +4,8 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 from enum import Enum
-
 import re
+from itertools import chain
 
 id_classification = Enum('id_classification', 'org rel com none')
 
@@ -70,6 +70,70 @@ def classify_id(identifier):
 ##############################
 # semeval element retrievers #
 ##############################
+def get_orgquestion_content(orgquestion):
+    """Retrieve the content of an original question element.
+
+    That is to say the textual content of both the subject and the body.
+
+    Parameters
+    ----------
+    orgquestion : ET.Element
+        The original question from which to get the text.
+
+    Returns
+    -------
+    out : str
+        The textual content of the original question.
+    """
+    return '. '.join(
+        [orgquestion.find(tag).text
+         if orgquestion.find(tag).text is not None else ''
+         for tag in ['OrgQSubject', 'OrgQBody']
+         ]
+    )
+
+
+def get_relquestion_content(relquestion):
+    """Retrieve the content of an related question element.
+
+    That is to say the textual content of both the subject and the body.
+
+    Parameters
+    ----------
+    relquestion : ET.Element
+        The related question from which to get the text.
+
+    Returns
+    -------
+    out : str
+        The textual content of the related question.
+    """
+    return '. '.join(
+        [relquestion.find(tag).text
+         if relquestion.find(tag).text is not None else ''
+         for tag in ['RelQSubject', 'RelQBody']
+         ]
+    )
+
+
+def get_relcomment_content(relcomment):
+    """Retrieve the content of an related comment element.
+
+    That is to say its textual content.
+
+    Parameters
+    ----------
+    relcomment : ET.Element
+        The related comment from which to get the text.
+
+    Returns
+    -------
+    out : str
+        The textual content of the related comment.
+    """
+    return relcomment.find('RelCText').text
+
+
 def get_semeval_content(element):
     """Retrieve the content of a semeval element.
 
@@ -84,26 +148,53 @@ def get_semeval_content(element):
     -------
     out : str
         The text of the element.
-
     """
     if element.tag == 'OrgQuestion':
-        return '\n'.join(
-            [element.find(tag).text
-             if element.find(tag).text is not None else ''
-             for tag in ['OrgQSubject', 'OrgQBody']
-             ]
-        )
+        return get_orgquestion_content(element)
 
     if element.tag == 'RelQuestion':
-        return '\n'.join(
-            [element.find(tag).text
-             if element.find(tag).text is not None else ''
-             for tag in ['RelQSubject', 'RelQBody']
-             ]
-        )
+        return get_relquestion_content(element)
+
+    if element.tag == 'Thread':
+        return get_relquestion_content(element.find('./RelQuestion'))
 
     if element.tag == 'RelComment':
-        return element.find('RelCText').text
+        return get_relcomment_content(element)
+
+    return None
+
+
+def get_semeval_content_with_relcomments(element):
+    """Retrieve the content of a semeval element, related comment included.
+
+    That is to say an original question will return the textual content of the subject and the body whereas a related thread will return the textual content of the subject, the body and the comment.
+
+    For consistency's sake, if the element is a comment, its content will still be returned.
+
+    None is returned if the element is a related question.
+
+    Parameters
+    ----------
+    element : ET.Element
+        The original question, related question or related comment to get the text from.
+
+    Returns
+    -------
+    out : str
+        The text of the element.
+    """
+    if element.tag == 'OrgQuestion':
+        return get_orgquestion_content(element)
+
+    if element.tag == 'Thread':
+        return ' '.join(chain(
+            [get_relquestion_content(element.find('./RelQuestion'))],
+            [get_relcomment_content(comment)
+             for comment in element.findall('./RelComment')]
+        ))
+
+    if element.tag == 'RelComment':
+        return get_relcomment_content(element)
 
     return None
 
@@ -125,7 +216,8 @@ def get_semeval_id(element):
     """
     translation = {'OrgQuestion': 'ORGQ_ID',
                    'RelQuestion': 'RELQ_ID',
-                   'RelComment': 'RELC_ID'}
+                   'RelComment': 'RELC_ID',
+                   'Thread': 'THREAD_SEQUENCE'}
 
     if element.tag in translation.keys():
         return element.attrib[translation[element.tag]]
@@ -151,6 +243,60 @@ def get_semeval_relevance_orgq(element):
     if element.tag == 'RelComment':
         return element.attrib['RELQ_RELEVANCE2ORGQ']
     return None
+
+
+def get_related_questions(element):
+    """Retrieve the related question from an element.
+
+    This element can be:
+     - original question
+     - related question (returns itself)
+     - thread
+     - full tree
+
+    Parameters
+    ----------
+    element : ET.element
+        The element from wich to extract the related questions.
+
+    Returns
+    -------
+    out : list of ET.element
+    """
+    tag2path = {
+        'OrgQuestion': './Thread/RelQuestion',
+        'Thread': './RelQuestion',
+        'RelQuestion': '.',
+    }
+    if element.tag in tag2path:
+        return element.findall(tag2path[element.tag])
+    return element.findall('./OrgQuestion/Thread/RelQuestion')
+
+
+def get_related_threads(element):
+    """Retrieve the related threads from an element.
+
+    This element can be:
+     - original question
+     - related thread (returns itself)
+     - full tree
+
+    Parameters
+    ----------
+    element : ET.element
+        The element from wich to extract the related thread.
+
+    Returns
+    -------
+    out : list of ET.element
+    """
+    tag2path = {
+        'OrgQuestion': './Thread',
+        'Thread': '.',
+    }
+    if element.tag in tag2path:
+        return element.findall(tag2path[element.tag])
+    return element.findall('./OrgQuestion/Thread')
 
 
 class xmlextract(object):
@@ -244,6 +390,18 @@ class xmlextract(object):
             The list of the original questions IDs.
         """
         return [q.attrib['ORGQ_ID'] for q in self.merged_root.findall('OrgQuestion')]
+
+    #######################
+    # elements extraction #
+    #######################
+    def get_org_elements(self):
+        """Retrieve the elements of the original questions.
+
+        Returns
+        -------
+        out : list of ET.element
+        """
+        return self.merged_root.findall('OrgQuestion')
 
     #######################################
     # retrieve specific elements from ids #
