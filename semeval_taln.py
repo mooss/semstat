@@ -93,4 +93,18 @@ def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_valu
     bagb = bag_maker(docb)
     intersection = baga & bagb
     termfreq = term_frequencies(baga + bagb)
-    return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
+
+    return (sum(tf_idf(term, termfreq, inversedocfreqs, out_of_corpus_value) * occurences
+               for term, occurences in intersection.items()) * sum(intersection.values()))
+#    return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
+
+
+# def create_unit_dict(wordex, sentex, filters, doca, docb):
+#     for unit in sentex(doca)
+
+# def customizable_scorer(wordex, sentex, filters, doca, docb, inversedocfreqs, out_of_corpus_value):
+#     for unit in sentex(doca)
+
+#     score = 0;
+#     for term in :
+#         if

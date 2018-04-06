@@ -52,14 +52,32 @@ extractors = {
    # 'questions_with_comments': get_semeval_content_with_relcomments
 }
 
+MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
+
+
 def isnotstopword(word):
     return word not in STOP_WORDS
 
-filters = {
+
+def isnotstopword2(word):
+    return word not in MAPPSENT_STOPWORDS
+
+
+lenfilters = {
+    'gtr1': lambda word: len(word) > 1,
     'gtr2': lambda word: len(word) > 2,
-    'nostopwords': isnotstopword,
-    'nofilter': lambda x: True,
+    'gtr3': lambda word: len(word) > 3,
+    'gtr4': lambda word: len(word) > 4,
 }
+
+nolenfilters = {
+    'nostopwords': isnotstopword2,
+}
+
+filters = {}
+filters.update(lenfilters)
+filters.update(nolenfilters)
+filters.update({ 'nofilter': lambda x: True })
 
 def extracttext(tok):
     return tok.text
@@ -129,6 +147,7 @@ def nonemptypartitions(iterable):
         for perm in combinations(iterable, i):
             yield perm
 
+
 def join_predicates(iterable_preds):
     def joinedlocal(element):
         for pred in iterable_preds:
@@ -138,7 +157,14 @@ def join_predicates(iterable_preds):
     print('joining', *(pred for pred in iterable_preds))
     return joinedlocal
 
-filters_partition = list(nonemptypartitions(set(filters) - {'nofilter'}))
+
+filters_partition = list(nonemptypartitions(nolenfilters))
+
+for len_and_nolen in product(nolenfilters, lenfilters):
+    filters_partition.append(len_and_nolen)
+
+for lenfilter in lenfilters:
+    filters_partition.append((lenfilter,))
 
 filters_partition.append(('nofilter',))
 

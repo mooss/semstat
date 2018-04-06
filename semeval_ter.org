@@ -339,12 +339,36 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       bagb = bag_maker(docb)
       intersection = baga & bagb
       termfreq = term_frequencies(baga + bagb)
-      return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
+
+      return (sum(tf_idf(term, termfreq, inversedocfreqs, out_of_corpus_value) * occurences
+                 for term, occurences in intersection.items()) * sum(intersection.values()))
+  #    return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
+
+
+  def create_unit_dict(wordex, sentex, filters, doc):
+      result = defaultdict(list)
+      for unit in sentex(doc):
+          if all(f(x) for f in filters):
+              result[wordex(unit)].append(unit)
+
+  # def customizable_scorer(wordex, sentex, filters, doca, docb, inversedocfreqs, out_of_corpus_value):
+  #     unita = create_unit_dict(wordex, sentex, filters, doca)
+  #     unitb = create_unit_dict(wordex, sentex, filters, docb)
+
+  #     intersection = set(unita) & set(unitb)
+
+  #     score = 0
+  #     termfreq = term_frequencies(Counter(unita) + Counter(unitb))
+
+  #     for el in intersection:
+  #         score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)
 #+END_SRC
 
 #+RESULTS:
 
 Où =bag_maker= est une fonction retournant un sac de mots.
+
+**** ajouter avec normalisation, ex div par len phrase can
 
 * TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
 * TODO faire les calculs préliminaires (type tf-idf) sur le jeu de test train :noexport:
@@ -462,22 +486,38 @@ Les mots d'un sac de mots peuvent être filtrés ou non selon un prédicat.
 #+BEGIN_SRC ipython
   MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
 
+
   def isnotstopword(word):
       return word not in STOP_WORDS
+
 
   def isnotstopword2(word):
       return word not in MAPPSENT_STOPWORDS
 
-  filters = {
+
+  lenfilters = {
+      'gtr1': lambda word: len(word) > 1,
       'gtr2': lambda word: len(word) > 2,
-      'nostopwords': isnotstopword2,
-      'nofilter': lambda x: True,
+      'gtr3': lambda word: len(word) > 3,
+      'gtr4': lambda word: len(word) > 4,
   }
+
+  nolenfilters = {
+      'nostopwords': isnotstopword2,
+  }
+
+  filters = {}
+  filters.update(lenfilters)
+  filters.update(nolenfilters)
+  filters.update({ 'nofilter': lambda x: True })
 #+END_SRC
 
 #+BEGIN_SRC ipython :tangle no :exports none :results silent
   filters_descr = {
+      'gtr1': '$\leq 1$',
       'gtr2': '$\leq 2$',
+      'gtr3': '$\leq 3$',
+      'gtr4': '$\leq 4$',
       'nostopwords': 'Mots outils',
       'nofilter': 'Pas de filtre',
   }
@@ -586,6 +626,7 @@ La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
           for perm in combinations(iterable, i):
               yield perm
 
+
   def join_predicates(iterable_preds):
       def joinedlocal(element):
           for pred in iterable_preds:
@@ -595,7 +636,14 @@ La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
       print('joining', *(pred for pred in iterable_preds))
       return joinedlocal
 
-  filters_partition = list(nonemptypartitions(set(filters) - {'nofilter'}))
+
+  filters_partition = list(nonemptypartitions(nolenfilters))
+
+  for len_and_nolen in product(nolenfilters, lenfilters):
+      filters_partition.append(len_and_nolen)
+
+  for lenfilter in lenfilters:
+      filters_partition.append((lenfilter,))
 
   filters_partition.append(('nofilter',))
 #+END_SRC
@@ -680,10 +728,10 @@ Chacune des approches précédemment générées est exécutée et les scores pr
 #+END_SRC
 
 #+RESULTS:
-: {'Q318': {'Q318_R17': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R6': 2.9320145366226384, 'Q318_R19': 1.4660072683113192, 'Q318_R14': 0, 'Q318_R61': 0, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R52': 1.4660072683113192, 'Q318_R4': 0}}
-: {'Q318': {'Q318_R17': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R6': 2.9320145366226384, 'Q318_R19': 1.4660072683113192, 'Q318_R14': 0, 'Q318_R61': 0, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R52': 1.4660072683113192, 'Q318_R4': 0}}
-: {'Q318': {'Q318_R17': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R6': 2.9320145366226384, 'Q318_R19': 1.4660072683113192, 'Q318_R14': 0, 'Q318_R61': 0, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R52': 1.4660072683113192, 'Q318_R4': 0}}
-: {'Q318': {'Q318_R17': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R6': 2.9320145366226384, 'Q318_R19': 1.4660072683113192, 'Q318_R14': 0, 'Q318_R61': 0, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R52': 1.4660072683113192, 'Q318_R4': 0}}
+: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
+: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
+: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
+: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
 
 
 * Résultats
@@ -756,38 +804,86 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 :RESULTS:
 | Année | Sac de mots                    | Filtres               | Score MAP |
 |-------+--------------------------------+-----------------------+-----------|
-|  2016 | Lemmes                         | $\leq 2$, Mots outils |    0.7559 |
-|  2016 | Lemmes                         | $\leq 2$              |    0.7500 |
-|  2016 | Textes des entités nommées     | $\leq 2$              |    0.7493 |
+|  2016 | Tokens                         | Mots outils, $\leq 1$ |    0.7522 |
 |  2016 | Textes des entités nommées     | Mots outils           |    0.7493 |
-|  2016 | Textes des entités nommées     | $\leq 2$, Mots outils |    0.7493 |
+|  2016 | Textes des entités nommées     | Mots outils, $\leq 1$ |    0.7493 |
+|  2016 | Textes des entités nommées     | Mots outils, $\leq 2$ |    0.7493 |
+|  2016 | Textes des entités nommées     | Mots outils, $\leq 3$ |    0.7493 |
+|  2016 | Textes des entités nommées     | Mots outils, $\leq 4$ |    0.7493 |
+|  2016 | Textes des entités nommées     | $\leq 1$              |    0.7493 |
+|  2016 | Textes des entités nommées     | $\leq 2$              |    0.7493 |
+|  2016 | Textes des entités nommées     | $\leq 3$              |    0.7493 |
+|  2016 | Textes des entités nommées     | $\leq 4$              |    0.7493 |
 |  2016 | Textes des entités nommées     | Pas de filtre         |    0.7493 |
-|  2016 | Tokens                         | $\leq 2$, Mots outils |    0.7460 |
-|  2016 | Tokens                         | $\leq 2$              |    0.7409 |
-|  2016 | Lemmes                         | Mots outils           |    0.7395 |
-|  2016 | Lemmes                         | Pas de filtre         |    0.7352 |
-|  2016 | Tokens                         | Mots outils           |    0.7288 |
-|  2016 | Tokens                         | Pas de filtre         |    0.7223 |
-|  2016 | Étiquettes des entités nommées | $\leq 2$              |    0.7079 |
-|  2016 | Étiquettes des entités nommées | Mots outils           |    0.7079 |
-|  2016 | Étiquettes des entités nommées | $\leq 2$, Mots outils |    0.7079 |
-|  2016 | Étiquettes des entités nommées | Pas de filtre         |    0.7079 |
-|  2017 | Lemmes                         | $\leq 2$              |    0.4629 |
-|  2017 | Tokens                         | $\leq 2$              |    0.4515 |
-|  2017 | Lemmes                         | Pas de filtre         |    0.4492 |
-|  2017 | Lemmes                         | Mots outils           |    0.4484 |
-|  2017 | Lemmes                         | $\leq 2$, Mots outils |    0.4483 |
-|  2017 | Tokens                         | $\leq 2$, Mots outils |    0.4392 |
-|  2017 | Tokens                         | Pas de filtre         |    0.4366 |
-|  2017 | Tokens                         | Mots outils           |    0.4300 |
-|  2017 | Étiquettes des entités nommées | $\leq 2$              |    0.4153 |
+|  2016 | Tokens                         | Mots outils, $\leq 2$ |    0.7493 |
+|  2016 | Tokens                         | $\leq 2$              |    0.7481 |
+|  2016 | Lemmes                         | Mots outils, $\leq 2$ |    0.7448 |
+|  2016 | Tokens                         | Mots outils, $\leq 3$ |    0.7438 |
+|  2016 | Lemmes                         | Mots outils, $\leq 1$ |    0.7428 |
+|  2016 | Tokens                         | Mots outils, $\leq 4$ |    0.7387 |
+|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 4$ |    0.7383 |
+|  2016 | Étiquettes des entités nommées | $\leq 4$              |    0.7383 |
+|  2016 | Tokens                         | $\leq 3$              |    0.7376 |
+|  2016 | Tokens                         | $\leq 4$              |    0.7375 |
+|  2016 | Tokens                         | Mots outils           |    0.7359 |
+|  2016 | Lemmes                         | $\leq 2$              |    0.7284 |
+|  2016 | Lemmes                         | Mots outils           |    0.7277 |
+|  2016 | Lemmes                         | $\leq 1$              |    0.7231 |
+|  2016 | Lemmes                         | $\leq 4$              |    0.7223 |
+|  2016 | Lemmes                         | $\leq 3$              |    0.7220 |
+|  2016 | Lemmes                         | Mots outils, $\leq 3$ |    0.7193 |
+|  2016 | Étiquettes des entités nommées | Mots outils           |    0.7174 |
+|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 1$ |    0.7174 |
+|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 2$ |    0.7174 |
+|  2016 | Étiquettes des entités nommées | $\leq 1$              |    0.7174 |
+|  2016 | Étiquettes des entités nommées | $\leq 2$              |    0.7174 |
+|  2016 | Étiquettes des entités nommées | Pas de filtre         |    0.7174 |
+|  2016 | Tokens                         | $\leq 1$              |    0.7162 |
+|  2016 | Lemmes                         | Mots outils, $\leq 4$ |    0.7143 |
+|  2016 | Lemmes                         | Pas de filtre         |    0.7142 |
+|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 3$ |    0.7103 |
+|  2016 | Étiquettes des entités nommées | $\leq 3$              |    0.7103 |
+|  2016 | Tokens                         | Pas de filtre         |    0.7070 |
+|  2017 | Lemmes                         | Mots outils, $\leq 2$ |    0.4685 |
+|  2017 | Lemmes                         | Mots outils, $\leq 1$ |    0.4677 |
+|  2017 | Lemmes                         | Mots outils, $\leq 3$ |    0.4658 |
+|  2017 | Tokens                         | Mots outils, $\leq 2$ |    0.4601 |
+|  2017 | Lemmes                         | $\leq 1$              |    0.4597 |
+|  2017 | Tokens                         | Mots outils, $\leq 1$ |    0.4589 |
+|  2017 | Lemmes                         | $\leq 4$              |    0.4576 |
+|  2017 | Tokens                         | Mots outils, $\leq 3$ |    0.4564 |
+|  2017 | Tokens                         | $\leq 1$              |    0.4555 |
+|  2017 | Lemmes                         | $\leq 2$              |    0.4551 |
+|  2017 | Lemmes                         | Pas de filtre         |    0.4550 |
+|  2017 | Lemmes                         | Mots outils           |    0.4545 |
+|  2017 | Lemmes                         | Mots outils, $\leq 4$ |    0.4528 |
+|  2017 | Tokens                         | $\leq 2$              |    0.4517 |
+|  2017 | Lemmes                         | $\leq 3$              |    0.4484 |
+|  2017 | Tokens                         | Mots outils           |    0.4449 |
+|  2017 | Tokens                         | Pas de filtre         |    0.4445 |
+|  2017 | Tokens                         | Mots outils, $\leq 4$ |    0.4427 |
+|  2017 | Tokens                         | $\leq 3$              |    0.4370 |
+|  2017 | Tokens                         | $\leq 4$              |    0.4197 |
+|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 3$ |    0.4158 |
+|  2017 | Étiquettes des entités nommées | $\leq 3$              |    0.4158 |
 |  2017 | Étiquettes des entités nommées | Mots outils           |    0.4153 |
-|  2017 | Étiquettes des entités nommées | $\leq 2$, Mots outils |    0.4153 |
+|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 1$ |    0.4153 |
+|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 2$ |    0.4153 |
+|  2017 | Étiquettes des entités nommées | $\leq 1$              |    0.4153 |
+|  2017 | Étiquettes des entités nommées | $\leq 2$              |    0.4153 |
 |  2017 | Étiquettes des entités nommées | Pas de filtre         |    0.4153 |
-|  2017 | Textes des entités nommées     | $\leq 2$              |    0.4083 |
+|  2017 | Textes des entités nommées     | Mots outils, $\leq 3$ |    0.4139 |
+|  2017 | Textes des entités nommées     | Mots outils, $\leq 4$ |    0.4139 |
+|  2017 | Textes des entités nommées     | $\leq 3$              |    0.4139 |
+|  2017 | Textes des entités nommées     | $\leq 4$              |    0.4139 |
 |  2017 | Textes des entités nommées     | Mots outils           |    0.4083 |
-|  2017 | Textes des entités nommées     | $\leq 2$, Mots outils |    0.4083 |
+|  2017 | Textes des entités nommées     | Mots outils, $\leq 1$ |    0.4083 |
+|  2017 | Textes des entités nommées     | Mots outils, $\leq 2$ |    0.4083 |
+|  2017 | Textes des entités nommées     | $\leq 1$              |    0.4083 |
+|  2017 | Textes des entités nommées     | $\leq 2$              |    0.4083 |
 |  2017 | Textes des entités nommées     | Pas de filtre         |    0.4083 |
+|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 4$ |    0.4063 |
+|  2017 | Étiquettes des entités nommées | $\leq 4$              |    0.4063 |
 :END:
 
 | Année | Score MAP baseline |
@@ -795,3 +891,12 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 |  2016 |             0.7475 |
 |  2017 |             0.4185 |
 
+
+* perspectives
+dictionnaire synonymes
++ de filtres
+combinaison entités et (lemmes ou texte)
+catégories grammaticales
+
+le score 
+le nombre de 
