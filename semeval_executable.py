@@ -48,7 +48,7 @@ corpuses = {
 }
 
 extractors = {
-    'questions': get_semeval_content,
+    'questions': lambda x: get_semeval_content(x).lower(),
    # 'questions_with_comments': get_semeval_content_with_relcomments
 }
 
