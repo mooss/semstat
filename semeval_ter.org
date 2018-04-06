@@ -1,0 +1,793 @@
+#+TITLE:Appariement de questions/réponses
+#+AUTHOR:Félix Jamet
+# -*- org-export-babel-evaluate: t -*-
+#+PROPERTY: result silent
+#+PROPERTY: exports code
+#+PROPERTY: header-args:python :session pythonsession
+#+PROPERTY: header-args :eval no-export
+#+PROPERTY: header-args:python :eval never
+
+\newpage
+* Structures de données et algorithmes (=semeval_struct.py=)
+:PROPERTIES:
+:header-args: :tangle semeval_struct.py
+:END:
+** Imports
+#+BEGIN_SRC python
+  import re
+  import operator
+#+END_SRC
+
+** Arbres
+*** Transformation en profondeur
+Il s'agit ici d'appliquer récursivement une fonction à chacune des feuilles d'un arbre.
+
+#+BEGIN_SRC python
+  def transformtree_deep(func, tree):
+      """Transform a tree by applying a function to its leaves.
+
+      Parameters
+      ----------
+      func : function
+          The function that will transform each leaf.
+
+      tree : recursive dict
+          The tree to transform.
+
+      Returns
+      -------
+      out : recursive dict
+          The transformed tree.
+      """
+      return {
+          key: transformtree_deep(func, value)
+          if isinstance(value, dict)
+          else func(value)
+          for key, value in tree.items()
+      }
+#+END_SRC
+
+*** Transformation sur $N$ niveaux
+L'inconvénient de =transformtree_deep= est qu'elle parcourt l'arbre entièrement, tandis qu'il serait parfois utile de ne parcourir que les $N$ premiers niveaux.
+
+#+BEGIN_SRC python
+  def transformtree_n(func, tree, n):
+      """Transform a tree up to a maximum depth by applying a function to its leaves.
+
+      Once the maximum depth is reached, the function is applied, even if it is not a leaf.
+
+      Parameters
+      ----------
+      func : function
+          The function that will transform each leaf, as well as the final depth.
+
+      tree : recursive dict
+          The tree to transform.
+
+      n : int
+          The maximum depth
+
+      Returns
+      -------
+      out : recursive dict
+          The transformed tree.
+      """
+      if n > 0:
+          return {
+              key: transformtree_n(func, value, n - 1)
+              if isinstance(value, dict)
+              else func(value)
+              for key, value in tree.items()
+          }
+      else:
+          return { key: func(value) for key, value in tree.items() }
+#+END_SRC
+
+*** Transformation générique
+Une sémantique intéressante pour la transformation d'arbre est de considérer que transformer un arbre jusqu'au niveau $-1$ revient à le transformer sans limite de profondeur.
+
+#+BEGIN_SRC python
+  def transformtree(func, tree, n=-1):
+      if n < 0:
+          return transformtree_deep(func, tree)
+      else:
+          return transformtree_n(func, tree, n)
+#+END_SRC
+
+# *** Extraction des valeurs d'un arbre
+# **** Itération récursive sur les valeurs d'un arbre
+# Le but de =nested_values_generator= est de permettre d'itérer récursivement sur les valeurs d'un arbre, en conservant sa structure hiérarchique.
+# #+BEGIN_SRC python
+#   def nested_values_generator(tree):
+#       for value in tree.values():
+#           if isinstance(value, dict):
+#               yield nested_values_generator(value)
+#           else:
+#               yield value
+# #+END_SRC
+
+# Par définition, on ne peut pas obtenir la taille d'un générateur, ce qui pose problème pour certaines utilisations.
+
+# =nested_values_list= permet d'obtenir une liste récursive contenant les valeurs d'un arbre. Ce faisant, les information sur les noeuds sont perdues.
+
+# #+BEGIN_SRC python
+#   def nested_values_list(tree):
+#       result = list()
+#       for value in tree.values():
+#           if isinstance(value, dict):
+#               result.append(nested_values_list(value))
+#           else:
+#               result.append(value)
+#       return result
+# #+END_SRC
+
+** Tris
+*** Dictionnaire
+Par défaut, le tri sur les entrées d'un dictionnaire se fait sur les clés. On propose la fonction =sorted_items= pour faire un tri sur les valeurs.
+#+BEGIN_SRC python
+  def sorted_items(dictionary, key=operator.itemgetter(1), reverse=False):
+      return sorted(dictionary.items(), key=key, reverse=reverse)
+#+END_SRC
+
+*** Tri naturel
+Il n'y a pas de support natif dans python pour trier des éléments dans l'ordre naturel. La fonction =natural_sort_key= permet d'atteindre ce résultat, lorsque utilisée comme le paramètre =key= d'une fonction de tri.
+
+#+BEGIN_SRC python
+  def natural_sort_key(key):
+      """Transform a key in order to achieve natural sort.
+      from https://blog.codinghorror.com/sorting-for-humans-natural-sort-order/
+      """
+      def convert(text):
+          return int(text) if text.isdigit() else text
+      return [convert(c) for c in re.split('([0-9]+)', key)]
+#+END_SRC
+
+* Fonctionnalités de support (=semeval_util.py=)
+:PROPERTIES:
+:header-args: :tangle semeval_util.py
+:END:
+
+** Imports
+#+BEGIN_SRC python
+  import pickle
+#+END_SRC
+
+** Sauvegarde et chargement d'objets sur le disque
+On utilise pickle pour sauvegarder et charger des objets qu'il serait long de reconstruire à chaque execution d'un script.
+#+BEGIN_SRC python
+
+  def save_object(obj, filename):
+      pickle.dump(obj, open(filename, 'wb'))
+
+  def load_object(filename):
+      return pickle.load(open(filename, 'rb'))
+#+END_SRC
+
+* Traitement du langage naturel (=semeval_taln.py=)
+:PROPERTIES:
+:header-args: :tangle semeval_taln.py
+:END:
+** Imports
+#+BEGIN_SRC python
+  import os.path
+  import math
+  from itertools import chain
+  from collections import Counter
+  from semeval_xml import get_semeval_id, get_related_threads, xmlextract
+  from semeval_util import save_object, load_object
+#+END_SRC
+
+La classe =Counter= est une sous-classe de =dict=, permettant de compter les occurences d'une clé. Elle est ici utilisée pour représenter des sacs de mots.
+
+** Analyse des questions par un modèle
+Étant donné que les questions sont organisées de manière hiérarchiques, à savoir $N$ questions originales, chacune accompagnée de 10 questions reliées, elles vont être représentées par un arbre.
+
+Chaque question est passée dans un modèle de language, produisant ainsi un document.
+
+La fonction =make_document_tree= permet de construire l'arbre des documents, à partir :
+ - des questions originales (=original_questions=),
+ - d'un modèle de language (=model=),
+ - d'une fonction d'extraction de contenu (=content_extractor=)
+
+#+BEGIN_SRC python
+  def make_document_tree(original_questions, model, content_extractor):
+      result = {}
+      for org in original_questions:
+          orgid = get_semeval_id(org)
+          result[orgid] = {
+              get_semeval_id(rel): model(content_extractor(rel))
+              for rel in get_related_threads(org)
+          }
+          result[orgid]['org'] = model(content_extractor(org))
+      return result
+#+END_SRC
+
+L'analyse d'une phrase par un modèle étant une opération possiblement coûteuse, les documents liés aux questions vont être sauvegardées sur le disque afin de ne pas avoir à refaire tous les calculs à chaque fois.
+
+#+BEGIN_SRC python
+  def make_or_load_document_tree(xml_source, saved_path, model, content_extractor, verbose=False):
+      if os.path.isfile(saved_path):
+          if verbose:
+              print('Loading document tree from', saved_path)
+          result = load_object(saved_path)
+          return result
+      else:
+          if verbose:
+              print('Creating document tree. This might take a while...')
+
+          extractor = xmlextract(xml_source)
+          result = make_document_tree(
+              extractor.get_org_elements(), model, content_extractor)
+
+          if verbose:
+              print('Saving document tree to', saved_path)
+          save_object(result, saved_path)
+
+          return result
+#+END_SRC
+
+** Pondération de termes
+TF (/Term Frequency/) et IDF (/Inverse Document Frequency/) sont des mesures permettant de pondérer des termes selon leur importance dans un corpus.
+
+Les documents sont ici manipulés comme des sacs de mots, implémentés ici sous forme de compteurs.
+
+*** /Term Frequency/
+La TF d'un terme correspond à sa fréquence d'apparition dans l'ensemble des documents.
+$$TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}$$
+
+où la taille d'un document correspond au nombre de termes qu'il contient.
+
+Plutôt que de calculer la TF d'un terme dans un document à chaque fois que nécessaire,  la TF de tous les termes d'un document est stockée dans un dictionnaire.
+
+#+BEGIN_SRC python
+
+  def term_frequencies(bag):
+      documentlen = sum(bag.values())
+      return {
+          term: occurrences / documentlen
+          for term, occurrences in bag.items()
+      }
+#+END_SRC
+
+*** /Inverse Document Frequency/
+L'IDF d'un terme est proportionnelle à l'inverse du nombre de documents dans lesquels il apparaît.
+Elle se base sur la DF (/Document Frequency/), correspondant au nombre de document dans lesquels un terme apparaît.
+$$DF(terme, corpus) = \norm{\{doc / doc \in corpus \land terme \in doc\}}$$
+$$IDF(terme, corpus) = log \left( \frac{taille(corpus)}
+{DF(terme, corpus)} \right)$$
+
+
+De la même manière que pour la TF, l'IDF de tous les termes du corpus est stockée dans un dictionnaire.
+
+#+BEGIN_SRC python
+
+  def document_frequencies(corpus):
+      result = Counter()
+      for document in corpus:
+          result.update({term for term in document})
+      return result
+
+
+  def inverse_document_frequencies(corpus, DF=None):
+      if DF == None:
+          DF = document_frequencies(corpus)
+      return {term: math.log2(len(corpus)/docfreq)
+              for term, docfreq in DF.items()}
+#+END_SRC
+
+*** /Term Frequency - Inverse Document Frequency/ 
+La TF-IDF d'un terme correspond à une combinaison de sa TF et de son IDF :
+$$\var{TF-IDF}(terme, document, corpus) = TF(terme, document) * IDF(terme, corpus)$$
+
+La TF-IDF d'un terme est implémentée comme une fonction utilisant des dictionnaires TF et IDF passés en paramètres.
+
+#+BEGIN_SRC python
+
+  def tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value):
+      """Term Frequency - Inverse Document Frequency of a term using dictionaries.
+
+      If the term is not in the inverse document frequency dictionary, this function will use the argument out_of_corpus_value.
+
+      Parameters
+      ----------
+      term : str
+          The term.
+
+      termfreq : dict
+          The term frequencies of the document.
+
+      inversedocfreq : dict
+          The inverse document frequencies of the corpus.
+
+      Returns
+      -------
+      out : float
+          The TF-IDF value of the term.
+      """
+      if term not in termfreq:
+          return 0
+      if term not in inversedocfreq:
+          return out_of_corpus_value
+
+      return termfreq[term] * inversedocfreq[term]
+#+END_SRC
+
+**** Sacs de mots
+Le score TF-IDF d'un sac de mots correspond à la somme des valeurs TF-IDF de ses éléments :
+$$\var{score_{TF-IDF}}(sac, document, corpus) =
+\sum_{terme \in sac} \var{TF-IDF}(terme, document, corpus)$$
+
+
+#+BEGIN_SRC python
+
+  def tf_idf_bow(bag, termfreq, inversedocfreq, out_of_corpus_value):
+      return sum(tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value) * occurences
+                 for term, occurences in bag.items())
+#+END_SRC
+
+**** Similarité de documents
+Le score de similarité entre deux documents correspond au score TF-IDF du sac de mots qu'ils forment.
+
+$$similarit \acute e(doc_a, doc_b, corpus) = \var{score_{TF-IDF}}(SAC_{doc_a} \cap SAC_{doc_b}, SAC_{doc_a} \cup SAC_{doc_b}, corpus)$$
+Où $SAC_{doc}$ est le sac de mots de $doc$.
+
+Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmétriques, c'est pourquoi le sac de mots envoyé à $\var{score_{TF-IDF}}$ est leur union.
+
+#+BEGIN_SRC python
+  def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_value):
+      baga = bag_maker(doca)
+      bagb = bag_maker(docb)
+      intersection = baga & bagb
+      termfreq = term_frequencies(baga + bagb)
+      return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
+#+END_SRC
+
+#+RESULTS:
+
+Où =bag_maker= est une fonction retournant un sac de mots.
+
+* TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
+* TODO faire les calculs préliminaires (type tf-idf) sur le jeu de test train :noexport:
+* Évaluation des approches (=semeval_executable.py=)
+:PROPERTIES:
+:header-args: :tangle semeval_executable.py :exports code :session semexec :results output silent :eval no-export
+:END:
+** Imports
+
+#+BEGIN_SRC ipython
+  #!/usr/bin/env python3
+  from itertools import product, combinations
+  import spacy
+  from spacy.lang.en.stop_words import STOP_WORDS
+  from semeval_struct import *
+  from semeval_util import *
+  from semeval_xml import get_semeval_content
+  from semeval_taln import *
+#+END_SRC
+
+** Scores
+Les scores sont stockés dans un arbre construit à partir de l'arbre des documents.
+=compute_relqs_scores= calcule les scores de similarité d'un noeud de l'arbre des documents, en attribuant à chaque question relié son score obtenu en comparaison avec sa question originale.
+
+#+BEGIN_SRC ipython
+  def compute_relqs_scores(orgqnode, scorer):
+      return {relid: scorer(orgqnode['org'], orgqnode[relid])
+              for relid in orgqnode.keys() - {'org'}}
+#+END_SRC
+
+=make_score_tree= transforme le premier niveau d'un arbre de documents en lui appliquant =compute_relqs_scores= associé à la fonction de scoring recue en paramètre.
+
+#+BEGIN_SRC ipython
+  def make_score_tree(document_tree, scorer):
+      return transformtree(
+          lambda x: compute_relqs_scores(x, scorer),
+          document_tree,
+          0
+      )
+#+END_SRC
+
+*** Écriture des fichiers de prédiction
+Semeval fournit un script permettant de noter les performances d'une approche.
+Ce script prend en entrée un fichier de prédiction dont chaque ligne correspond à une question reliée et est formatée de la manière suivante :
+
+#+BEGIN_EXAMPLE
+orgq_id  relq_id  0  score  true
+#+END_EXAMPLE
+
+Les troisième et cinquième colonnes sont sans intérêt pour cette tâche.
+
+Le fichier de prédiction est destiné à être ensuite comparé à un fichier de référence de Semeval, afin d'évaluer les performances du système.
+
+La fonction =write_scores_to_file= permet de générer ce fichier de prédiction.
+Les résultats sont triés sur le tas, pour correspondre à l'ordre du fichier de références.
+
+#+BEGIN_SRC ipython
+  def write_scores_to_file(scores, filename):
+      """Write a semeval score tree to a prediction file.
+
+      Parameters
+      ----------
+      scores : dict of dict of float
+          The scores to write.
+
+      filename : str
+         The name of the output file.
+      """
+      linebuffer = [(orgid, relid, str(0), str(score), 'true')
+                    for orgid, relqs in scores.items()
+                    for relid, score in relqs.items()]
+
+      linebuffer.sort(key=lambda x: natural_sort_key(x[1]))
+
+      with open(filename, 'w') as out:
+          out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
+
+#+END_SRC
+
+** Dimensions orthogonales d'une approche
+Plusieurs dimensions orthogonales sont envisagées pour appareiller des questions. Ces dimensions sont combinées les unes avec les autres, en faisant un produit cartésien, formant ainsi une approche.
+
+*** Modèle de langage
+Un seul modèle de langage est utilisé.
+#+BEGIN_SRC ipython
+  models = {
+      'spacy_en': spacy.load('en')
+  }
+#+END_SRC
+
+*** Corpus
+Les approches sont testées sur les données 2016 et 2017 de Semeval.
+#+BEGIN_SRC ipython
+  corpuses = {
+      '2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
+      '2017': 'SemEval2017-task3-English-test-input.xml',
+  }
+#+END_SRC
+
+*** Extraction de contenu
+Deux manières d'extraire du contenu sont envisagées. Elles se différencient au niveau de l'extraction du contenu des questions reliées. La première extrait uniquement le sujet et le corps d'une question, tandis que la seconde extrait également les commentaires des questions reliées.
+
+#+BEGIN_SRC ipython
+  extractors = {
+      'questions': get_semeval_content,
+     # 'questions_with_comments': get_semeval_content_with_relcomments
+  }
+#+END_SRC
+
+Ces fonctions sont fournies dans le fichier =semeval_xml.py=.
+
+*** Filtrage des mots
+Les mots d'un sac de mots peuvent être filtrés ou non selon un prédicat.
+
+#+BEGIN_SRC ipython
+
+  def isnotstopword(word):
+      return word not in STOP_WORDS
+
+  filters = {
+      'gtr2': lambda word: len(word) > 2,
+      'nostopwords': isnotstopword,
+      'nofilter': lambda x: True,
+  }
+#+END_SRC
+
+#+BEGIN_SRC ipython :tangle no :exports none :results silent
+  filters_descr = {
+      'gtr2': '$\leq 2$',
+      'nostopwords': 'Mots outils',
+      'nofilter': 'Pas de filtre',
+  }
+#+END_SRC
+
+*** Construction des sacs de mots
+Les sacs de mots sont construits à l'aide de deux fonctions.
+La première est une fonction d'extraction de caractéristique, qui étant donné un token, renvoie la caractéristique désirée de celui-ci. La deuxième est une fonction d'extraction de phrase, qui étant donné un document, renvoie un itérable contenant des mots.
+
+Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
+#+BEGIN_SRC ipython
+  def extracttext(tok):
+      return tok.text
+
+  def extractlemma(tok):
+      return tok.lemma_
+
+  def extractlabel(ent):
+      return ent.label_ if hasattr(ent, 'label_') else None
+
+  def getentities(doc):
+      return doc.ents
+
+  wordextractors = {
+      'text': extracttext,
+      'lemma': extractlemma,
+      'label': extractlabel,
+  }
+
+  sentenceextractors = {
+      'entities': getentities,
+      'document': lambda x: x,
+  }
+
+  bowmakers = {
+      'named_entities_text': ('text', 'entities'),
+      'named_entities_label': ('label', 'entities'),
+      'tokens': ('text', 'document'),
+      'lemmas': ('lemma', 'document'),
+  }
+
+  def getbowmakerfunctions(key):
+      return (wordextractors[bowmakers[key][0]], sentenceextractors[bowmakers[key][1]])
+#+END_SRC
+
+#+BEGIN_SRC ipython :tangle no :exports none :results silent
+  bowmakers_descr = {
+      'named_entities_text': 'Textes des entités nommées',
+      'named_entities_label': 'Étiquettes des entités nommées',
+      'tokens': 'Tokens',
+      'lemmas': 'Lemmes',
+  }
+#+END_SRC
+
+Les fonctions associées aux éléments de =bowmakers= sont destinés à être passés à la fonction =createbowmaker=, retournant une fonction permettant de construire un sac de mots selon les modalité voulues.
+
+#+BEGIN_SRC ipython
+  def createbowmaker(wordextractor, sentenceextractor, filters):
+      def bowmaker(document):
+          return Counter(
+              list(filter(lambda x: all(f(x) for f in filters),
+                     map(wordextractor, sentenceextractor(document))))
+              )
+
+      return bowmaker
+
+#+END_SRC
+
+*** Création des approches
+Les arbres des documents sont précalculés pour éviter de répéter cette opération coûteuse.
+
+#+BEGIN_SRC ipython
+  training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
+
+  training_doctree = make_or_load_document_tree(
+      training_file,
+      'train_2016_part1.pickle',
+      models['spacy_en'],
+      get_semeval_content,
+      verbose=True
+  )
+
+  doctrees = {
+      '_'.join((model, corpus, extractor)): make_or_load_document_tree(
+          corpuses[corpus],
+          '_'.join((model, corpus, extractor) )+ '.pickle',
+          models[model],
+          extractors[extractor],
+          verbose=True
+      )
+      for model, corpus, extractor in product(models, corpuses, extractors)
+  }
+#+END_SRC
+
+#+BEGIN_SRC ipython :tangle no :exports none :results silent
+  doctrees_years = {
+      '_'.join((model, corpus, extractor)): corpus
+      for model, corpus, extractor in product(models, corpuses, extractors)
+  }
+#+END_SRC
+
+La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
+#+BEGIN_SRC ipython
+  def nonemptypartitions(iterable):
+      for i in range(1, len(iterable) + 1):
+          for perm in combinations(iterable, i):
+              yield perm
+
+  def join_predicates(iterable_preds):
+      def joinedlocal(element):
+          for pred in iterable_preds:
+              if not pred(element):
+                  return False
+          return True
+      print('joining', *(pred for pred in iterable_preds))
+      return joinedlocal
+
+  filters_partition = list(nonemptypartitions(set(filters) - {'nofilter'}))
+
+  filters_partition.append(('nofilter',))
+#+END_SRC
+
+Les approches sont crées en faisant le produit cartésien des dimensions envisagées.
+
+#+BEGIN_SRC ipython
+  approches = list(product(doctrees, bowmakers, filters_partition))
+#+END_SRC
+
+** Exécution des approches
+
+Chacune des approches précédemment générées est exécutée et les scores produits sont écrits dans les fichiers correspondants.
+
+#+BEGIN_SRC ipython
+  def getpredfilename(doctree, bowmaker, filterspartition):
+      return '_'.join((doctree, bowmaker, *filterspartition, 'scores.pred'))
+
+
+  # inversedocfreqs = transformtree(
+  #     lambda wordextractor: inverse_document_frequencies(
+  #         [[wordextractor(tok) for tok in doc]
+  #          for org in training_doctree.values()
+  #          for doc in org.values()]
+  #     ),
+  #     wordextractors
+  # )
+
+  inversedocfreqs = {
+      wordex + '_' + sentex: inverse_document_frequencies(
+          [[wordextractors[wordex](tok) for tok in sentenceextractors[sentex](doc)]
+           for org in training_doctree.values()
+           for doc in org.values()]
+      )
+      for wordex, sentex in bowmakers.values()
+  }
+
+  out_of_corpus_value = max(inversedocfreqs['text_document'].values())
+
+  for doctree, bowmaker, filterspartition in approches:
+      wordex, sentex = bowmakers[bowmaker]
+      bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
+                                    [filters[filterkey] for filterkey in filterspartition])
+
+      scores = make_score_tree(
+          doctrees[doctree],
+          lambda a, b: tf_idf_bow_scorer(
+              bowmakerfunc, a, b,
+              inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+      )
+
+      prediction_file = getpredfilename(doctree, bowmaker, filterspartition)
+      print('writing scores to', prediction_file)
+      write_scores_to_file(scores, prediction_file)
+#+END_SRC
+
+* Debug                                                            :noexport:
+#+BEGIN_SRC ipython :results output replace :eval noexport :session semexec
+  def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_value):
+      baga = bag_maker(doca)
+      bagb = bag_maker(docb)
+      intersection = baga & bagb
+      termfreq = term_frequencies(baga + bagb)
+      return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
+
+  for filterspartition in filters_partition:
+      wordex, sentex = 'label', 'entities'
+      bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
+                                    [filters[filterkey] for filterkey in filterspartition])
+
+      scores = make_score_tree(
+          {'Q318': doctrees['spacy_en_2016_questions']['Q318']},
+          lambda a, b: tf_idf_bow_scorer(
+              bowmakerfunc, a, b,
+              inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+      )
+
+      print(scores)
+      # prediction_file = getpredfilename('spacy_en_2016_questions', 'named_entities_label', filterspartition)
+      # print('writing scores to', prediction_file)
+      # write_scores_to_file(scores, prediction_file)
+#+END_SRC
+
+#+RESULTS:
+: {'Q318': {'Q318_R9': 0.9461238557507694, 'Q318_R14': 0.24045052952049178, 'Q318_R19': 0.5497527256167447, 'Q318_R17': 0, 'Q318_R4': 0.6280390615528804, 'Q318_R52': 1.6860085407228331, 'Q318_R6': 2.8706388246852264, 'Q318_R45': 1.1152957818270552, 'Q318_R61': 0, 'Q318_R20': 0.3206007060273224}}
+: {'Q318': {'Q318_R9': 0.9461238557507694, 'Q318_R14': 0.24045052952049178, 'Q318_R19': 0.5497527256167447, 'Q318_R17': 0, 'Q318_R4': 0.6280390615528804, 'Q318_R52': 1.6860085407228331, 'Q318_R6': 2.8706388246852264, 'Q318_R45': 1.1152957818270552, 'Q318_R61': 0, 'Q318_R20': 0.3206007060273224}}
+: {'Q318': {'Q318_R9': 0.9461238557507694, 'Q318_R14': 0.24045052952049178, 'Q318_R19': 0.5497527256167447, 'Q318_R17': 0, 'Q318_R4': 0.6280390615528804, 'Q318_R52': 1.6860085407228331, 'Q318_R6': 2.8706388246852264, 'Q318_R45': 1.1152957818270552, 'Q318_R61': 0, 'Q318_R20': 0.3206007060273224}}
+: {'Q318': {'Q318_R9': 0.9461238557507694, 'Q318_R14': 0.24045052952049178, 'Q318_R19': 0.5497527256167447, 'Q318_R17': 0, 'Q318_R4': 0.6280390615528804, 'Q318_R52': 1.6860085407228331, 'Q318_R6': 2.8706388246852264, 'Q318_R45': 1.1152957818270552, 'Q318_R61': 0, 'Q318_R20': 0.3206007060273224}}
+
+
+* Résultats
+Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de prédiction :
+#+BEGIN_SRC sh :shebang "#!/usr/bin/env bash" :exports code :eval never :tangle extractMAP.sh
+  prediction=$1
+
+  if echo $prediction | grep --quiet "2016"
+  then
+      reference=scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy
+  else
+      reference=scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy
+  fi
+
+  python2 scorer/ev.py $reference $prediction | grep "^MAP" | sed 's/ \+/;/g' | cut -f 4 -d ';'
+#+END_SRC
+
+#+BEGIN_SRC ipython :exports results :results drawer table output :tangle no :session semexec
+  def orgmodetable(matrix, header=False):
+      maxlen = [0] * len(matrix[0])
+      for line in matrix:
+          for i, cell in enumerate(line):
+              if len(maxlen) <= i or len(cell) > maxlen[i]:
+                  maxlen[i] = len(cell)
+
+      def orgmodeline(line, fill=' '):
+          joinsep = fill + '|' + fill
+          return '|' + fill + joinsep.join(
+              cell + ' ' * (mlen - len(cell))
+              for cell, mlen in zip(line, maxlen)
+          ) + fill + '|'
+
+      result = ''
+      if header:
+          result = orgmodeline(matrix[0]) + '\n' + \
+              orgmodeline(('-') * len(maxlen), fill='-')
+
+          matrix = matrix[0:]
+
+      result += '\n'.join(orgmodeline(line) for line in matrix)
+      return result
+
+
+  import subprocess
+
+  resulttable=[]
+  for doctree, bowmaker, filterspartition in approches:
+      predfilename = getpredfilename(
+          doctree, bowmaker, filterspartition)
+
+      score = subprocess.run(
+          ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
+
+
+
+      line = [doctrees_years[doctree],
+              bowmakers_descr[bowmaker],
+              ', '.join(filters_descr[key] for key in filterspartition),
+              score.stdout.decode('utf-8').strip('\n')]
+
+      resulttable.append(line)
+
+  resulttable.sort(key=lambda x: x[3], reverse=True)
+  resulttable.sort(key=lambda x: x[0])
+  resulttable.insert(0, ['Année', 'Sac de mots', 'Filtres', 'Score MAP'])
+  print(orgmodetable(resulttable, header=True))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| Année | Sac de mots                    | Filtres               | Score MAP |
+|-------+--------------------------------+-----------------------+-----------|
+|  2016 | Lemmes                         | Mots outils, $\leq 2$ |    0.7573 |
+|  2016 | Lemmes                         | Pas de filtre         |    0.7505 |
+|  2016 | Lemmes                         | $\leq 2$              |    0.7503 |
+|  2016 | Lemmes                         | Mots outils           |    0.7350 |
+|  2016 | Tokens                         | $\leq 2$              |    0.7329 |
+|  2016 | Tokens                         | Mots outils, $\leq 2$ |    0.7297 |
+|  2016 | Textes des entités nommées     | Mots outils, $\leq 2$ |    0.7283 |
+|  2016 | Textes des entités nommées     | Mots outils           |    0.7281 |
+|  2016 | Textes des entités nommées     | $\leq 2$              |    0.7205 |
+|  2016 | Textes des entités nommées     | Pas de filtre         |    0.7203 |
+|  2016 | Tokens                         | Mots outils           |    0.7099 |
+|  2016 | Tokens                         | Pas de filtre         |    0.7060 |
+|  2016 | Étiquettes des entités nommées | Mots outils           |    0.6738 |
+|  2016 | Étiquettes des entités nommées | $\leq 2$              |    0.6738 |
+|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 2$ |    0.6738 |
+|  2016 | Étiquettes des entités nommées | Pas de filtre         |    0.6738 |
+|  2017 | Lemmes                         | $\leq 2$              |    0.4503 |
+|  2017 | Lemmes                         | Mots outils, $\leq 2$ |    0.4451 |
+|  2017 | Lemmes                         | Pas de filtre         |    0.4408 |
+|  2017 | Tokens                         | Mots outils, $\leq 2$ |    0.4372 |
+|  2017 | Tokens                         | $\leq 2$              |    0.4367 |
+|  2017 | Tokens                         | Mots outils           |    0.4339 |
+|  2017 | Lemmes                         | Mots outils           |    0.4338 |
+|  2017 | Tokens                         | Pas de filtre         |    0.4314 |
+|  2017 | Textes des entités nommées     | Mots outils, $\leq 2$ |    0.3979 |
+|  2017 | Textes des entités nommées     | $\leq 2$              |    0.3976 |
+|  2017 | Textes des entités nommées     | Mots outils           |    0.3975 |
+|  2017 | Textes des entités nommées     | Pas de filtre         |    0.3972 |
+|  2017 | Étiquettes des entités nommées | Mots outils           |    0.3459 |
+|  2017 | Étiquettes des entités nommées | $\leq 2$              |    0.3459 |
+|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 2$ |    0.3459 |
+|  2017 | Étiquettes des entités nommées | Pas de filtre         |    0.3459 |
+:END:
+
+| Année | Score MAP baseline |
+|-------+--------------------|
+|  2016 |             0.7475 |
+|  2017 |             0.4185 |
+
