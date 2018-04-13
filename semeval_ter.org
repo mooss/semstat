@@ -6,6 +6,8 @@
 #+PROPERTY: header-args:python :session pythonsession
 #+PROPERTY: header-args :eval no-export
 #+PROPERTY: header-args:python :eval never
+#+PROPERTY: header-args:org :exports both
+#+OPTIONS: toc:nil title:nil
 
 \newpage
 * Structures de données et algorithmes (=semeval_struct.py=)
@@ -172,7 +174,7 @@ On utilise pickle pour sauvegarder et charger des objets qu'il serait long de re
   import os.path
   import math
   from itertools import chain
-  from collections import Counter
+  from collections import Counter, defaultdict
   from semeval_xml import get_semeval_id, get_related_threads, xmlextract
   from semeval_util import save_object, load_object
 #+END_SRC
@@ -338,48 +340,108 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       baga = bag_maker(doca)
       bagb = bag_maker(docb)
       intersection = baga & bagb
+      #print('tf:', baga, bagb)
       termfreq = term_frequencies(baga + bagb)
 
       return (sum(tf_idf(term, termfreq, inversedocfreqs, out_of_corpus_value) * occurences
                  for term, occurences in intersection.items()) * sum(intersection.values()))
+  # sum(intersection.values()) == length of the sentence
   #    return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
 
+
+              # list(filter(lambda x: all(f(x) for f in filters),
+              #        map(wordextractor, sentenceextractor(document))))
 
   def create_unit_dict(wordex, sentex, filters, doc):
       result = defaultdict(list)
       for unit in sentex(doc):
-          if all(f(x) for f in filters):
+          if all(flt(wordex(unit)) for flt in filters):
               result[wordex(unit)].append(unit)
+      return result
 
-  # def customizable_scorer(wordex, sentex, filters, doca, docb, inversedocfreqs, out_of_corpus_value):
-  #     unita = create_unit_dict(wordex, sentex, filters, doca)
-  #     unitb = create_unit_dict(wordex, sentex, filters, docb)
+  def intersection_score(baga, bagb,
+                         inversedocfreqs,
+                         out_of_corpus_value,
+                         score_multiplier='interlen'):
+      score = 0
+      intersection = baga & bagb
+      termfreq = term_frequencies(baga + bagb)
 
-  #     intersection = set(unita) & set(unitb)
 
-  #     score = 0
-  #     termfreq = term_frequencies(Counter(unita) + Counter(unitb))
 
-  #     for el in intersection:
-  #         score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)
+      if score_multiplier == 'interocc':
+          for el, count in intersection.items():
+              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                       ,* count
+      else:
+          for el in intersection:
+              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                       ,* len(intersection)
+
+      return score
+
+  def customizable_scorer(
+          wordex, sentex, filters,
+          doca, docb, inversedocfreqs,
+          out_of_corpus_value,
+          score_multiplier='interlen'):
+      unitsa = create_unit_dict(wordex, sentex, filters, doca)
+      unitsb = create_unit_dict(wordex, sentex, filters, docb)
+
+      counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+      countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+
+      return intersection_score(counta, countb, inversedocfreqs,
+                                out_of_corpus_value, score_multiplier)
+
+  def entity_weighter(unita, unitb, weight=0.8):
+      entcount = 0
+      for tok in chain(unita, unitb):
+          if tok.ent_type_ != '':
+              ++entcount
+      if entcount > 0:
+          return weight
+      else:
+          return 1-weight
+
+  def entityweight_scorer(
+          wordex, filters,
+          doca, docb, inversedocfreqs,
+          out_of_corpus_value,
+          score_multiplier='interlen'):
+      unitsa = create_unit_dict(wordex, lambda x: x, filters, doca)
+      unitsb = create_unit_dict(wordex, lambda x: x, filters, docb)
+
+      counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+      countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+
+      score = 0
+      intersection = baga & bagb
+      termfreq = term_frequencies(baga + bagb)
+
+      if score_multiplier == 'interocc':
+          for el, count in intersection.items():
+              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                       ,* count
+      else:
+          for el in intersection:
+              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                       ,* len(intersection) * entity_weighter(unitsa[el], unitsb[el])
+      return score
 #+END_SRC
-
-#+RESULTS:
 
 Où =bag_maker= est une fonction retournant un sac de mots.
 
 **** ajouter avec normalisation, ex div par len phrase can
 
 * TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
-* TODO faire les calculs préliminaires (type tf-idf) sur le jeu de test train :noexport:
 * Évaluation des approches (=semeval_executable.py=)
 :PROPERTIES:
 :header-args: :tangle semeval_executable.py :exports code :session semexec :results output silent :eval no-export
 :END:
 ** Imports
 
-#+BEGIN_SRC ipython
-  #!/usr/bin/env python3
+#+BEGIN_SRC ipython :shebang "#!/usr/bin/python"
   from itertools import product, combinations
   import spacy
   from spacy.lang.en.stop_words import STOP_WORDS
@@ -426,7 +488,7 @@ La fonction =write_scores_to_file= permet de générer ce fichier de prédiction
 Les résultats sont triés sur le tas, pour correspondre à l'ordre du fichier de références.
 
 #+BEGIN_SRC ipython
-  def write_scores_to_file(scores, filename):
+  def write_scores_to_file(scores, filename, verbose=False):
       """Write a semeval score tree to a prediction file.
 
       Parameters
@@ -442,6 +504,9 @@ Les résultats sont triés sur le tas, pour correspondre à l'ordre du fichier d
                     for relid, score in relqs.items()]
 
       linebuffer.sort(key=lambda x: natural_sort_key(x[1]))
+
+      if verbose:
+          print('writing scores to', prediction_file)
 
       with open(filename, 'w') as out:
           out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
@@ -593,8 +658,7 @@ Les fonctions associées aux éléments de =bowmakers= sont destinés à être p
 
 #+END_SRC
 
-*** Création des approches
-Les arbres des documents sont précalculés pour éviter de répéter cette opération coûteuse.
+*** Création des arbres de documents
 
 #+BEGIN_SRC ipython
   training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
@@ -618,6 +682,13 @@ Les arbres des documents sont précalculés pour éviter de répéter cette opé
       for model, corpus, extractor in product(models, corpuses, extractors)
   }
 #+END_SRC
+
+** Approches bruteforce
+*** Création des approches bruteforce
+Les approches combinatoires correspondent ici à une approche en force brute.
+Sont testées toutes les combinaisons de sacs de mots et de filtres.
+
+Les arbres des documents sont précalculés pour éviter de répéter cette opération coûteuse.
 
 #+BEGIN_SRC ipython :tangle no :exports none :results silent
   doctrees_years = {
@@ -655,13 +726,13 @@ La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
   filters_partition.append(('nofilter',))
 #+END_SRC
 
-Les approches sont crées en faisant le produit cartésien des dimensions envisagées.
+Les approches combinatoires sont crées en faisant le produit cartésien des dimensions envisagées.
 
 #+BEGIN_SRC ipython
-  approches = list(product(doctrees, bowmakers, filters_partition))
+  approches_combinatoires = list(product(doctrees, bowmakers, filters_partition))
 #+END_SRC
 
-** Exécution des approches
+*** Exécution des approches bruteforce
 
 Chacune des approches précédemment générées est exécutée et les scores produits sont écrits dans les fichiers correspondants.
 
@@ -690,21 +761,27 @@ Chacune des approches précédemment générées est exécutée et les scores pr
 
   out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
-  for doctree, bowmaker, filterspartition in approches:
+  for doctree, bowmaker, filterspartition in approches_combinatoires:
       wordex, sentex = bowmakers[bowmaker]
-      bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
-                                    [filters[filterkey] for filterkey in filterspartition])
+      # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
+      #                               [filters[filterkey] for filterkey in filterspartition])
 
       scores = make_score_tree(
           doctrees[doctree],
-          lambda a, b: tf_idf_bow_scorer(
-              bowmakerfunc, a, b,
-              inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+          # lambda a, b: tf_idf_bow_scorer(
+          #     bowmakerfunc, a, b,
+          #     inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+          lambda a, b: customizable_scorer(
+              wordextractors[wordex],
+              sentenceextractors[sentex],
+              [filters[filterkey] for filterkey in filterspartition],
+              a, b, inversedocfreqs[wordex + '_' + sentex],
+              out_of_corpus_value
+          )
       )
 
       prediction_file = getpredfilename(doctree, bowmaker, filterspartition)
-      print('writing scores to', prediction_file)
-      write_scores_to_file(scores, prediction_file)
+      write_scores_to_file(scores, prediction_file, verbose=True)
 #+END_SRC
 
 * Debug                          :noexport:
@@ -759,13 +836,20 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
   then
       reference=scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy
   else
-      reference=scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy
+      if echo $prediction | grep --quiet "2017"
+      then
+          reference=scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy
+      else
+          reference=scorer/SemEval2016-debug.relevancy
+      fi
   fi
 
   python2 scorer/ev.py $reference $prediction | grep "^MAP" | sed 's/ \+/;/g' | cut -f 4 -d ';'
 #+END_SRC
 
-#+BEGIN_SRC ipython :exports results :results drawer table output :tangle no :session semexec
+** tableaux des scores
+
+#+BEGIN_SRC ipython :exports results :results drawer output :tangle no :session semexec
   def orgmodetable(matrix, header=False):
       maxlen = [0] * len(matrix[0])
       for line in matrix:
@@ -776,16 +860,15 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
       def orgmodeline(line, fill=' '):
           joinsep = fill + '|' + fill
           return '|' + fill + joinsep.join(
-              cell + ' ' * (mlen - len(cell))
+              cell + fill * (mlen - len(cell))
               for cell, mlen in zip(line, maxlen)
           ) + fill + '|'
 
       result = ''
       if header:
           result = orgmodeline(matrix[0]) + '\n' + \
-              orgmodeline(('-') * len(maxlen), fill='-')
-
-          matrix = matrix[0:]
+              orgmodeline(('-') * len(maxlen), fill='-') + '\n'
+          matrix = matrix[1:]
 
       result += '\n'.join(orgmodeline(line) for line in matrix)
       return result
@@ -793,114 +876,127 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 
   import subprocess
 
-  resulttable=[]
-  for doctree, bowmaker, filterspartition in approches:
-      predfilename = getpredfilename(
-          doctree, bowmaker, filterspartition)
+  def makerestable(doctree):
+      resulttable=[]
+      for bowmaker, filterspartition in product(bowmakers, filters_partition):
+          predfilename = getpredfilename(
+              doctree, bowmaker, filterspartition)
 
-      score = subprocess.run(
-          ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
+          score = subprocess.run(
+              ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
 
+          line = [bowmakers_descr[bowmaker],
+                  ', '.join(filters_descr[key] for key in filterspartition),
+                  score.stdout.decode('utf-8').strip('\n')]
 
+          resulttable.append(line)
+      return resulttable
 
-      line = [doctrees_years[doctree],
-              bowmakers_descr[bowmaker],
-              ', '.join(filters_descr[key] for key in filterspartition),
-              score.stdout.decode('utf-8').strip('\n')]
-
-      resulttable.append(line)
-
-  resulttable.sort(key=lambda x: x[3], reverse=True)
-  resulttable.sort(key=lambda x: x[0])
-  resulttable.insert(0, ['Année', 'Sac de mots', 'Filtres', 'Score MAP'])
-  print(orgmodetable(resulttable, header=True))
+  for doctree in doctrees:
+      restable = makerestable(doctree)
+      restable.sort(key=lambda x: x[2], reverse=True)
+      restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
+      print()
+      print('\\newpage\n' + '*année ' + doctrees_years[doctree] + '*' + '\n')
+      print(orgmodetable(restable, header=True))
 #+END_SRC
 
 #+RESULTS:
 :RESULTS:
-| Année | Sac de mots                    | Filtres               | Score MAP |
-|-------+--------------------------------+-----------------------+-----------|
-|  2016 | Tokens                         | Mots outils, $\leq 1$ |    0.7522 |
-|  2016 | Textes des entités nommées     | Mots outils           |    0.7493 |
-|  2016 | Textes des entités nommées     | Mots outils, $\leq 1$ |    0.7493 |
-|  2016 | Textes des entités nommées     | Mots outils, $\leq 2$ |    0.7493 |
-|  2016 | Textes des entités nommées     | Mots outils, $\leq 3$ |    0.7493 |
-|  2016 | Textes des entités nommées     | Mots outils, $\leq 4$ |    0.7493 |
-|  2016 | Textes des entités nommées     | $\leq 1$              |    0.7493 |
-|  2016 | Textes des entités nommées     | $\leq 2$              |    0.7493 |
-|  2016 | Textes des entités nommées     | $\leq 3$              |    0.7493 |
-|  2016 | Textes des entités nommées     | $\leq 4$              |    0.7493 |
-|  2016 | Textes des entités nommées     | Pas de filtre         |    0.7493 |
-|  2016 | Tokens                         | Mots outils, $\leq 2$ |    0.7493 |
-|  2016 | Tokens                         | $\leq 2$              |    0.7481 |
-|  2016 | Lemmes                         | Mots outils, $\leq 2$ |    0.7448 |
-|  2016 | Tokens                         | Mots outils, $\leq 3$ |    0.7438 |
-|  2016 | Lemmes                         | Mots outils, $\leq 1$ |    0.7428 |
-|  2016 | Tokens                         | Mots outils, $\leq 4$ |    0.7387 |
-|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 4$ |    0.7383 |
-|  2016 | Étiquettes des entités nommées | $\leq 4$              |    0.7383 |
-|  2016 | Tokens                         | $\leq 3$              |    0.7376 |
-|  2016 | Tokens                         | $\leq 4$              |    0.7375 |
-|  2016 | Tokens                         | Mots outils           |    0.7359 |
-|  2016 | Lemmes                         | $\leq 2$              |    0.7284 |
-|  2016 | Lemmes                         | Mots outils           |    0.7277 |
-|  2016 | Lemmes                         | $\leq 1$              |    0.7231 |
-|  2016 | Lemmes                         | $\leq 4$              |    0.7223 |
-|  2016 | Lemmes                         | $\leq 3$              |    0.7220 |
-|  2016 | Lemmes                         | Mots outils, $\leq 3$ |    0.7193 |
-|  2016 | Étiquettes des entités nommées | Mots outils           |    0.7174 |
-|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 1$ |    0.7174 |
-|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 2$ |    0.7174 |
-|  2016 | Étiquettes des entités nommées | $\leq 1$              |    0.7174 |
-|  2016 | Étiquettes des entités nommées | $\leq 2$              |    0.7174 |
-|  2016 | Étiquettes des entités nommées | Pas de filtre         |    0.7174 |
-|  2016 | Tokens                         | $\leq 1$              |    0.7162 |
-|  2016 | Lemmes                         | Mots outils, $\leq 4$ |    0.7143 |
-|  2016 | Lemmes                         | Pas de filtre         |    0.7142 |
-|  2016 | Étiquettes des entités nommées | Mots outils, $\leq 3$ |    0.7103 |
-|  2016 | Étiquettes des entités nommées | $\leq 3$              |    0.7103 |
-|  2016 | Tokens                         | Pas de filtre         |    0.7070 |
-|  2017 | Lemmes                         | Mots outils, $\leq 2$ |    0.4685 |
-|  2017 | Lemmes                         | Mots outils, $\leq 1$ |    0.4677 |
-|  2017 | Lemmes                         | Mots outils, $\leq 3$ |    0.4658 |
-|  2017 | Tokens                         | Mots outils, $\leq 2$ |    0.4601 |
-|  2017 | Lemmes                         | $\leq 1$              |    0.4597 |
-|  2017 | Tokens                         | Mots outils, $\leq 1$ |    0.4589 |
-|  2017 | Lemmes                         | $\leq 4$              |    0.4576 |
-|  2017 | Tokens                         | Mots outils, $\leq 3$ |    0.4564 |
-|  2017 | Tokens                         | $\leq 1$              |    0.4555 |
-|  2017 | Lemmes                         | $\leq 2$              |    0.4551 |
-|  2017 | Lemmes                         | Pas de filtre         |    0.4550 |
-|  2017 | Lemmes                         | Mots outils           |    0.4545 |
-|  2017 | Lemmes                         | Mots outils, $\leq 4$ |    0.4528 |
-|  2017 | Tokens                         | $\leq 2$              |    0.4517 |
-|  2017 | Lemmes                         | $\leq 3$              |    0.4484 |
-|  2017 | Tokens                         | Mots outils           |    0.4449 |
-|  2017 | Tokens                         | Pas de filtre         |    0.4445 |
-|  2017 | Tokens                         | Mots outils, $\leq 4$ |    0.4427 |
-|  2017 | Tokens                         | $\leq 3$              |    0.4370 |
-|  2017 | Tokens                         | $\leq 4$              |    0.4197 |
-|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 3$ |    0.4158 |
-|  2017 | Étiquettes des entités nommées | $\leq 3$              |    0.4158 |
-|  2017 | Étiquettes des entités nommées | Mots outils           |    0.4153 |
-|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 1$ |    0.4153 |
-|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 2$ |    0.4153 |
-|  2017 | Étiquettes des entités nommées | $\leq 1$              |    0.4153 |
-|  2017 | Étiquettes des entités nommées | $\leq 2$              |    0.4153 |
-|  2017 | Étiquettes des entités nommées | Pas de filtre         |    0.4153 |
-|  2017 | Textes des entités nommées     | Mots outils, $\leq 3$ |    0.4139 |
-|  2017 | Textes des entités nommées     | Mots outils, $\leq 4$ |    0.4139 |
-|  2017 | Textes des entités nommées     | $\leq 3$              |    0.4139 |
-|  2017 | Textes des entités nommées     | $\leq 4$              |    0.4139 |
-|  2017 | Textes des entités nommées     | Mots outils           |    0.4083 |
-|  2017 | Textes des entités nommées     | Mots outils, $\leq 1$ |    0.4083 |
-|  2017 | Textes des entités nommées     | Mots outils, $\leq 2$ |    0.4083 |
-|  2017 | Textes des entités nommées     | $\leq 1$              |    0.4083 |
-|  2017 | Textes des entités nommées     | $\leq 2$              |    0.4083 |
-|  2017 | Textes des entités nommées     | Pas de filtre         |    0.4083 |
-|  2017 | Étiquettes des entités nommées | Mots outils, $\leq 4$ |    0.4063 |
-|  2017 | Étiquettes des entités nommées | $\leq 4$              |    0.4063 |
+
+\newpage
+*année 2016*
+
+| Sac de mots                    | Filtres               | Score MAP |
+|--------------------------------|-----------------------|-----------|
+| Lemmes                         | Mots outils, $\leq 2$ | 0.7679    |
+| Textes des entités nommées     | Mots outils           | 0.7493    |
+| Textes des entités nommées     | Mots outils, $\leq 1$ | 0.7493    |
+| Textes des entités nommées     | Mots outils, $\leq 2$ | 0.7493    |
+| Textes des entités nommées     | Mots outils, $\leq 3$ | 0.7493    |
+| Textes des entités nommées     | Mots outils, $\leq 4$ | 0.7493    |
+| Textes des entités nommées     | $\leq 1$              | 0.7493    |
+| Textes des entités nommées     | $\leq 2$              | 0.7493    |
+| Textes des entités nommées     | $\leq 3$              | 0.7493    |
+| Textes des entités nommées     | $\leq 4$              | 0.7493    |
+| Textes des entités nommées     | Pas de filtre         | 0.7493    |
+| Lemmes                         | Mots outils, $\leq 1$ | 0.7490    |
+| Tokens                         | Mots outils, $\leq 2$ | 0.7488    |
+| Tokens                         | Mots outils, $\leq 1$ | 0.7446    |
+| Lemmes                         | Mots outils           | 0.7424    |
+| Tokens                         | Mots outils, $\leq 3$ | 0.7423    |
+| Tokens                         | Mots outils, $\leq 4$ | 0.7422    |
+| Étiquettes des entités nommées | Mots outils, $\leq 4$ | 0.7369    |
+| Étiquettes des entités nommées | $\leq 4$              | 0.7369    |
+| Tokens                         | Mots outils           | 0.7322    |
+| Lemmes                         | Mots outils, $\leq 3$ | 0.7317    |
+| Lemmes                         | $\leq 2$              | 0.7293    |
+| Lemmes                         | $\leq 4$              | 0.7292    |
+| Tokens                         | $\leq 4$              | 0.7275    |
+| Tokens                         | $\leq 2$              | 0.7274    |
+| Lemmes                         | $\leq 1$              | 0.7269    |
+| Lemmes                         | $\leq 3$              | 0.7253    |
+| Tokens                         | $\leq 3$              | 0.7219    |
+| Lemmes                         | Mots outils, $\leq 4$ | 0.7202    |
+| Étiquettes des entités nommées | Mots outils           | 0.7153    |
+| Étiquettes des entités nommées | Mots outils, $\leq 1$ | 0.7153    |
+| Étiquettes des entités nommées | Mots outils, $\leq 2$ | 0.7153    |
+| Étiquettes des entités nommées | $\leq 1$              | 0.7153    |
+| Étiquettes des entités nommées | $\leq 2$              | 0.7153    |
+| Étiquettes des entités nommées | Pas de filtre         | 0.7153    |
+| Lemmes                         | Pas de filtre         | 0.7148    |
+| Tokens                         | $\leq 1$              | 0.7135    |
+| Tokens                         | Pas de filtre         | 0.7098    |
+| Étiquettes des entités nommées | Mots outils, $\leq 3$ | 0.7081    |
+| Étiquettes des entités nommées | $\leq 3$              | 0.7081    |
+
+\newpage
+*année 2017*
+
+| Sac de mots                    | Filtres               | Score MAP |
+|--------------------------------|-----------------------|-----------|
+| Tokens                         | Mots outils, $\leq 1$ | 0.4705    |
+| Lemmes                         | Mots outils, $\leq 1$ | 0.4678    |
+| Tokens                         | Mots outils, $\leq 2$ | 0.4653    |
+| Tokens                         | Mots outils, $\leq 3$ | 0.4650    |
+| Lemmes                         | Mots outils, $\leq 2$ | 0.4624    |
+| Tokens                         | $\leq 2$              | 0.4623    |
+| Tokens                         | Mots outils           | 0.4598    |
+| Lemmes                         | Mots outils           | 0.4581    |
+| Lemmes                         | Pas de filtre         | 0.4580    |
+| Tokens                         | Mots outils, $\leq 4$ | 0.4521    |
+| Lemmes                         | $\leq 1$              | 0.4473    |
+| Lemmes                         | Mots outils, $\leq 3$ | 0.4458    |
+| Tokens                         | $\leq 1$              | 0.4455    |
+| Lemmes                         | $\leq 2$              | 0.4425    |
+| Lemmes                         | Mots outils, $\leq 4$ | 0.4419    |
+| Tokens                         | Pas de filtre         | 0.4418    |
+| Tokens                         | $\leq 3$              | 0.4392    |
+| Lemmes                         | $\leq 3$              | 0.4389    |
+| Lemmes                         | $\leq 4$              | 0.4249    |
+| Tokens                         | $\leq 4$              | 0.4153    |
+| Textes des entités nommées     | Mots outils, $\leq 3$ | 0.4139    |
+| Textes des entités nommées     | Mots outils, $\leq 4$ | 0.4139    |
+| Textes des entités nommées     | $\leq 3$              | 0.4139    |
+| Textes des entités nommées     | $\leq 4$              | 0.4139    |
+| Étiquettes des entités nommées | Mots outils           | 0.4123    |
+| Étiquettes des entités nommées | Mots outils, $\leq 1$ | 0.4123    |
+| Étiquettes des entités nommées | Mots outils, $\leq 2$ | 0.4123    |
+| Étiquettes des entités nommées | $\leq 1$              | 0.4123    |
+| Étiquettes des entités nommées | $\leq 2$              | 0.4123    |
+| Étiquettes des entités nommées | Pas de filtre         | 0.4123    |
+| Étiquettes des entités nommées | Mots outils, $\leq 3$ | 0.4104    |
+| Étiquettes des entités nommées | $\leq 3$              | 0.4104    |
+| Textes des entités nommées     | Mots outils           | 0.4083    |
+| Textes des entités nommées     | Mots outils, $\leq 1$ | 0.4083    |
+| Textes des entités nommées     | Mots outils, $\leq 2$ | 0.4083    |
+| Textes des entités nommées     | $\leq 1$              | 0.4083    |
+| Textes des entités nommées     | $\leq 2$              | 0.4083    |
+| Textes des entités nommées     | Pas de filtre         | 0.4083    |
+| Étiquettes des entités nommées | Mots outils, $\leq 4$ | 0.4063    |
+| Étiquettes des entités nommées | $\leq 4$              | 0.4063    |
 :END:
+
 
 | Année | Score MAP baseline |
 |-------+--------------------|

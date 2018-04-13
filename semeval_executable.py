@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 from itertools import product, combinations
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
@@ -18,7 +18,7 @@ def make_score_tree(document_tree, scorer):
         0
     )
 
-def write_scores_to_file(scores, filename):
+def write_scores_to_file(scores, filename, verbose=False):
     """Write a semeval score tree to a prediction file.
 
     Parameters
@@ -35,6 +35,9 @@ def write_scores_to_file(scores, filename):
 
     linebuffer.sort(key=lambda x: natural_sort_key(x[1]))
 
+    if verbose:
+        print('writing scores to', prediction_file)
+
     with open(filename, 'w') as out:
         out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
 
@@ -42,10 +45,17 @@ models = {
     'spacy_en': spacy.load('en')
 }
 
-corpuses = {
-    '2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
-    '2017': 'SemEval2017-task3-English-test-input.xml',
-}
+debug_mode = False;
+
+if debug_mode:
+    corpuses = {
+        'debug': 'debug.xml',
+    }
+else:
+    corpuses = {
+        '2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
+        '2017': 'SemEval2017-task3-English-test-input.xml',
+    }
 
 extractors = {
     'questions': lambda x: get_semeval_content(x).lower(),
@@ -168,7 +178,7 @@ for lenfilter in lenfilters:
 
 filters_partition.append(('nofilter',))
 
-approches = list(product(doctrees, bowmakers, filters_partition))
+approches_combinatoires = list(product(doctrees, bowmakers, filters_partition))
 
 def getpredfilename(doctree, bowmaker, filterspartition):
     return '_'.join((doctree, bowmaker, *filterspartition, 'scores.pred'))
@@ -194,18 +204,24 @@ inversedocfreqs = {
 
 out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
-for doctree, bowmaker, filterspartition in approches:
+for doctree, bowmaker, filterspartition in approches_combinatoires:
     wordex, sentex = bowmakers[bowmaker]
-    bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
-                                  [filters[filterkey] for filterkey in filterspartition])
+    # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
+    #                               [filters[filterkey] for filterkey in filterspartition])
 
     scores = make_score_tree(
         doctrees[doctree],
-        lambda a, b: tf_idf_bow_scorer(
-            bowmakerfunc, a, b,
-            inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+        # lambda a, b: tf_idf_bow_scorer(
+        #     bowmakerfunc, a, b,
+        #     inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+        lambda a, b: customizable_scorer(
+            wordextractors[wordex],
+            sentenceextractors[sentex],
+            [filters[filterkey] for filterkey in filterspartition],
+            a, b, inversedocfreqs[wordex + '_' + sentex],
+            out_of_corpus_value
+        )
     )
 
     prediction_file = getpredfilename(doctree, bowmaker, filterspartition)
-    print('writing scores to', prediction_file)
-    write_scores_to_file(scores, prediction_file)
+    write_scores_to_file(scores, prediction_file, verbose=True)

@@ -1,7 +1,7 @@
 import os.path
 import math
 from itertools import chain
-from collections import Counter
+from collections import Counter, defaultdict
 from semeval_xml import get_semeval_id, get_related_threads, xmlextract
 from semeval_util import save_object, load_object
 
@@ -92,19 +92,91 @@ def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_valu
     baga = bag_maker(doca)
     bagb = bag_maker(docb)
     intersection = baga & bagb
+    #print('tf:', baga, bagb)
     termfreq = term_frequencies(baga + bagb)
 
     return (sum(tf_idf(term, termfreq, inversedocfreqs, out_of_corpus_value) * occurences
                for term, occurences in intersection.items()) * sum(intersection.values()))
+# sum(intersection.values()) == length of the sentence
 #    return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
 
 
-# def create_unit_dict(wordex, sentex, filters, doca, docb):
-#     for unit in sentex(doca)
+            # list(filter(lambda x: all(f(x) for f in filters),
+            #        map(wordextractor, sentenceextractor(document))))
 
-# def customizable_scorer(wordex, sentex, filters, doca, docb, inversedocfreqs, out_of_corpus_value):
-#     for unit in sentex(doca)
+def create_unit_dict(wordex, sentex, filters, doc):
+    result = defaultdict(list)
+    for unit in sentex(doc):
+        if all(flt(wordex(unit)) for flt in filters):
+            result[wordex(unit)].append(unit)
+    return result
 
-#     score = 0;
-#     for term in :
-#         if
+def intersection_score(baga, bagb,
+                       inversedocfreqs,
+                       out_of_corpus_value,
+                       score_multiplier='interlen'):
+    score = 0
+    intersection = baga & bagb
+    termfreq = term_frequencies(baga + bagb)
+
+
+
+    if score_multiplier == 'interocc':
+        for el, count in intersection.items():
+            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                     * count
+    else:
+        for el in intersection:
+            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                     * len(intersection)
+
+    return score
+
+def customizable_scorer(
+        wordex, sentex, filters,
+        doca, docb, inversedocfreqs,
+        out_of_corpus_value,
+        score_multiplier='interlen'):
+    unitsa = create_unit_dict(wordex, sentex, filters, doca)
+    unitsb = create_unit_dict(wordex, sentex, filters, docb)
+
+    counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+    countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+
+    return intersection_score(counta, countb, inversedocfreqs,
+                              out_of_corpus_value, score_multiplier)
+
+def entity_weighter(unita, unitb, weight=0.8):
+    entcount = 0
+    for tok in chain(unita, unitb):
+        if tok.ent_type_ != '':
+            ++entcount
+    if entcount > 0:
+        return weight
+    else:
+        return 1-weight
+
+def entityweight_scorer(
+        wordex, filters,
+        doca, docb, inversedocfreqs,
+        out_of_corpus_value,
+        score_multiplier='interlen'):
+    unitsa = create_unit_dict(wordex, lambda x: x, filters, doca)
+    unitsb = create_unit_dict(wordex, lambda x: x, filters, docb)
+
+    counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+    countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+
+    score = 0
+    intersection = baga & bagb
+    termfreq = term_frequencies(baga + bagb)
+
+    if score_multiplier == 'interocc':
+        for el, count in intersection.items():
+            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                     * count
+    else:
+        for el in intersection:
+            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                     * len(intersection) * entity_weighter(unitsa[el], unitsb[el])
+    return score
