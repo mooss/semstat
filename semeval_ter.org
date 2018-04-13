@@ -356,11 +356,11 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       return intersection_score(counta, countb, inversedocfreqs,
                                 out_of_corpus_value, score_multiplier)
 
-  def entity_weighter(unita, unitb, weight=0.8):
+  def entity_weighter(unita, unitb, weight=0.6):
       entcount = 0
       for tok in chain(unita, unitb):
-          if tok.ent_type_ != '':
-              ++entcount
+          if tok.ent_type != 0:
+              entcount += 1
       if entcount > 0:
           return weight
       else:
@@ -378,13 +378,13 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       countb = Counter(word for word, occ in unitsb.items() for _ in occ)
 
       score = 0
-      intersection = baga & bagb
-      termfreq = term_frequencies(baga + bagb)
+      intersection = counta & countb
+      termfreq = term_frequencies(counta + countb)
 
       if score_multiplier == 'interocc':
           for el, count in intersection.items():
               score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                       ,* count
+                       ,* count * entity_weighter(unitsa[el], unitsb[el])
       else:
           for el in intersection:
               score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
