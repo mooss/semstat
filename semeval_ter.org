@@ -734,6 +734,21 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
       '_'.join((model, corpus, extractor)): corpus
       for model, corpus, extractor in product(models, corpuses, extractors)
   }
+
+  def get_filters_descr(filters):
+      return ', '.join(all_filters_descr[key] for key in filters)
+
+  def get_indicator_descr(indicator):
+      return all_indicators_descr[indicator]
+
+  def get_doctree_descr(doctree):
+      return all_doctrees_descr[doctree]
+
+  def get_map_score(predfilename):
+      score = subprocess.run(
+          ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
+      return score.stdout.decode('utf-8').strip('\n')
+
 #+END_SRC
 
 *** Méthodes bruteforce
@@ -797,29 +812,17 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
 #+END_SRC
 
 #+BEGIN_SRC ipython :tangle no :exports results :results output drawer replace
-
   for doctree in doctrees:
-      restable = []
-      for indicator, fltrs in product(*ponderated_methods[1:]):
-
-          predfilename = getpredfilename(
-              doctree, indicator, fltrs, 'nerponderation')
-
-          score = subprocess.run(
-              ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
-
-          line = [all_indicators_descr[indicator],
-                  ', '.join(all_filters_descr[key] for key in fltrs),
-                  score.stdout.decode('utf-8').strip('\n')]
-
-          restable.append(line)
+      restable = [[get_indicator_descr(indi),
+                   get_filters_descr(fltr),
+                   get_map_score(getpredfilename(doctree, indi, fltr, 'nerponderation'))]
+                  for indi, fltr in product(*ponderated_methods[1:])]
 
       restable.sort(key=lambda x: x[2], reverse=True)
       restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
       print()
       print('\\newpage\n' + '*année ' + all_doctrees_descr[doctree] + '*' + '\n')
       print(orgmodetable(restable, header=True))
-
 #+END_SRC
 
 #+RESULTS:
@@ -945,26 +948,12 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 ** tableaux des scores
 
 #+BEGIN_SRC ipython :exports results :results drawer output replace :tangle no :session semexec
-
-
-  def makerestable(doctree):
-      resulttable=[]
-      for indicator, filterspartition in product(*bruteforce_methods[1:]):
-          predfilename = getpredfilename(
-              doctree, indicator, filterspartition, 'bruteforce')
-
-          score = subprocess.run(
-              ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
-
-          line = [all_indicators_descr[indicator],
-                  ', '.join(all_filters_descr[key] for key in filterspartition),
-                  score.stdout.decode('utf-8').strip('\n')]
-
-          resulttable.append(line)
-      return resulttable
-
   for doctree in doctrees:
-      restable = makerestable(doctree)
+      restable = [[get_indicator_descr(indi),
+                   get_filters_descr(fltr),
+                   get_map_score(getpredfilename(doctree, indi, fltr, 'bruteforce'))]
+                  for indi, fltr in product(*bruteforce_methods[1:])]
+
       restable.sort(key=lambda x: x[2], reverse=True)
       restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
       print()
