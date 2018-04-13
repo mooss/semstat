@@ -679,18 +679,40 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
 #+END_SRC
 
 ** Méthodes
-=getpredfilename= permet de s'assurer que les fichiers de prédiction sont tous construits de la même manière.
+=getpredfilename= permet de s'assurer que les noms des fichiers de prédiction sont tous construits de la même manière.
 
 #+BEGIN_SRC ipython
   def getpredfilename(doctree, indicator, filterspartition, methodcategory):
-      return '_'.join((doctree, indicator, *filterspartition,
+      return 'predictions/' + '_'.join((doctree, indicator, *filterspartition,
                        methodcategory, 'scores.pred'))
 #+END_SRC
+
+
+Un script shell est utilisé pour extraire le score MAP d'un fichier de prédiction :
+#+BEGIN_SRC sh :shebang "#!/usr/bin/env bash" :exports code :eval never :tangle extractMAP.sh
+  prediction=$1
+
+  if echo $prediction | grep --quiet "2016"
+  then
+      reference=scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy
+  else
+      if echo $prediction | grep --quiet "2017"
+      then
+          reference=scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy
+      else
+          reference=scorer/SemEval2016-debug.relevancy
+      fi
+  fi
+
+  python2 scorer/ev.py $reference $prediction | grep "^MAP" | sed 's/ \+/;/g' | cut -f 4 -d ';'
+#+END_SRC
+
 
 *** hidden utils                                                   :noexport:
 
 #+BEGIN_SRC ipython :tangle no :exports none :results silent
   import subprocess
+
   def orgmodetable(matrix, header=False):
       maxlen = [0] * len(matrix[0])
       for line in matrix:
@@ -710,9 +732,9 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
           result = orgmodeline(matrix[0]) + '\n' + \
               orgmodeline(('-') * len(maxlen), fill='-') + '\n'
           matrix = matrix[1:]
-
       result += '\n'.join(orgmodeline(line) for line in matrix)
       return result
+
 
   all_filters_descr = {
       'gtr1': '$\leq 1$',
@@ -781,172 +803,6 @@ Les méthodes précédemment générées sont exécutées et les scores produits
       write_scores_to_file(scores, prediction_file, verbose=True)
 #+END_SRC
 
-
-*** Méthodes pondérées
-
-Le but des méthodes pondérées est d'utiliser plusieurs indicateurs au sein d'une même méthode.
-Un exemple d'approche de pondération est d'utiliser les lemmes pour estimer la similarité de phrases,
-et de donner une plus grande importance aux lemmes communs qui sont également des entités nommées.
-
-**** Recherche des pondérations optimales
-**** Pondération par entités nommées
-
-#+BEGIN_SRC ipython
-  ponderated_methods = (doctrees, morphologic_indicators, filters_partition)
-
-  for doctree, indicator, fltrs in product(*ponderated_methods):
-      wordex, sentex = all_indicators[indicator]
-
-      scores = make_score_tree(
-          doctrees[doctree],
-          lambda a, b: entityweight_scorer(
-              wordextractors[wordex],
-              [filters[filterkey] for filterkey in fltrs],
-              a, b, inversedocfreqs[wordex + '_' + sentex],
-              out_of_corpus_value
-          )
-      )
-
-      prediction_file = getpredfilename(doctree, indicator, fltrs, 'nerponderation')
-      write_scores_to_file(scores, prediction_file, verbose=True)
-#+END_SRC
-
-#+BEGIN_SRC ipython :tangle no :exports results :results output drawer replace
-  for doctree in doctrees:
-      restable = [[get_indicator_descr(indi),
-                   get_filters_descr(fltr),
-                   get_map_score(getpredfilename(doctree, indi, fltr, 'nerponderation'))]
-                  for indi, fltr in product(*ponderated_methods[1:])]
-
-      restable.sort(key=lambda x: x[2], reverse=True)
-      restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
-      print()
-      print('\\newpage\n' + '*année ' + all_doctrees_descr[doctree] + '*' + '\n')
-      print(orgmodetable(restable, header=True))
-#+END_SRC
-
-#+RESULTS:
-:RESULTS:
-
-\newpage
-*année 2016*
-
-| Sac de mots | Filtres               | Score MAP |
-|-------------|-----------------------|-----------|
-| Lemmes      | Mots outils, $\leq 2$ | 0.7663    |
-| Tokens      | Mots outils, $\leq 2$ | 0.7497    |
-| Lemmes      | Mots outils, $\leq 1$ | 0.7474    |
-| Tokens      | Mots outils, $\leq 1$ | 0.7446    |
-| Tokens      | Mots outils, $\leq 3$ | 0.7430    |
-| Tokens      | Mots outils, $\leq 4$ | 0.7422    |
-| Lemmes      | Mots outils           | 0.7405    |
-| Tokens      | Mots outils           | 0.7319    |
-| Lemmes      | Mots outils, $\leq 3$ | 0.7301    |
-| Lemmes      | $\leq 4$              | 0.7292    |
-| Lemmes      | $\leq 2$              | 0.7287    |
-| Tokens      | $\leq 4$              | 0.7264    |
-| Tokens      | $\leq 2$              | 0.7254    |
-| Lemmes      | $\leq 1$              | 0.7239    |
-| Lemmes      | $\leq 3$              | 0.7237    |
-| Tokens      | $\leq 3$              | 0.7214    |
-| Lemmes      | Mots outils, $\leq 4$ | 0.7202    |
-| Lemmes      | Pas de filtre         | 0.7167    |
-| Tokens      | $\leq 1$              | 0.7142    |
-| Tokens      | Pas de filtre         | 0.7078    |
-
-\newpage
-*année 2017*
-
-| Sac de mots | Filtres               | Score MAP |
-|-------------|-----------------------|-----------|
-| Tokens      | Mots outils, $\leq 1$ | 0.4725    |
-| Lemmes      | Mots outils, $\leq 1$ | 0.4707    |
-| Tokens      | Mots outils, $\leq 3$ | 0.4658    |
-| Tokens      | Mots outils, $\leq 2$ | 0.4651    |
-| Tokens      | Mots outils           | 0.4622    |
-| Tokens      | $\leq 2$              | 0.4621    |
-| Lemmes      | Mots outils, $\leq 2$ | 0.4618    |
-| Lemmes      | Mots outils           | 0.4599    |
-| Tokens      | Mots outils, $\leq 4$ | 0.4521    |
-| Lemmes      | Pas de filtre         | 0.4509    |
-| Lemmes      | $\leq 1$              | 0.4477    |
-| Tokens      | $\leq 1$              | 0.4475    |
-| Lemmes      | Mots outils, $\leq 3$ | 0.4432    |
-| Lemmes      | $\leq 2$              | 0.4424    |
-| Lemmes      | Mots outils, $\leq 4$ | 0.4413    |
-| Tokens      | $\leq 3$              | 0.4412    |
-| Tokens      | Pas de filtre         | 0.4412    |
-| Lemmes      | $\leq 3$              | 0.4387    |
-| Lemmes      | $\leq 4$              | 0.4252    |
-| Tokens      | $\leq 4$              | 0.4124    |
-:END:
-
-* Debug                          :noexport:
-#+BEGIN_SRC ipython :results output replace drawer :eval noexport :session semexec :tangle no
-
-  if debug_mode:
-      for filterspartition in filters_partition:
-          wordex, sentex = 'label', 'entities'
-          bowmakerfunc = createbowmaker(
-              wordextractors[wordex], sentenceextractors[sentex],
-              [filters[filterkey] for filterkey in filterspartition])
-
-
-          custom_scores = make_score_tree(
-              doctrees['spacy_en_debug_questions'],
-              lambda a, b: customizable_scorer(
-                  wordextractors[wordex],
-                  sentenceextractors[sentex],
-                  [filters[filterkey] for filterkey in filterspartition],
-                  a, b, inversedocfreqs[wordex + '_' + sentex],
-                  out_of_corpus_value
-              )
-          )
-
-
-          scores = make_score_tree(
-              doctrees['spacy_en_debug_questions'],
-              lambda a, b: tf_idf_bow_scorer(
-                  bowmakerfunc, a, b,
-                  inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
-          )
-
-          printsubset = {'Q318'}
-          print({k: custom_scores[k] for k in custom_scores.keys() & printsubset})
-          print({k: scores[k] for k in scores.keys() & printsubset})
-          print()
-          # prediction_file = getpredfilename('spacy_en_2016_questions', 'named_entities_label', filterspartition)
-          # print('writing scores to', prediction_file)
-          # write_scores_to_file(scores, prediction_file)
-#+END_SRC
-
-#+RESULTS:
-:RESULTS:
-:END:
-
-
-* Résultats
-Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de prédiction :
-#+BEGIN_SRC sh :shebang "#!/usr/bin/env bash" :exports code :eval never :tangle extractMAP.sh
-  prediction=$1
-
-  if echo $prediction | grep --quiet "2016"
-  then
-      reference=scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy
-  else
-      if echo $prediction | grep --quiet "2017"
-      then
-          reference=scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy
-      else
-          reference=scorer/SemEval2016-debug.relevancy
-      fi
-  fi
-
-  python2 scorer/ev.py $reference $prediction | grep "^MAP" | sed 's/ \+/;/g' | cut -f 4 -d ';'
-#+END_SRC
-
-** tableaux des scores
-
 #+BEGIN_SRC ipython :exports results :results drawer output replace :tangle no :session semexec
   for doctree in doctrees:
       restable = [[get_indicator_descr(indi),
@@ -956,14 +812,13 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 
       restable.sort(key=lambda x: x[2], reverse=True)
       restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
-      print()
       print('\\newpage\n' + '*année ' + all_doctrees_descr[doctree] + '*' + '\n')
       print(orgmodetable(restable, header=True))
+      print()
 #+END_SRC
 
 #+RESULTS:
 :RESULTS:
-
 \newpage
 *année 2016*
 
@@ -1055,6 +910,7 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 | Textes des entités nommées     | Pas de filtre         | 0.4083    |
 | Étiquettes des entités nommées | Mots outils, $\leq 4$ | 0.4063    |
 | Étiquettes des entités nommées | $\leq 4$              | 0.4063    |
+
 :END:
 
 
@@ -1062,6 +918,151 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 |-------+--------------------|
 |  2016 |             0.7475 |
 |  2017 |             0.4185 |
+
+
+
+
+*** Méthodes pondérées
+
+Le but des méthodes pondérées est d'utiliser plusieurs indicateurs au sein d'une même méthode.
+Un exemple d'approche de pondération est d'utiliser les lemmes pour estimer la similarité de phrases,
+et de donner une plus grande importance aux lemmes communs qui sont également des entités nommées.
+
+**** Recherche des pondérations optimales
+**** Pondération par entités nommées
+
+#+BEGIN_SRC ipython
+  ponderated_methods = (doctrees, morphologic_indicators, filters_partition)
+
+  for doctree, indicator, fltrs in product(*ponderated_methods):
+      wordex, sentex = all_indicators[indicator]
+
+      scores = make_score_tree(
+          doctrees[doctree],
+          lambda a, b: entityweight_scorer(
+              wordextractors[wordex],
+              [filters[filterkey] for filterkey in fltrs],
+              a, b, inversedocfreqs[wordex + '_' + sentex],
+              out_of_corpus_value
+          )
+      )
+
+      prediction_file = getpredfilename(doctree, indicator, fltrs, 'nerponderation')
+      write_scores_to_file(scores, prediction_file, verbose=True)
+#+END_SRC
+
+#+BEGIN_SRC ipython :tangle no :exports results :results output drawer replace
+  for doctree in doctrees:
+      restable = [[get_indicator_descr(indi),
+                   get_filters_descr(fltr),
+                   get_map_score(getpredfilename(doctree, indi, fltr, 'nerponderation'))]
+                  for indi, fltr in product(*ponderated_methods[1:])]
+
+      restable.sort(key=lambda x: x[2], reverse=True)
+      restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
+      print('\\newpage\n' + '*année ' + all_doctrees_descr[doctree] + '*' + '\n')
+      print(orgmodetable(restable, header=True))
+      print()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+\newpage
+*année 2016*
+
+| Sac de mots | Filtres               | Score MAP |
+|-------------|-----------------------|-----------|
+| Lemmes      | Mots outils, $\leq 2$ | 0.7663    |
+| Tokens      | Mots outils, $\leq 2$ | 0.7497    |
+| Lemmes      | Mots outils, $\leq 1$ | 0.7474    |
+| Tokens      | Mots outils, $\leq 1$ | 0.7446    |
+| Tokens      | Mots outils, $\leq 3$ | 0.7430    |
+| Tokens      | Mots outils, $\leq 4$ | 0.7422    |
+| Lemmes      | Mots outils           | 0.7405    |
+| Tokens      | Mots outils           | 0.7319    |
+| Lemmes      | Mots outils, $\leq 3$ | 0.7301    |
+| Lemmes      | $\leq 4$              | 0.7292    |
+| Lemmes      | $\leq 2$              | 0.7287    |
+| Tokens      | $\leq 4$              | 0.7264    |
+| Tokens      | $\leq 2$              | 0.7254    |
+| Lemmes      | $\leq 1$              | 0.7239    |
+| Lemmes      | $\leq 3$              | 0.7237    |
+| Tokens      | $\leq 3$              | 0.7214    |
+| Lemmes      | Mots outils, $\leq 4$ | 0.7202    |
+| Lemmes      | Pas de filtre         | 0.7167    |
+| Tokens      | $\leq 1$              | 0.7142    |
+| Tokens      | Pas de filtre         | 0.7078    |
+
+\newpage
+*année 2017*
+
+| Sac de mots | Filtres               | Score MAP |
+|-------------|-----------------------|-----------|
+| Tokens      | Mots outils, $\leq 1$ | 0.4725    |
+| Lemmes      | Mots outils, $\leq 1$ | 0.4707    |
+| Tokens      | Mots outils, $\leq 3$ | 0.4658    |
+| Tokens      | Mots outils, $\leq 2$ | 0.4651    |
+| Tokens      | Mots outils           | 0.4622    |
+| Tokens      | $\leq 2$              | 0.4621    |
+| Lemmes      | Mots outils, $\leq 2$ | 0.4618    |
+| Lemmes      | Mots outils           | 0.4599    |
+| Tokens      | Mots outils, $\leq 4$ | 0.4521    |
+| Lemmes      | Pas de filtre         | 0.4509    |
+| Lemmes      | $\leq 1$              | 0.4477    |
+| Tokens      | $\leq 1$              | 0.4475    |
+| Lemmes      | Mots outils, $\leq 3$ | 0.4432    |
+| Lemmes      | $\leq 2$              | 0.4424    |
+| Lemmes      | Mots outils, $\leq 4$ | 0.4413    |
+| Tokens      | $\leq 3$              | 0.4412    |
+| Tokens      | Pas de filtre         | 0.4412    |
+| Lemmes      | $\leq 3$              | 0.4387    |
+| Lemmes      | $\leq 4$              | 0.4252    |
+| Tokens      | $\leq 4$              | 0.4124    |
+
+:END:
+
+* Debug                          :noexport:
+#+BEGIN_SRC ipython :results output replace drawer :eval noexport :session semexec :tangle no
+
+  if debug_mode:
+      for filterspartition in filters_partition:
+          wordex, sentex = 'label', 'entities'
+          bowmakerfunc = createbowmaker(
+              wordextractors[wordex], sentenceextractors[sentex],
+              [filters[filterkey] for filterkey in filterspartition])
+
+
+          custom_scores = make_score_tree(
+              doctrees['spacy_en_debug_questions'],
+              lambda a, b: customizable_scorer(
+                  wordextractors[wordex],
+                  sentenceextractors[sentex],
+                  [filters[filterkey] for filterkey in filterspartition],
+                  a, b, inversedocfreqs[wordex + '_' + sentex],
+                  out_of_corpus_value
+              )
+          )
+
+
+          scores = make_score_tree(
+              doctrees['spacy_en_debug_questions'],
+              lambda a, b: tf_idf_bow_scorer(
+                  bowmakerfunc, a, b,
+                  inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+          )
+
+          printsubset = {'Q318'}
+          print({k: custom_scores[k] for k in custom_scores.keys() & printsubset})
+          print({k: scores[k] for k in scores.keys() & printsubset})
+          print()
+          # prediction_file = getpredfilename('spacy_en_2016_questions', 'named_entities_label', filterspartition)
+          # print('writing scores to', prediction_file)
+          # write_scores_to_file(scores, prediction_file)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+:END:
 
 
 * perspectives
