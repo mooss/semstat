@@ -96,33 +96,6 @@ Une sémantique intéressante pour la transformation d'arbre est de considérer 
           return transformtree_n(func, tree, n)
 #+END_SRC
 
-# *** Extraction des valeurs d'un arbre
-# **** Itération récursive sur les valeurs d'un arbre
-# Le but de =nested_values_generator= est de permettre d'itérer récursivement sur les valeurs d'un arbre, en conservant sa structure hiérarchique.
-# #+BEGIN_SRC python
-#   def nested_values_generator(tree):
-#       for value in tree.values():
-#           if isinstance(value, dict):
-#               yield nested_values_generator(value)
-#           else:
-#               yield value
-# #+END_SRC
-
-# Par définition, on ne peut pas obtenir la taille d'un générateur, ce qui pose problème pour certaines utilisations.
-
-# =nested_values_list= permet d'obtenir une liste récursive contenant les valeurs d'un arbre. Ce faisant, les information sur les noeuds sont perdues.
-
-# #+BEGIN_SRC python
-#   def nested_values_list(tree):
-#       result = list()
-#       for value in tree.values():
-#           if isinstance(value, dict):
-#               result.append(nested_values_list(value))
-#           else:
-#               result.append(value)
-#       return result
-# #+END_SRC
-
 ** Tris
 *** Dictionnaire
 Par défaut, le tri sur les entrées d'un dictionnaire se fait sur les clés. On propose la fonction =sorted_items= pour faire un tri sur les valeurs.
@@ -340,17 +313,11 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       baga = bag_maker(doca)
       bagb = bag_maker(docb)
       intersection = baga & bagb
-      #print('tf:', baga, bagb)
       termfreq = term_frequencies(baga + bagb)
 
       return (sum(tf_idf(term, termfreq, inversedocfreqs, out_of_corpus_value) * occurences
                  for term, occurences in intersection.items()) * sum(intersection.values()))
-  # sum(intersection.values()) == length of the sentence
-  #    return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
 
-
-              # list(filter(lambda x: all(f(x) for f in filters),
-              #        map(wordextractor, sentenceextractor(document))))
 
   def create_unit_dict(wordex, sentex, filters, doc):
       result = defaultdict(list)
@@ -653,13 +620,6 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
       'document': lambda x: x,
   }
 
-  # bowmakers = {
-  #     'named_entities_text': ('text', 'entities'),
-  #     'named_entities_label': ('label', 'entities'),
-  #     'tokens': ('text', 'document'),
-  #     'lemmas': ('lemma', 'document'),
-  # }
-
   morphologic_indicators = {
       'tokens': ('text', 'document'),
       'lemmas': ('lemma', 'document'),
@@ -752,15 +712,6 @@ Les méthodes précédemment générées sont exécutées et les scores produits
       return '_'.join((doctree, indicator, *filterspartition, 'scores.pred'))
 
 
-  # inversedocfreqs = transformtree(
-  #     lambda wordextractor: inverse_document_frequencies(
-  #         [[wordextractor(tok) for tok in doc]
-  #          for org in training_doctree.values()
-  #          for doc in org.values()]
-  #     ),
-  #     wordextractors
-  # )
-
   inversedocfreqs = {
       wordex + '_' + sentex: inverse_document_frequencies(
           [[wordextractors[wordex](tok) for tok in sentenceextractors[sentex](doc)]
@@ -774,14 +725,9 @@ Les méthodes précédemment générées sont exécutées et les scores produits
 
   for doctree, indicator, filterspartition in product(*bruteforce_methods):
       wordex, sentex = all_indicators[indicator]
-      # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
-      #                               [filters[filterkey] for filterkey in filterspartition])
-
       scores = make_score_tree(
           doctrees[doctree],
-          # lambda a, b: tf_idf_bow_scorer(
-          #     bowmakerfunc, a, b,
-          #     inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+
           lambda a, b: customizable_scorer(
               wordextractors[wordex],
               sentenceextractors[sentex],
