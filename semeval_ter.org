@@ -402,7 +402,7 @@ Où =bag_maker= est une fonction retournant un sac de mots.
 * TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
 * Évaluation des approches (=semeval_executable.py=)
 :PROPERTIES:
-:header-args: :tangle semeval_executable.py :exports code :session semexec :eval no-export
+:header-args: :ipython: :tangle semeval_executable.py :exports code :session semexec :eval no-export
 :END:
 ** Imports
 
@@ -414,6 +414,13 @@ Où =bag_maker= est une fonction retournant un sac de mots.
   from semeval_util import *
   from semeval_xml import get_semeval_content
   from semeval_taln import *
+#+END_SRC
+
+** Paramètres d'exécution
+
+#+BEGIN_SRC ipython
+  debug_mode = False;
+  seek_optimal_ner_ponderation = True
 #+END_SRC
 
 ** Scores
@@ -492,7 +499,6 @@ Un seul modèle de langage est utilisé.
 *** Corpus
 Les approches sont testées sur les données 2016 et 2017 de Semeval.
 #+BEGIN_SRC ipython
-  debug_mode = False;
 
   if debug_mode:
       corpuses = {
@@ -577,18 +583,6 @@ La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
   filters_partition.append(('nofilter',))
 #+END_SRC
 
-
-#+BEGIN_SRC ipython :tangle no :exports none :results silent
-  filters_descr = {
-      'gtr1': '$\leq 1$',
-      'gtr2': '$\leq 2$',
-      'gtr3': '$\leq 3$',
-      'gtr4': '$\leq 4$',
-      'nostopwords': 'Mots outils',
-      'nofilter': 'Pas de filtre',
-  }
-#+END_SRC
-
 *** Construction des sacs de mots
 Les sacs de mots sont construits à l'aide de deux fonctions.
 La première est une fonction d'extraction de caractéristique, qui étant donné un token, renvoie la caractéristique désirée de celui-ci. La deuxième est une fonction d'extraction de phrase, qui étant donné un document, renvoie un itérable contenant des mots.
@@ -636,15 +630,6 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
       return (wordextractors[all_indicators[key][0]], sentenceextractors[all_indicators[key][1]])
 #+END_SRC
 
-#+BEGIN_SRC ipython :tangle no :exports none :results silent
-  all_indicators_descr = {
-      'named_entities_text': 'Textes des entités nommées',
-      'named_entities_label': 'Étiquettes des entités nommées',
-      'tokens': 'Tokens',
-      'lemmas': 'Lemmes',
-  }
-#+END_SRC
-
 Les fonctions associées aux éléments de =all_indicators= sont destinés à être passés à la fonction =createbowmaker=, retournant une fonction permettant de construire un sac de mots selon les modalité voulues.
 
 #+BEGIN_SRC ipython
@@ -672,6 +657,15 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
       verbose=True
   )
 
+  inversedocfreqs = {
+      wordex + '_' + sentex: inverse_document_frequencies(
+          [[wordextractors[wordex](tok) for tok in sentenceextractors[sentex](doc)]
+           for org in training_doctree.values()
+           for doc in org.values()]
+      )
+      for wordex, sentex in all_indicators.values()
+  }
+
   doctrees = {
       '_'.join((model, corpus, extractor)): make_or_load_document_tree(
           corpuses[corpus],
@@ -684,15 +678,6 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
   }
 #+END_SRC
 
-
-#+BEGIN_SRC ipython :tangle no :exports none :results silent
-  doctrees_years = {
-      '_'.join((model, corpus, extractor)): corpus
-      for model, corpus, extractor in product(models, corpuses, extractors)
-  }
-#+END_SRC
-
-
 ** Méthodes
 =getpredfilename= permet de s'assurer que les fichiers de prédiction sont tous construits de la même manière.
 
@@ -704,7 +689,7 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
 
 *** hidden utils                                                   :noexport:
 
-#+BEGIN_SRC ipython :tangle no
+#+BEGIN_SRC ipython :tangle no :exports none :results silent
   import subprocess
   def orgmodetable(matrix, header=False):
       maxlen = [0] * len(matrix[0])
@@ -728,30 +713,38 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
 
       result += '\n'.join(orgmodeline(line) for line in matrix)
       return result
+
+  filters_descr = {
+      'gtr1': '$\leq 1$',
+      'gtr2': '$\leq 2$',
+      'gtr3': '$\leq 3$',
+      'gtr4': '$\leq 4$',
+      'nostopwords': 'Mots outils',
+      'nofilter': 'Pas de filtre',
+  }
+
+  all_indicators_descr = {
+      'named_entities_text': 'Textes des entités nommées',
+      'named_entities_label': 'Étiquettes des entités nommées',
+      'tokens': 'Tokens',
+      'lemmas': 'Lemmes',
+  }
+
+  doctrees_years = {
+      '_'.join((model, corpus, extractor)): corpus
+      for model, corpus, extractor in product(models, corpuses, extractors)
+  }
 #+END_SRC
 
 *** Méthodes bruteforce
-**** Création des méthodes bruteforce
 Les méthodes bruteforce correspondent à tester toutes les combinaisons d'arbres de documents, de sacs de mots et de filtres.
 Les méthodes bruteforce sont crées en faisant le produit cartésien des dimensions envisagées.
-
-#+BEGIN_SRC ipython
-  bruteforce_methods = (doctrees, all_indicators, filters_partition)
-#+END_SRC
-
-**** Exécution des méthodes bruteforce
 
 Les méthodes précédemment générées sont exécutées et les scores produits sont écrits dans les fichiers correspondants.
 
 #+BEGIN_SRC ipython
-  inversedocfreqs = {
-      wordex + '_' + sentex: inverse_document_frequencies(
-          [[wordextractors[wordex](tok) for tok in sentenceextractors[sentex](doc)]
-           for org in training_doctree.values()
-           for doc in org.values()]
-      )
-      for wordex, sentex in all_indicators.values()
-  }
+  bruteforce_methods = (doctrees, all_indicators, filters_partition)
+
 
   out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
@@ -780,6 +773,7 @@ Le but des méthodes pondérées est d'utiliser plusieurs indicateurs au sein d'
 Un exemple d'approche de pondération est d'utiliser les lemmes pour estimer la similarité de phrases,
 et de donner une plus grande importance aux lemmes communs qui sont également des entités nommées.
 
+**** Recherche des pondérations optimales
 **** Pondération par entités nommées
 
 #+BEGIN_SRC ipython
@@ -950,7 +944,7 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 
 ** tableaux des scores
 
-#+BEGIN_SRC ipython :exports results :results drawer output :tangle no :session semexec
+#+BEGIN_SRC ipython :exports results :results drawer output replace :tangle no :session semexec
 
 
   def makerestable(doctree):

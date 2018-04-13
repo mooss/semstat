@@ -7,6 +7,9 @@ from semeval_util import *
 from semeval_xml import get_semeval_content
 from semeval_taln import *
 
+debug_mode = False;
+seek_optimal_ner_ponderation = True
+
 def compute_relqs_scores(orgqnode, scorer):
     return {relid: scorer(orgqnode['org'], orgqnode[relid])
             for relid in orgqnode.keys() - {'org'}}
@@ -44,8 +47,6 @@ def write_scores_to_file(scores, filename, verbose=False):
 models = {
     'spacy_en': spacy.load('en')
 }
-
-debug_mode = False;
 
 if debug_mode:
     corpuses = {
@@ -173,6 +174,15 @@ training_doctree = make_or_load_document_tree(
     verbose=True
 )
 
+inversedocfreqs = {
+    wordex + '_' + sentex: inverse_document_frequencies(
+        [[wordextractors[wordex](tok) for tok in sentenceextractors[sentex](doc)]
+         for org in training_doctree.values()
+         for doc in org.values()]
+    )
+    for wordex, sentex in all_indicators.values()
+}
+
 doctrees = {
     '_'.join((model, corpus, extractor)): make_or_load_document_tree(
         corpuses[corpus],
@@ -190,14 +200,6 @@ def getpredfilename(doctree, indicator, filterspartition, methodcategory):
 
 bruteforce_methods = (doctrees, all_indicators, filters_partition)
 
-inversedocfreqs = {
-    wordex + '_' + sentex: inverse_document_frequencies(
-        [[wordextractors[wordex](tok) for tok in sentenceextractors[sentex](doc)]
-         for org in training_doctree.values()
-         for doc in org.values()]
-    )
-    for wordex, sentex in all_indicators.values()
-}
 
 out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
