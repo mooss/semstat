@@ -734,18 +734,18 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
   }
 #+END_SRC
 
-** Approches bruteforce
-*** Création des approches bruteforce
-Les approches bruteforce correspondent à tester toutes les combinaisons d'arbres de documents, de sacs de mots et de filtres.
-Les approches combinatoires sont crées en faisant le produit cartésien des dimensions envisagées.
+** Méthodes bruteforce
+*** Création des méthodes bruteforce
+Les méthodes bruteforce correspondent à tester toutes les combinaisons d'arbres de documents, de sacs de mots et de filtres.
+Les méthodes bruteforce sont crées en faisant le produit cartésien des dimensions envisagées.
 
 #+BEGIN_SRC ipython
-  approches_combinatoires = list(product(doctrees, all_indicators, filters_partition))
+  bruteforce_methods = (doctrees, all_indicators, filters_partition)
 #+END_SRC
 
-*** Exécution des approches bruteforce
+*** Exécution des méthodes bruteforce
 
-Chacune des approches précédemment générées est exécutée et les scores produits sont écrits dans les fichiers correspondants.
+Les méthodes précédemment générées sont exécutées et les scores produits sont écrits dans les fichiers correspondants.
 
 #+BEGIN_SRC ipython
   def getpredfilename(doctree, indicator, filterspartition):
@@ -772,7 +772,7 @@ Chacune des approches précédemment générées est exécutée et les scores pr
 
   out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
-  for doctree, indicator, filterspartition in approches_combinatoires:
+  for doctree, indicator, filterspartition in product(*bruteforce_methods):
       wordex, sentex = all_indicators[indicator]
       # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
       #                               [filters[filterkey] for filterkey in filterspartition])
@@ -796,16 +796,16 @@ Chacune des approches précédemment générées est exécutée et les scores pr
 #+END_SRC
 
 
-** Approches de pondération
+** Méthodes pondérées
 
-Le but des approches de pondération est de d'utiliser plusieurs indicateurs au sein d'une même méthode.
+Le but des méthodes pondérées est d'utiliser plusieurs indicateurs au sein d'une même méthode.
 Un exemple d'approche de pondération est d'utiliser les lemmes pour estimer la similarité de phrases,
 et de donner une plus grande importance aux lemmes communs qui sont également des entités nommées.
 
 *** Création des approches de pondération
 
 #+BEGIN_SRC ipython
-
+  ponderated_methods = (doctrees, morphologic_indicators, ner_indicators, filters_partition)
 #+END_SRC
 
 * Debug                          :noexport:
@@ -814,8 +814,9 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
   if debug_mode:
       for filterspartition in filters_partition:
           wordex, sentex = 'label', 'entities'
-          bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
-                                        [filters[filterkey] for filterkey in filterspartition])
+          bowmakerfunc = createbowmaker(
+              wordextractors[wordex], sentenceextractors[sentex],
+              [filters[filterkey] for filterkey in filterspartition])
 
 
           custom_scores = make_score_tree(
@@ -902,7 +903,7 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 
   def makerestable(doctree):
       resulttable=[]
-      for indicator, filterspartition in product(all_indicators, filters_partition):
+      for indicator, filterspartition in product(*bruteforce_methods[1:]):
           predfilename = getpredfilename(
               doctree, indicator, filterspartition)
 

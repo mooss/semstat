@@ -191,7 +191,7 @@ doctrees = {
     for model, corpus, extractor in product(models, corpuses, extractors)
 }
 
-approches_combinatoires = list(product(doctrees, all_indicators, filters_partition))
+bruteforce_methods = (doctrees, all_indicators, filters_partition)
 
 def getpredfilename(doctree, indicator, filterspartition):
     return '_'.join((doctree, indicator, *filterspartition, 'scores.pred'))
@@ -217,7 +217,7 @@ inversedocfreqs = {
 
 out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
-for doctree, indicator, filterspartition in approches_combinatoires:
+for doctree, indicator, filterspartition in product(*bruteforce_methods):
     wordex, sentex = all_indicators[indicator]
     # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
     #                               [filters[filterkey] for filterkey in filterspartition])
@@ -239,4 +239,4 @@ for doctree, indicator, filterspartition in approches_combinatoires:
     prediction_file = getpredfilename(doctree, indicator, filterspartition)
     write_scores_to_file(scores, prediction_file, verbose=True)
 
-
+ponderated_methods = (doctrees, morphologic_indicators, ner_indicators, filters_partition)
