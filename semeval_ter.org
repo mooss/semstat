@@ -1,12 +1,7 @@
 #+TITLE:Appariement de questions/réponses
 #+AUTHOR:Félix Jamet
 # -*- org-export-babel-evaluate: t -*-
-#+PROPERTY: result silent
-#+PROPERTY: exports code
-#+PROPERTY: header-args:python :session pythonsession
-#+PROPERTY: header-args :eval no-export
-#+PROPERTY: header-args:python :eval never
-#+PROPERTY: header-args:org :exports both
+#+PROPERTY: header-args:ipython :session semexec :eval no-export :results output silent
 #+OPTIONS: toc:nil title:nil
 
 \newpage
@@ -15,7 +10,7 @@
 :header-args: :tangle semeval_struct.py
 :END:
 ** Imports
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   import re
   import operator
 #+END_SRC
@@ -24,7 +19,7 @@
 *** Transformation en profondeur
 Il s'agit ici d'appliquer récursivement une fonction à chacune des feuilles d'un arbre.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def transformtree_deep(func, tree):
       """Transform a tree by applying a function to its leaves.
 
@@ -52,7 +47,7 @@ Il s'agit ici d'appliquer récursivement une fonction à chacune des feuilles d'
 *** Transformation sur $N$ niveaux
 L'inconvénient de =transformtree_deep= est qu'elle parcourt l'arbre entièrement, tandis qu'il serait parfois utile de ne parcourir que les $N$ premiers niveaux.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def transformtree_n(func, tree, n):
       """Transform a tree up to a maximum depth by applying a function to its leaves.
 
@@ -88,7 +83,7 @@ L'inconvénient de =transformtree_deep= est qu'elle parcourt l'arbre entièremen
 *** Transformation générique
 Une sémantique intéressante pour la transformation d'arbre est de considérer que transformer un arbre jusqu'au niveau $-1$ revient à le transformer sans limite de profondeur.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def transformtree(func, tree, n=-1):
       if n < 0:
           return transformtree_deep(func, tree)
@@ -99,7 +94,7 @@ Une sémantique intéressante pour la transformation d'arbre est de considérer 
 ** Tris
 *** Dictionnaire
 Par défaut, le tri sur les entrées d'un dictionnaire se fait sur les clés. On propose la fonction =sorted_items= pour faire un tri sur les valeurs.
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def sorted_items(dictionary, key=operator.itemgetter(1), reverse=False):
       return sorted(dictionary.items(), key=key, reverse=reverse)
 #+END_SRC
@@ -107,7 +102,7 @@ Par défaut, le tri sur les entrées d'un dictionnaire se fait sur les clés. On
 *** Tri naturel
 Il n'y a pas de support natif dans python pour trier des éléments dans l'ordre naturel. La fonction =natural_sort_key= permet d'atteindre ce résultat, lorsque utilisée comme le paramètre =key= d'une fonction de tri.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def natural_sort_key(key):
       """Transform a key in order to achieve natural sort.
       from https://blog.codinghorror.com/sorting-for-humans-natural-sort-order/
@@ -123,13 +118,13 @@ Il n'y a pas de support natif dans python pour trier des éléments dans l'ordre
 :END:
 
 ** Imports
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   import pickle
 #+END_SRC
 
 ** Sauvegarde et chargement d'objets sur le disque
 On utilise pickle pour sauvegarder et charger des objets qu'il serait long de reconstruire à chaque execution d'un script.
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
 
   def save_object(obj, filename):
       pickle.dump(obj, open(filename, 'wb'))
@@ -143,7 +138,7 @@ On utilise pickle pour sauvegarder et charger des objets qu'il serait long de re
 :header-args: :tangle semeval_taln.py
 :END:
 ** Imports
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   import os.path
   import math
   from itertools import chain
@@ -164,7 +159,7 @@ La fonction =make_document_tree= permet de construire l'arbre des documents, à 
  - d'un modèle de language (=model=),
  - d'une fonction d'extraction de contenu (=content_extractor=)
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def make_document_tree(original_questions, model, content_extractor):
       result = {}
       for org in original_questions:
@@ -179,7 +174,7 @@ La fonction =make_document_tree= permet de construire l'arbre des documents, à 
 
 L'analyse d'une phrase par un modèle étant une opération possiblement coûteuse, les documents liés aux questions vont être sauvegardées sur le disque afin de ne pas avoir à refaire tous les calculs à chaque fois.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def make_or_load_document_tree(xml_source, saved_path, model, content_extractor, verbose=False):
       if os.path.isfile(saved_path):
           if verbose:
@@ -214,7 +209,7 @@ où la taille d'un document correspond au nombre de termes qu'il contient.
 
 Plutôt que de calculer la TF d'un terme dans un document à chaque fois que nécessaire,  la TF de tous les termes d'un document est stockée dans un dictionnaire.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
 
   def term_frequencies(bag):
       documentlen = sum(bag.values())
@@ -234,7 +229,7 @@ $$IDF(terme, corpus) = log \left( \frac{taille(corpus)}
 
 De la même manière que pour la TF, l'IDF de tous les termes du corpus est stockée dans un dictionnaire.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
 
   def document_frequencies(corpus):
       result = Counter()
@@ -256,7 +251,7 @@ $$\var{TF-IDF}(terme, document, corpus) = TF(terme, document) * IDF(terme, corpu
 
 La TF-IDF d'un terme est implémentée comme une fonction utilisant des dictionnaires TF et IDF passés en paramètres.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
 
   def tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value):
       """Term Frequency - Inverse Document Frequency of a term using dictionaries.
@@ -293,7 +288,7 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
 \sum_{terme \in sac} \var{TF-IDF}(terme, document, corpus)$$
 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
 
   def tf_idf_bow(bag, termfreq, inversedocfreq, out_of_corpus_value):
       return sum(tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value) * occurences
@@ -308,7 +303,7 @@ Où $SAC_{doc}$ est le sac de mots de $doc$.
 
 Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmétriques, c'est pourquoi le sac de mots envoyé à $\var{score_{TF-IDF}}$ est leur union.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython
   def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_value):
       baga = bag_maker(doca)
       bagb = bag_maker(docb)
