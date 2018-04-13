@@ -462,10 +462,17 @@ Un seul modèle de langage est utilisé.
 *** Corpus
 Les approches sont testées sur les données 2016 et 2017 de Semeval.
 #+BEGIN_SRC ipython
-  corpuses = {
-      '2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
-      '2017': 'SemEval2017-task3-English-test-input.xml',
-  }
+  debug_mode = False;
+
+  if debug_mode:
+      corpuses = {
+          'debug': 'debug.xml',
+      }
+  else:
+      corpuses = {
+          '2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
+          '2017': 'SemEval2017-task3-English-test-input.xml',
+      }
 #+END_SRC
 
 *** Extraction de contenu
@@ -700,38 +707,47 @@ Chacune des approches précédemment générées est exécutée et les scores pr
       write_scores_to_file(scores, prediction_file)
 #+END_SRC
 
-* Debug                                                            :noexport:
-#+BEGIN_SRC ipython :results output replace :eval noexport :session semexec
-  def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_value):
-      baga = bag_maker(doca)
-      bagb = bag_maker(docb)
-      intersection = baga & bagb
-      termfreq = term_frequencies(baga + bagb)
-      return tf_idf_bow(intersection, termfreq, inversedocfreqs, out_of_corpus_value)
+* Debug                          :noexport:
+#+BEGIN_SRC ipython :results output replace drawer :eval noexport :session semexec :tangle no
 
-  for filterspartition in filters_partition:
-      wordex, sentex = 'label', 'entities'
-      bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
-                                    [filters[filterkey] for filterkey in filterspartition])
+  if debug_mode:
+      for filterspartition in filters_partition:
+          wordex, sentex = 'label', 'entities'
+          bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
+                                        [filters[filterkey] for filterkey in filterspartition])
 
-      scores = make_score_tree(
-          {'Q318': doctrees['spacy_en_2016_questions']['Q318']},
-          lambda a, b: tf_idf_bow_scorer(
-              bowmakerfunc, a, b,
-              inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
-      )
 
-      print(scores)
-      # prediction_file = getpredfilename('spacy_en_2016_questions', 'named_entities_label', filterspartition)
-      # print('writing scores to', prediction_file)
-      # write_scores_to_file(scores, prediction_file)
+          custom_scores = make_score_tree(
+              doctrees['spacy_en_debug_questions'],
+              lambda a, b: customizable_scorer(
+                  wordextractors[wordex],
+                  sentenceextractors[sentex],
+                  [filters[filterkey] for filterkey in filterspartition],
+                  a, b, inversedocfreqs[wordex + '_' + sentex],
+                  out_of_corpus_value
+              )
+          )
+
+
+          scores = make_score_tree(
+              doctrees['spacy_en_debug_questions'],
+              lambda a, b: tf_idf_bow_scorer(
+                  bowmakerfunc, a, b,
+                  inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+          )
+
+          printsubset = {'Q318'}
+          print({k: custom_scores[k] for k in custom_scores.keys() & printsubset})
+          print({k: scores[k] for k in scores.keys() & printsubset})
+          print()
+          # prediction_file = getpredfilename('spacy_en_2016_questions', 'named_entities_label', filterspartition)
+          # print('writing scores to', prediction_file)
+          # write_scores_to_file(scores, prediction_file)
 #+END_SRC
 
 #+RESULTS:
-: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
-: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
-: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
-: {'Q318': {'Q318_R61': 0, 'Q318_R19': 1.4660072683113192, 'Q318_R52': 1.4660072683113192, 'Q318_R45': 1.4660072683113192, 'Q318_R20': 0, 'Q318_R9': 0.8796043609867915, 'Q318_R17': 0, 'Q318_R14': 0, 'Q318_R4': 0, 'Q318_R6': 2.9320145366226384}}
+:RESULTS:
+:END:
 
 
 * Résultats

@@ -1,0 +1,1602 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xml [
+<!ELEMENT xml (OrgQuestion*)>
+<!ATTLIST xml 
+version CDATA #REQUIRED
+>
+<!ELEMENT OrgQuestion (OrgQSubject, OrgQBody, Thread)>
+<!ATTLIST OrgQuestion 
+ORGQ_ID CDATA #REQUIRED
+>
+<!ELEMENT OrgQSubject (#PCDATA)>
+<!ELEMENT OrgQBody (#PCDATA)>
+<!ELEMENT Thread (RelQuestion, RelComment*)>
+<!ATTLIST Thread
+ THREAD_SEQUENCE CDATA #REQUIRED
+ SubtaskA_Skip_Because_Same_As_RelQuestion_ID CDATA #IMPLIED
+>
+<!ELEMENT RelQuestion (RelQSubject, RelQBody)>
+<!ATTLIST RelQuestion
+RELQ_ID CDATA #REQUIRED
+RELQ_RANKING_ORDER CDATA #REQUIRED
+RELQ_CATEGORY CDATA #REQUIRED
+RELQ_DATE CDATA #REQUIRED
+RELQ_USERID CDATA #REQUIRED
+RELQ_USERNAME CDATA #REQUIRED
+RELQ_RELEVANCE2ORGQ CDATA #REQUIRED
+>
+<!ELEMENT RelQSubject (#PCDATA)>
+<!ELEMENT RelQBody (#PCDATA)>
+<!ELEMENT RelComment (RelCText)>
+<!ATTLIST RelComment
+RELC_ID CDATA #REQUIRED
+RELC_DATE CDATA #REQUIRED
+RELC_USERID CDATA #REQUIRED
+RELC_USERNAME CDATA #REQUIRED
+RELC_RELEVANCE2ORGQ CDATA #REQUIRED
+RELC_RELEVANCE2RELQ CDATA #REQUIRED
+>
+<!ELEMENT RelCText (#PCDATA)>
+]>
+<xml version="1.0">
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R4" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q56_R4">
+		<RelQuestion RELQ_ID="Q318_R4" RELQ_RANKING_ORDER="4" RELQ_CATEGORY="Opportunities" RELQ_DATE="2012-11-12 13:06:59" RELQ_USERID="U1929" RELQ_USERNAME="doha0303" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Why finding a job in Doha so hard?</RelQSubject>
+			<RelQBody>Can somebody tell me how i get a good job in doha? i have an American passport and holding a husband visas; with a bachelor degree; speaking 3 languages; having a hard time to find a good job; i post my CV on many website including bayt.com and many more; but didn't get any respond. Thanks.</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R4_C1" RELC_DATE="2012-11-12 13:39:04" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Are you Qatari? That may be the answer.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C2" RELC_DATE="2012-11-12 13:41:33" RELC_USERID="U1929" RELC_USERNAME="doha0303" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>No I am not qatari; but I can speak Arabic; It's my second language..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C3" RELC_DATE="2012-11-12 13:42:08" RELC_USERID="U112" RELC_USERNAME="mimiloves2sing" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Not easy..... unless you have a father's rp or married to a man who has atleast 10;000r a month salary to be on his rp Getting interviews are easy with a nice Modern Key Words CV that features your accomplishments.... Getting a visa to work is the problem. I speak from 10 mos experience on this. Best wishes</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C4" RELC_DATE="2012-11-12 13:43:57" RELC_USERID="U62" RELC_USERNAME="smoke" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Wasta my child...thats all it takes. Having American passport is of no use if jobs in your field can be filled with cheaper hires. comprende?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C5" RELC_DATE="2012-11-12 13:46:33" RELC_USERID="U62" RELC_USERNAME="smoke" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>also as tahsinmim said..helps sometimes to hand over the CV directly. I think she's already on her husbands's sponsorship as she mentioned that.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C6" RELC_DATE="2012-11-12 13:55:50" RELC_USERID="U1930" RELC_USERNAME="pixiequeen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>QDClover I guess you are not a Qatari and you still have a job! So it’s not always true. Try visiting the recruitment companies in person. It helps.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C7" RELC_DATE="2012-11-12 14:02:31" RELC_USERID="U1930" RELC_USERNAME="pixiequeen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Smoke; International/govt/semi govt companies wont accept CV by hand.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C8" RELC_DATE="2012-11-12 14:02:40" RELC_USERID="U1929" RELC_USERNAME="doha0303" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Yes i am on husband visas; and don't want to transfer my visas to the company that's why i think it's hard for me to get a job. Thanks to all.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C9" RELC_DATE="2012-11-12 14:03:18" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>No; not Qatari but a good old Aussie. They offered me a job before I came but it does annoy me people complaining that they can't get a job in someone elses country. Is it easy for Qataris to get jobs in the US?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R4_C10" RELC_DATE="2012-11-12 14:04:49" RELC_USERID="U112" RELC_USERNAME="mimiloves2sing" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Kat yep very true about the type of work you are experienced in; if the position can be filled local the mindset is.....why hire a American that will want more salary then a different nationality? Wasta; I have but lol kat i dont have the right wasta so im out of here. even with a catchy; professional cv it all came down to wrong visa. lol and they say being American with upon arrival visa is transferable.... ya right.... Can u be my wasta? It is EASY if you are on husbands rp; just need patience as this is Qatar they move slow in HR; but they get over 100+ applications a day. IF your CV is eye catching and has what they need; you will get a call for interview.</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R6">
+		<RelQuestion RELQ_ID="Q318_R6" RELQ_RANKING_ORDER="6" RELQ_CATEGORY="Opportunities" RELQ_DATE="2012-12-26 17:50:49" RELQ_USERID="U3" RELQ_USERNAME="anonymous" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>IT Jobs in Qatar</RelQSubject>
+			<RelQBody>how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here.</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R6_C1" RELC_DATE="2012-12-26 18:28:16" RELC_USERID="U5529" RELC_USERNAME="baazir" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Ive been here for a month and getting nothing back like u. Finished BSc IT and Worked in a large comp in UK for 3 years. Having hundred of knowledge sectors and certificates but everything became useless before gulf experience. Beyond ad and job sites Im visiting to companies and created own portfolio web as well. Got 3 or 4 mails since advertised and just they got back my resume. Lets see Good Luck to u :)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C2" RELC_DATE="2012-12-26 19:56:40" RELC_USERID="U5530" RELC_USERNAME="lailuen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>seems like there are lot of job opportunities but nobody seems to get it... i hear people coming to work in Qatar everyday... but doesnt seems to be able to fing wokr myself</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C3" RELC_DATE="2012-12-26 22:03:05" RELC_USERID="U996" RELC_USERNAME="BlueBull" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Qatar is not the place for people with IT Experiencewho really want to make a career in IT. Qatar IT is desktop and network management only.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C4" RELC_DATE="2012-12-26 22:32:23" RELC_USERID="U5531" RELC_USERNAME="sandeepclt" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>i am here for last 1 month and not even called for a single interview. i have 8 yrs of IT exp and worked for one of the biggest MNC in India. looks like the decision to come here turning out to be wrong... bcoz i am confident on my skills; may go back back to india after searching for 1 more month :) i didn't get any guidance b4 coming. so pls come here if someone can get you a job... Sandy</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C5" RELC_DATE="2012-12-27 07:35:30" RELC_USERID="U5532" RELC_USERNAME="praveen06527" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Shall we talk about gulftalent...I think it is a wasiting of time...No positive response for me for the last three years from gulftalent.Now i stopped to login to that.better we go directly to the company career site.Expecting your valuable comments.thanks to all in advance.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C6" RELC_DATE="2012-12-27 11:18:28" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>how did u advertise your resume then? this place is kind of depressing isn't it?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C7" RELC_DATE="2012-12-27 12:53:02" RELC_USERID="U4100" RELC_USERNAME="Brad_cin_dell" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>On the same boat.. :-(</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C8" RELC_DATE="2012-12-27 15:04:25" RELC_USERID="U5533" RELC_USERNAME="shafcp" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>forward ur cv to admin@arablandgroup.com; let hope for the best</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C9" RELC_DATE="2012-12-27 15:50:53" RELC_USERID="U5534" RELC_USERNAME="Ahmad_Mansoor" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>well maybe if there wasn't 1 billion of you guys trying to take the same job from those few companies. Yet the new generation is also going crazy enrolling in IT degrees... How many IT jobs you think there are in this place? Unix and Linux are jobs for men in here.. Yes believe me; certain jobs are dedicated for each gender... an IT company that needs a Unix admin; that is 99.99% male dominated department would NEVER hire a woman. Sorry to burst the bubble; reality is bitter Good luck try harder.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R6_C10" RELC_DATE="2012-12-27 16:16:18" RELC_USERID="U5535" RELC_USERNAME="Azhar89" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>An IT job in the middle east; especially Qatar - Not a smart idea!</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R9" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q141_R52">
+		<RelQuestion RELQ_ID="Q318_R9" RELQ_RANKING_ORDER="9" RELQ_CATEGORY="Opportunities" RELQ_DATE="2015-01-05 23:51:33" RELQ_USERID="U3612" RELQ_USERNAME="kumaresanm" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Are Indians really getting job in Qatar right now?</RelQSubject>
+			<RelQBody>I am coming to qatar in visit visa coming week to search for a job. I've got no reference as such. Applied in many sites in Qatar; Not even a single positive response. Finally; i am hearing these: 1. Work visa not given for Indians 2. Oil price has come down. Anyone please tell me if these reasons are valid and true? If So; how to actually get a job in Qatar? Your suggestions could help me and anybody who is dying to get a job in Qatar...</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R9_C1" RELC_DATE="2015-01-06 07:42:19" RELC_USERID="U3613" RELC_USERNAME="kvpk1977" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>what kind of job are you looking for?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C2" RELC_DATE="2015-01-06 07:48:41" RELC_USERID="U3612" RELC_USERNAME="kumaresanm" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>IT support</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C3" RELC_DATE="2015-01-06 09:11:03" RELC_USERID="U3614" RELC_USERNAME="Master Mind" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Most of companies they haven't Indian visas to issuing.... if have you do not get these same profession. May be getting other category.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C4" RELC_DATE="2015-01-06 09:56:14" RELC_USERID="U3615" RELC_USERNAME="GTA ASSOCIATES" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>There are many restrictions in Qatar apart from Indian Visas... family visa would always be an issue; what ever the profession you are ... biz policies are not friendly as UAE... rents are higher...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C5" RELC_DATE="2015-01-06 11:08:25" RELC_USERID="U3616" RELC_USERNAME="hussainvr.qatar" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Honestly; if you want job in Qatar within one month submit your resume by going directly to that office. don't wait for Email responses bcz every companies getting 100 of spam mails daily. Don't hesitate to follow up again if you didn't get reply yet.Post Ads in Gulf-time newspaper is important thing by mentioning INDIAN IT SUPPORT Engineer with your relevant exp and visa type. don't forget to post in Qatarliving. join in IT social communities; make list of companies from linkeIn; Bayt and Collect HR email and Employees Call them if you found vacancy; never mind.. if they will tell you 'bla bla bla' actually they doesn't know anything so; whatever it is .. go directly to the office ; submit CV; collect Business card and HR Email.make followup after 5 days. you must be prepared for any kind of interviews. This is a fact .. Every companies need Indian employees because they are Hard workers than others. profession may be vary but it doesn't matter if you will get all the benefits from th.....</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C6" RELC_DATE="2015-01-06 11:18:06" RELC_USERID="U3617" RELC_USERNAME="coxtown" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Kumar; Well; you can come and take a chance; there are jobs available for Indians but as you said; it is not that easy or abundant. Still your luck and merit counts. Better try to stay for 3 months; in 1 month nothing will materialise unless you know some big shots to take care of you. But do not resign your current job. Hold on as standby. PS: Oil price coming down or LNG price going up etc.; nothing to do with Qatar; they are well stabilized for next 50 years. Good luck.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C7" RELC_DATE="2015-01-06 18:03:39" RELC_USERID="U3495" RELC_USERNAME="Motiv8er" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>The responses really enlightened me... Thank you QL !</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C8" RELC_DATE="2015-01-07 00:15:33" RELC_USERID="U3612" RELC_USERNAME="kumaresanm" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>@mastermind: in one of your posts; you have mentioned visa available for Indians. Is it work visa and for what type of job are you providing visa?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C9" RELC_DATE="2015-01-07 00:18:43" RELC_USERID="U3612" RELC_USERNAME="kumaresanm" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Thanks everyone for your suggestions. Really appreciate them.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R9_C10" RELC_DATE="2015-01-07 18:04:02" RELC_USERID="U3618" RELC_USERNAME="farhanmyr" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>company look only those who are in the same country(90%) ;most of the Job Portal there is a condition like expatriates can only apply ; so better to come here and apply ; best of luck brother</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R14" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q261_R18">
+		<RelQuestion RELQ_ID="Q318_R14" RELQ_RANKING_ORDER="14" RELQ_CATEGORY="Opportunities" RELQ_DATE="2011-01-11 14:32:27" RELQ_USERID="U5035" RELQ_USERNAME="aravind_nithila" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>About the job oppourtinites for Women in Doha</RelQSubject>
+			<RelQBody>hi; How about the job oppourtinites are there in doha for women who had IT experience? with regards A.Aravind</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R14_C1" RELC_DATE="2011-01-18 09:35:04" RELC_USERID="U5036" RELC_USERNAME="bhavani38" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hi; Am also looking for the same topic. Can anybody tell me good jobs for Women with IT experience of 5-6 years?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C2" RELC_DATE="2011-01-22 23:16:45" RELC_USERID="U5037" RELC_USERNAME="aatef" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>In my opinion who have IT qualification and experience are lucky :) there are lot of opportunities in many organisations ;like Banks ; Hospitals ; Schools ; it is IT dear :) try ; will find ; trust me ..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C3" RELC_DATE="2011-01-22 23:26:48" RELC_USERID="U5038" RELC_USERNAME="Hannah Montana" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>They are plenty of IT opportunities unless you are looking for in IT.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C4" RELC_DATE="2011-02-03 20:01:33" RELC_USERID="U5039" RELC_USERNAME="wafamerai" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hi; it's not true what you say; I am looking for a suitable job in IT since 8 months and I didn't find anything. I am an IT engineer with 3 years experience :(</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C5" RELC_DATE="2011-02-03 20:29:02" RELC_USERID="U78" RELC_USERNAME="qatarisun" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>wafamerai; your problem is not your profession; but your nationality. no visas for Tunisian female; that's why companies don't conact you or don't send you the offers.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C6" RELC_DATE="2011-02-04 01:22:29" RELC_USERID="U1060" RELC_USERNAME="anwarji" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>As per my experience in qatar....there are very few opportunities on IT from local companies and have more chances in foriegn companies but the problem to get the good chance recommondations.......hopefully.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C7" RELC_DATE="2013-10-29 09:10:40" RELC_USERID="U5040" RELC_USERNAME="maryan" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Please the same thing applicable to me. A graduate in Secretarial Administration for some time now. from Nigeria with Husband's Company sponsorship Visa even in related field to no avail.To all listeners look in to it and subject for me on what to do because i really need help.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C8" RELC_DATE="2013-10-29 09:21:48" RELC_USERID="U516" RELC_USERNAME="mast kalandar" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Have patience and try Inshallah you are all deserving candidates to get a good job in IT</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C9" RELC_DATE="2013-10-29 09:37:09" RELC_USERID="U66" RELC_USERNAME="Molten Metal" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Sister Maryan; Keep your hopes alive .... !</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R14_C10" RELC_DATE="2014-08-02 10:18:23" RELC_USERID="U5041" RELC_USERNAME="Sayantan" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hi Arvind; I have the same question. Do you have any inputs for work opportunities of women in Qatar? thanks; Sayantan</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R17" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q215_R66">
+		<RelQuestion RELQ_ID="Q318_R17" RELQ_RANKING_ORDER="17" RELQ_CATEGORY="Opportunities" RELQ_DATE="2013-09-06 22:34:19" RELQ_USERID="U4598" RELQ_USERNAME="samzuna" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>requirements to get a job in qatar police?</RelQSubject>
+			<RelQBody>Hi everyone! I born &amp; raised in dubai; my nationality is pakistan. I am flent in arabic lang;.. I am on visit visa in qatar; is there any way to get selected in police; since im on visit? I will really appreciate ur kind comments..</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R17_C1" RELC_DATE="2013-09-06 22:54:56" RELC_USERID="U956" RELC_USERNAME="Rip Cord" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I thought Pakistani cause most of the crimes not solve them?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C2" RELC_DATE="2013-09-06 22:55:18" RELC_USERID="U2584" RELC_USERNAME="riaz_ak" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Try it. Depends on ur luck.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C3" RELC_DATE="2013-09-06 23:02:38" RELC_USERID="U2485" RELC_USERNAME="Billaz Montana" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>my friend is also from pakistan ; he came here 1 year ago and doesnt know a single arabic word .. he is raised in pakistan he got a job in one of the best army job . he only goes for job 3 days a week . i dont know if its his luck or big wasta there is a place somewhere in doha ; you just have to visit and give your information ... dont know where it is</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C4" RELC_DATE="2013-09-06 23:22:45" RELC_USERID="U4598" RELC_USERNAME="samzuna" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>by the way; were ur cousin on visit visa ?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C5" RELC_DATE="2013-09-06 23:31:46" RELC_USERID="U4598" RELC_USERNAME="samzuna" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>man!! we r not that bad but our public image has been destroyed by the unknown terrorist organizations and media; by the way there r good n evil everywhere</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C6" RELC_DATE="2013-09-06 23:42:19" RELC_USERID="U513" RELC_USERNAME="jungle_book" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>can you eat 5 afgan kuboose in 10 min? if yes; easy to get that job.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C7" RELC_DATE="2013-09-07 00:00:29" RELC_USERID="U4599" RELC_USERNAME="gbs123" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>whoever is bad he think Pakistanis r bad; plz think positive</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C8" RELC_DATE="2013-09-07 00:21:06" RELC_USERID="U4600" RELC_USERNAME="ali ok" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>lancer 2007 model sale 1.3 call 66136714</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C9" RELC_DATE="2013-09-07 00:24:56" RELC_USERID="U4598" RELC_USERNAME="samzuna" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I thought my jokes were bad but ur's damn boring..; try another one and hopefully I might laugh</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R17_C10" RELC_DATE="2013-09-07 01:04:40" RELC_USERID="U4601" RELC_USERNAME="aiskaleem" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>RIP CORD; WHAT ARUBANS DO BY THE WAY IF MOST PAKISTANIS ARE CRIMINALS; DO U HAVE SOME PERSONAL ISSUES; OR SOME PAKISTANI COMMITTED A CRIME AGAINST YOU. AM SURE THERE WILL BE MORE CRIMINALS LIKE YOU IN ARUBA; THAT IS WHY YOU HAVE BEEN KICKED OUT.</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R19" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q75_R41">
+		<RelQuestion RELQ_ID="Q318_R19" RELQ_RANKING_ORDER="19" RELQ_CATEGORY="Opportunities" RELQ_DATE="2008-03-02 00:29:44" RELQ_USERID="U2439" RELQ_USERNAME="esadbey" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>how to find a job?</RelQSubject>
+			<RelQBody>hi i am new at this forum; so sorry if u were already speaking about this topic. i am planning to move to doha on the end of this year; together with husband. he is chef in the restaurant and we are wondering how to find jobs for both of us . I am speaking english ; arabic; greek and serbian; so maybe if it is possible something in the tourism. which web sites i should visit? thanx</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R19_C1" RELC_DATE="2008-03-02 01:38:43" RELC_USERID="U2440" RELC_USERNAME="bulele08" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>try visiting www.bayt.com</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C2" RELC_DATE="2008-03-02 06:34:17" RELC_USERID="U2441" RELC_USERNAME="Annel Ocampo" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hi I am an accounting graduate with 9 years experience in my field and am looking for a job in Doha. Thanks</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C3" RELC_DATE="2008-03-02 07:25:40" RELC_USERID="U14" RELC_USERNAME="irrysa" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>  Try hotels like marriott; ritz-carlton; sheraton; etc. Bayt.com is also good. you can also check the web site for the newspapers; like www.gulf-times.com and check their ads section. Sometimes the recruiting agencies are also advertising in that newspaper; so you can take some names from there as well. good luck!    If you're looking for a problem; you're probably gonna find one.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C4" RELC_DATE="2008-03-02 07:43:42" RELC_USERID="U78" RELC_USERNAME="qatarisun" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I am not sure on what condition you are going to move to Doha; but it looks like both of you guys don't have a job in Qatar... So actually you have to star from searching job. As has been mentioned; try to browse Internet for the advertismenets. Then you can get phone/fax numbers and e-mails of particular hotels; and send your CVs directly to these hotels. When you find the job; the Comapany will issue visa for you; and only after that you can come to Qatar. Good luck. *********************** This Too Shall Pass..... [img_assist|nid=71431|title=magic ring|desc=|link=none|align=left|width=|height=0]</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C5" RELC_DATE="2008-03-02 09:00:08" RELC_USERID="U15" RELC_USERNAME="dragonfly212" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>good luck with to find the dreams job. Everybody is right and Everybody is wrong; its depend where you stand</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C6" RELC_DATE="2008-03-03 21:13:24" RELC_USERID="U2439" RELC_USERNAME="esadbey" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>thank you. i already started searching some web sites. dragana</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C7" RELC_DATE="2008-03-04 10:31:16" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Can you enter Qatar if you don't have a job?? I mean if you want to live here?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C8" RELC_DATE="2008-03-04 10:33:31" RELC_USERID="U2442" RELC_USERNAME="globalmerchant" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"""Make a difference or make way"" More opportunities in Dubai if you are into the Food industry"</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C9" RELC_DATE="2008-03-05 03:26:50" RELC_USERID="U2440" RELC_USERNAME="bulele08" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>siobhanhill; u can enter qatar on a business/visit visa but the cost of living in that country is so high sooner or later u will look for a job to be able to afford a decent life there.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R19_C10" RELC_DATE="2008-03-05 10:14:49" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Very true bulele08; it would be next to impossible to stay here without a job thats for sure! From my experience getting a job is bloody impossible too!</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R20" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q147_R32">
+		<RelQuestion RELQ_ID="Q318_R20" RELQ_RANKING_ORDER="20" RELQ_CATEGORY="Opportunities" RELQ_DATE="2008-10-08 13:43:53" RELQ_USERID="U2648" RELQ_USERNAME="askme" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Reliable recruitment agencies of Doha</RelQSubject>
+			<RelQBody>Hi all; Can you please name some of reliable recruitment agencies in Doha you have tried and trust. Do you think it is better to hunt for job through these agent?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R20_C1" RELC_DATE="2008-10-08 14:24:50" RELC_USERID="U935" RELC_USERNAME="laksh65" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>You may try Qatar Recruitment Company; their website is www.qatarrecruit.com. there is a section for Job seekers; where you have to register and then post your CV. They have got a good clients base which are top notch and they generally take 2 days to respond to a query and 3 weeks to shortlist a CV for the vacancy in their clients. Hope this information is useful to you. I wish you good luck in your job search. Office Location: Office No: 34; Gate: 08 Town Center Building Freej Bin Omran Doha; Qatar Telphone: (+974) 487 6006 / (+974) 487 6116 Fax: (+974) 487 6226 Regards Laksh65</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C2" RELC_DATE="2010-05-29 19:45:39" RELC_USERID="U3687" RELC_USERNAME="safir jameel" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>who are the reliable recruitment agencies in doha how do i contact them</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C3" RELC_DATE="2012-05-11 11:44:59" RELC_USERID="U3688" RELC_USERNAME="ceefor.tgp68" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Kabayan; Where can we get good Recruitment Agency here in Doha? Maybe we can have a walk. Feel free to contact me +974-55706906.. Migz here from Bicol Philippines.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C4" RELC_DATE="2012-08-08 21:21:50" RELC_USERID="U1265" RELC_USERNAME="standfordcolly" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>maybe you can send cv/resume to this email info@gala-h.com or visit www.gala-h.com</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C5" RELC_DATE="2012-08-29 12:57:22" RELC_USERID="U3689" RELC_USERNAME="c4pcy" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>REED is a specialist provider of permanent; contract; temporary and outsourced recruitment solutions; assisting jobseekers and employers for over 50 years. With global expertise spanning Europe; the Middle East and Asia Pacific and the UK’s largest jobsite; reed.co.uk; clients and candidates have access to an unparalleled level of recruitment opportunity For me coming from the uk they provided a service not many agencies could match especially here in Qatar.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C6" RELC_DATE="2012-08-29 14:11:53" RELC_USERID="U169" RELC_USERNAME="azilana7037" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>they are good.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C7" RELC_DATE="2012-08-29 14:20:05" RELC_USERID="U3690" RELC_USERNAME="dudboyseller" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Depends on what sort of job are you interested in!? Ladies related to Construction...share your resume or buzz me!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C8" RELC_DATE="2012-10-04 16:22:51" RELC_USERID="U3691" RELC_USERNAME="Mariposa V" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"C4pcy I saw your post in a topic relating to ""reliable"" recruitment agencies. I am currently looking for some reliable people for some short term contract work here in Doha; and you mentioned the name 'REED' in your post. May I ask; do they have a branch located here in DOHA? From the website I only see European locations. Thanks; MV"</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C9" RELC_DATE="2012-10-30 15:29:30" RELC_USERID="U3692" RELC_USERNAME="Canadian Achilles" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I saw the post as well and started looking as I too am still prospecting worthy I.T. work before I decide to head back to Canada from visiting family here. check out this link for Reed in Qatar. https://www.reedglobal.com/web/reedqa/home</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R20_C10" RELC_DATE="2012-12-15 14:32:46" RELC_USERID="U3693" RELC_USERNAME="newmethods" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>www.new-methods.com</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R45" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q261_R33">
+		<RelQuestion RELQ_ID="Q318_R45" RELQ_RANKING_ORDER="45" RELQ_CATEGORY="Opportunities" RELQ_DATE="2007-12-31 01:52:37" RELQ_USERID="U5044" RELQ_USERNAME="UKExpat" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Legal jobs</RelQSubject>
+			<RelQBody>Hi My husband just accepted a job in Doha and so we will be moving there in April 2008. I have an LLB law degree with some legal experience (more in-house).....I am looking for a legal support role rather than a trainee role.....does anyone possibly know about any legal positions available in Doha? Or if anyone could give me some advice about the legal industry there....it would be much appreciated!!</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R45_C1" RELC_DATE="2007-12-31 04:25:05" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Well; for that you'd need to be fluent in Arabic.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C2" RELC_DATE="2007-12-31 06:06:43" RELC_USERID="U5045" RELC_USERNAME="elice_24" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>as creaklol said u need to speak or atleast start learning arabic now;it is a necessity for you since you will be dealing (if in case u got a job already)mostly of arabs here;try searching in google qroundabout directory and qatar yellow pages; you can find there lawfirms'contact number and even websites to help you out..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C3" RELC_DATE="2007-12-31 08:22:05" RELC_USERID="U211" RELC_USERNAME="DaRuDe" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Lawyers do have assistants in their office so she can hire few translators here. all she needs is to get approval from Law firms here. [img_assist|nid=21285|title=.|desc=|link=none|align=left|width=|height=0]</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C4" RELC_DATE="2007-12-31 08:31:02" RELC_USERID="U5046" RELC_USERNAME="army001" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"We have a few openings in the legal sector for non arabic speaking candidates. Pls contact us and we shall see if we can help you out. Shall PM you our mail id. AR. ""Work like you don't need the money; Love like you've never been hurt; and dance like you do when nobody's watching ""!"</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C5" RELC_DATE="2008-07-07 16:25:15" RELC_USERID="U1076" RELC_USERNAME="luke0305" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hi Lapmur and UKExpat; we have got some legal positions in my company. we can exchange emails for details. my email add is lukelu0305@yahoo.com thanks</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C6" RELC_DATE="2008-07-07 16:55:00" RELC_USERID="U179" RELC_USERNAME="dweller" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>try the QP Group.Google QP and check the vacancies They have english speaking lawyers as also do many of the legal companies in Doha. Arabic is NOT essential as much of the commercial work is in Eglish</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C7" RELC_DATE="2009-05-27 22:21:02" RELC_USERID="U5047" RELC_USERNAME="sameeralikhan" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hello every 1.. this is Abid Ali from UAE.. i need help regarding Legal Jobs in Qatar..i came to knw from different resourses that in Qatar the condition of Jobs are still ok and one can get job easy... I am working as an Admin-Assistant in Abu Dhabi;; and want to move to Qatar and enroll my self in Legal Field.. So can any1 help me abt their Jobs and Websites..thanks every1</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C8" RELC_DATE="2009-05-27 22:24:44" RELC_USERID="U5047" RELC_USERNAME="sameeralikhan" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hey Buddy.. this is Abid Ali from UAE.. as i knw that u r working in Qatar so i also want to get some Info abt JOBS in Qatar;; i mean Legal job as i mention that i have done my LLB and have some Experience in Property Consultancy and Education Consultancy.. so i just want to knw abt jobs in QATAR...thanks</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C9" RELC_DATE="2009-05-27 22:51:46" RELC_USERID="U406" RELC_USERNAME="Blue moon" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hi; Check out this link http://www.martindale.com/Results.aspx basically its a list of law firms in Doha. Maybe you can check with them and try applying. Good luck!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R45_C10" RELC_DATE="2009-05-27 22:53:58" RELC_USERID="U406" RELC_USERNAME="Blue moon" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>FYI; Arabic is not a necessity if you don't want to be involved in litigation matters.</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R52">
+		<RelQuestion RELQ_ID="Q318_R52" RELQ_RANKING_ORDER="52" RELQ_CATEGORY="Salary and Allowances" RELQ_DATE="2008-08-12 17:29:03" RELQ_USERID="U3" RELQ_USERNAME="anonymous" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>ONLINE JOBS</RelQSubject>
+			<RelQBody>Recently I saw an ad by Google; data entry jobs online. It required we give a fee and then they promise us a fixed amount every month. Is this a scam? or is it ok to proceed with it?? If so; do anyone know sites to get more online jobs; which is safe?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R52_C1" RELC_DATE="2008-08-12 17:36:04" RELC_USERID="U5536" RELC_USERNAME="classdiver" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>scam....takecare</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C2" RELC_DATE="2008-08-12 17:39:38" RELC_USERID="U63" RELC_USERNAME="mjamille28" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>well; probably is so i be more careful if i were you... why you looking for online jobs anyway;..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C3" RELC_DATE="2008-08-12 17:59:30" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Bcoz i got a baby and iam nt intrested to send him in a day care. thats y iam looking for an online job. so that i can work from home.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C4" RELC_DATE="2008-08-12 18:20:33" RELC_USERID="U1694" RELC_USERNAME="tallboy_v" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I suggest u better start a baby sitting centre. You can earn good money by that way. Moreover ur baby will have other babies to play with. Me believes; couples who have got jobs as well as babies will benefit by this service of yours and you can make good money. Just my 2 cents.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C5" RELC_DATE="2010-01-23 14:53:21" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>i am looking for job networking Vendor Certifications:  Microsoft Certified System Administrator (MCSA) (ID # 6193829)  Cisco Certified Network Associate (CCNA) (ID#11688483 ) (Exam code: 640-802) Academic Qualifications:- ng (009746235545 )</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C6" RELC_DATE="2010-03-05 10:41:59" RELC_USERID="U5537" RELC_USERNAME="remyajay" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I am a Diploma holder in Electronics Engineering.. Now i have a baby; so i am searching online jobs. Please contact to 6144520.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C7" RELC_DATE="2010-03-05 13:06:46" RELC_USERID="U5538" RELC_USERNAME="Aussie235" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I think it is a scam. Do not pay any fee; false promises are made online everyday. Be carefull.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C8" RELC_DATE="2010-03-05 13:10:57" RELC_USERID="U1070" RELC_USERNAME="fanonite" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>online jobs are 99.9% scam....</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C9" RELC_DATE="2010-03-05 13:28:14" RELC_USERID="U3920" RELC_USERNAME="HABIBMDH" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>SCAM !!!!!!!!!!!!!!!!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R52_C10" RELC_DATE="2010-04-04 07:31:18" RELC_USERID="U5539" RELC_USERNAME="Rockistan" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Can anybody help me out in finding out an online data entry job or an Online form submission jobs in QATAR ???IS THERE ANY COMPANY ANY FIRM WHICH PROVIDE THESE KINDA JOBS ??? ONLINE DATA ENTRY KINDA JOBS??? PLZ I NEED THIS JOB URGENTLY AS POSSIBLE WAITING 4 UR REPLY !PLZ DO REPLY TO THIS THREAD AS SOON AS POSSIBLE THANKS :) actually I wanted to knw abt the websites which provide this kinds jobs but the payment should be good enough depending upon work load? secondy i searched randomly in google but most of them r jst fake as far as em concerned!! but surely i`ll chk out in classifieds here in qatar living! frankly speakin i actually wanted da online form submisson job in QATAR only dats the imp. part! plz help me out if and post a link if anyone knws abt any website or if any one is doin dis kinda job?</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q318">
+	<OrgQSubject>"IT Jobs in Qatar</OrgQSubject>
+	<OrgQBody>""how hard is it for you to get a decent paying job in qatar? I had applied in bayt;monstergulf and gulftalent almost religiously every day and yet I am getting nothing more than having my CV viewed. I have 4 years + experience in Linux and Unix environment and a handful of certifications to boot also. well; while its back to updating my CV; I'd love to hear about your experiences on getting a job here."""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q318_R61" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q195_R26">
+		<RelQuestion RELQ_ID="Q318_R61" RELQ_RANKING_ORDER="61" RELQ_CATEGORY="Opportunities" RELQ_DATE="2011-05-13 06:41:43" RELQ_USERID="U811" RELQ_USERNAME="frankyJ" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>JOB APPLICATION: DIRECT OR THROUGH AGENCY??</RelQSubject>
+			<RelQBody>I have seen a job that i think I would be ideal for me on www.bayt.com. The employer's name is listed. I know a recruitment agency that works directly with the company that has listed the position. Now would I better off applying for the position myself OR would I be better off getting the recruitment agency to apply for the position for me?? Thanks</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q318_R61_C1" RELC_DATE="2011-05-13 08:03:51" RELC_USERID="U478" RELC_USERNAME="Mr M." RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>It's a lot better if you can do it yourself.Apply for that position directly since you alresdy know the company that is recruiting.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C2" RELC_DATE="2011-05-13 08:08:15" RELC_USERID="U811" RELC_USERNAME="frankyJ" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I was thinking though that I only know the company by name and the recruitment companies have built a relationship up withe actual recruiters of the company and might be able to sell me better? That is their job after all??</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C3" RELC_DATE="2011-05-13 08:13:53" RELC_USERID="U478" RELC_USERNAME="Mr M." RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"Many big comPnies tie up with recruitment companies in order to hire potential employees.This is their business really;""selling"" prospective employees to companies."</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C4" RELC_DATE="2011-05-13 10:46:35" RELC_USERID="U1048" RELC_USERNAME="bea_7" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I would apply via agency and directly to the company. there's nothing preventing you from doing both - apply via agency first (they will probably ask you if you already applied through another agency or directly for this role - then you say NO (which is true :o)... and then apply directly to the company. Why? Because you have no guarantee that the recruitment agency actually presents your CV to the company. So to have best chances - go for both! good luck!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C5" RELC_DATE="2011-05-13 11:20:29" RELC_USERID="U4363" RELC_USERNAME="georgejose" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>just like how the recruiting agent gets a commission for every candidate being recruited through them; a small percentage goes to the HR under the table for recruiting the candidate through them..... The top management would be unaware.... so its a give and take.... which means; always a higher chance of getting selected through the agancy.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C6" RELC_DATE="2011-05-13 12:05:42" RELC_USERID="U1048" RELC_USERNAME="bea_7" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I disagree with you Geo - I've worked in HR for many years; and worked in a recruitment agency here in Qatar as well.... no recruitment consultant submits all CVs to the company - I can tell you that :o) yes; I agree that more of a chance being hired via agency; but... to give yourself the best chance - apply through both!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C7" RELC_DATE="2011-05-13 12:11:14" RELC_USERID="U4256" RELC_USERNAME="Fury" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>don't ever trust and waste your money with online job site. This is from my personal experience.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C8" RELC_DATE="2011-05-13 12:13:11" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Apply through both; nothing stopping you from doing it.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C9" RELC_DATE="2011-05-13 12:26:47" RELC_USERID="U811" RELC_USERNAME="frankyJ" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Both seems like the best option! Will give it to the recruitment company first and then give them a day or so to apply for me and then I will apply it myself. Thanks!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q318_R61_C10" RELC_DATE="2011-05-13 12:29:37" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Apply at the same time.. For my current job; I applied through the agency as well as directly.. The job came through direct application.. All the best to you...</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R1">
+		<RelQuestion RELQ_ID="Q319_R1" RELQ_RANKING_ORDER="1" RELQ_CATEGORY="Politics" RELQ_DATE="2008-05-07 13:27:45" RELQ_USERID="U2724" RELQ_USERNAME="mghozlan" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Mix Marriages</RelQSubject>
+			<RelQBody>Do u think that 2 from 2 different cultures shall have a good marriage i mean will it last; (believes; customs; even language) not the same ! i'm not talking about 2 from 2 different countries in Europe; or 2 in Asia; or 2 in Africa; ... i'm talking about the one's where completely no similarity?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R1_C1" RELC_DATE="2008-05-07 13:29:38" RELC_USERID="U1724" RELC_USERNAME="Gumby" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Certainly it can work; and work well; depends on the individuals.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C2" RELC_DATE="2008-05-07 13:32:55" RELC_USERID="U78" RELC_USERNAME="qatarisun" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>but if they both will try to work it out; and both will adjust themselves  through the years of togetherness.... everything is possible.. why not? I know few examples when she is European/Canadian/Eastern European; and he is Jamaica/Lebanese/Mexican… or she is Brazilian; he is English…why not?? ********** [img_assist|nid=102563|title=QS|desc=|link=none|align=left|width=|height=0] Copyright©Mr.PAUL</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C3" RELC_DATE="2008-05-07 13:35:01" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>It can work of course an it does work see many of the mixed marriages around the world. People learn to compromise and to adjust if they are clever.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C4" RELC_DATE="2008-05-07 13:37:26" RELC_USERID="U463" RELC_USERNAME="swissgirl39" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>love negoates all barriers *WHAT WOULD YOU DO IF YOU KNEW YOU COULD NOT FAIL?* http://www.myswitzerland.com/en.cfm/home</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C5" RELC_DATE="2008-05-07 13:44:19" RELC_USERID="U78" RELC_USERNAME="qatarisun" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"love has nothing to do with that...if they NEED each other; they will work it out.. if not.. forget about it....no any ""love"" can help.... ********** [img_assist|nid=102563|title=QS|desc=|link=none|align=left|width=|height=0] Copyright©Mr.PAUL"</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C6" RELC_DATE="2008-05-07 13:46:17" RELC_USERID="U5540" RELC_USERNAME="NAVYBLUE" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>ıf they love each other too much that can make thıngs and dıfferences work together...love and respct is the secret</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C7" RELC_DATE="2008-05-07 13:49:27" RELC_USERID="U16" RELC_USERNAME="Oryx" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I can't get the lock fixed on the boot of my car for love nor money! For the love of whoever fix yourself please boot lock!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C8" RELC_DATE="2008-05-07 13:52:54" RELC_USERID="U78" RELC_USERNAME="qatarisun" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>we have got a shortage yesterday... hey someone from KAHRAMAA with BIG... LOVE.. can you pls fix it??? ********** [img_assist|nid=102563|title=QS|desc=|link=none|align=left|width=|height=0] Copyright©Mr.PAUL</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C9" RELC_DATE="2008-05-07 13:54:49" RELC_USERID="U385" RELC_USERNAME="owen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"there are a lot living testimonies that this kind of relationship works... you got to work harder in order to make a relationship work; and this goes to all sort of ""mixes"" ""combination"" of nationalities you got in mind.. Love conquers all as they say..   [img_assist|nid=12867|link=none|align=left|width=|height=0] Nothing in life is to be feared. It is only to be understood."</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R1_C10" RELC_DATE="2008-05-07 13:55:58" RELC_USERID="U18" RELC_USERNAME="Khanan" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>early morning i got call from the buddy with regard to that... was surprized to hear that.... i think some inspecotrs came to the house.....</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R2">
+		<RelQuestion RELQ_ID="Q319_R2" RELQ_RANKING_ORDER="2" RELQ_CATEGORY="Qatar Living Lounge" RELQ_DATE="2012-12-19 20:28:26" RELQ_USERID="U5541" RELQ_USERNAME="JomanaZ" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Mixed Marriages</RelQSubject>
+			<RelQBody>With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R2_C1" RELC_DATE="2012-12-19 20:55:39" RELC_USERID="U999" RELC_USERNAME="LOL.XD" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Dont Try Dude i m Regreting :D Dont Marry at all Thats The Best i cant Tell You!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C2" RELC_DATE="2012-12-19 21:14:06" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Met in a bar; must say I was very drunk</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C3" RELC_DATE="2012-12-19 21:33:34" RELC_USERID="U5127" RELC_USERNAME="dash201" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Well she was working as waitress at a cocktail bar...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C4" RELC_DATE="2012-12-19 22:14:23" RELC_USERID="U269" RELC_USERNAME="britexpat" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>What a strange question. Mixed marriages can succeed but they take a lot of effort from both parties. Good luck with yours..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C5" RELC_DATE="2012-12-19 23:18:57" RELC_USERID="U969" RELC_USERNAME="one_shot" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>well said Brit nothing to add more. in fact i think u stole my comment :) grrrrr</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C6" RELC_DATE="2012-12-19 23:34:11" RELC_USERID="U2484" RELC_USERNAME="Blosted" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>@costylove what the hell?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C7" RELC_DATE="2012-12-19 23:35:51" RELC_USERID="U5542" RELC_USERNAME="costylove" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>i said it ! :P</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C8" RELC_DATE="2012-12-19 23:37:59" RELC_USERID="U2484" RELC_USERNAME="Blosted" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>congratulations!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C9" RELC_DATE="2012-12-20 00:09:51" RELC_USERID="U5543" RELC_USERNAME="arc736" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Dear; there is no specific Formula for a successful Marriage whether its; Loved; Arranged; Mixed; Intercontinental its all depends on ones attitude n sacrifices... Choose your way wiseLy gOOd lucK ;)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R2_C10" RELC_DATE="2013-05-03 14:55:50" RELC_USERID="U5542" RELC_USERNAME="costylove" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>...</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R6">
+		<RelQuestion RELQ_ID="Q319_R6" RELQ_RANKING_ORDER="6" RELQ_CATEGORY="Qatari Culture" RELQ_DATE="2009-10-21 12:12:02" RELQ_USERID="U5544" RELQ_USERNAME="pigrah" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>interacial relationship</RelQSubject>
+			<RelQBody>OK so we see a lot of interacial relationships in this country..what do u guys think about it? common...i need ur opinon.</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R6_C1" RELC_DATE="2009-10-21 12:14:02" RELC_USERID="U63" RELC_USERNAME="mjamille28" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>it happens; no big deal although some people seem to get the kick out of making it a big deal... it's their choice and nobody's business but theirs and theirs alone..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C2" RELC_DATE="2009-10-21 12:17:38" RELC_USERID="U1213" RELC_USERNAME="rehanbutt" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>it reinforces the believe that we are all same . it is the choice of the couple and their business only</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C3" RELC_DATE="2009-10-21 12:21:07" RELC_USERID="U269" RELC_USERNAME="britexpat" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>It's more common than you think .. Learn to embrace and accept it.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C4" RELC_DATE="2009-10-21 12:21:30" RELC_USERID="U5545" RELC_USERNAME="momo1962" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>it is interracial !!! I think it is a gift from God . God says that he created male and female and nationas .. just for each to know each ther .. knwo mean live near and learn and share ... I am not against .</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C5" RELC_DATE="2009-10-21 12:36:51" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>It's great!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C6" RELC_DATE="2009-10-21 12:40:15" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Its excellent. Once we are all mixed up; it will be very hard to be racist.... it is something the gulf arabs should adopt more and more as it will cut down on genetic complications....</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C7" RELC_DATE="2009-10-21 12:51:39" RELC_USERID="U5544" RELC_USERNAME="pigrah" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>well said exiledsaint! i hope the rest of the human race would be open minded like all u guys here. im really not the type that cares about wat other people might think....but i cant help getting pissed off when other people stares and gives u the look like..wat the F or much worse is the look that says; hey baby wassup! uggghhh!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C8" RELC_DATE="2009-10-21 13:01:20" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Start enjoying;;; wat u heard;;; n wat u see here :P We were given: Two hands to hold. To legs to walk. Two eyes to see. Two ears to listen. But why only one heart? Because the other was given to someone else. For us to find.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C9" RELC_DATE="2009-10-21 13:07:51" RELC_USERID="U998" RELC_USERNAME="snessy" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I think its great - your children will grow up to understand and respect different religions/cultures.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R6_C10" RELC_DATE="2009-10-21 13:17:48" RELC_USERID="U3323" RELC_USERNAME="EXLegend" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>i admire it.. especially the offsprings out of such relationships... they turn out to be special looking (not that others aren't) but the culture deminishes little by little.</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R19" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q158_R60">
+		<RelQuestion RELQ_ID="Q319_R19" RELQ_RANKING_ORDER="19" RELQ_CATEGORY="Family Life in Qatar" RELQ_DATE="2008-07-02 09:38:08" RELQ_USERID="U3866" RELQ_USERNAME="shushu" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>what are the problems will occur if a fare boy married a dark girl?</RelQSubject>
+			<RelQBody>what are the problems will occur if a fare boy married a dark girl?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R19_C1" RELC_DATE="2008-07-02 09:42:37" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>c'mon... are you still in those pre-mature.. primitive.. pre-historic.. olden days?? GROW UP habeebi..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C2" RELC_DATE="2008-07-02 09:44:29" RELC_USERID="U468" RELC_USERNAME="brandylady" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>In an un prejudiced society there would be no problems at all but unfortunitely a world of problems could occur. You would face all sorts of name calling etc; your children could suffer also from being mixed race. However; mixed race marriages are becoming more tolerated and if it what your heart is telling you then no amount of small minded insults should stand in your way; you just need to be strong and have the courage of your convictions :)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C3" RELC_DATE="2008-07-02 09:44:59" RELC_USERID="U1664" RELC_USERNAME="ksarat16" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Well Sshushu...please dont mind for a quick joke.. if a dark boy and a fare girl marry or vice-versa... We might as well watch a BLACK &amp; WHITE TV...LOL!!! seriouisly no offence...at all meant mate;;;</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C4" RELC_DATE="2008-07-02 09:49:17" RELC_USERID="U475" RELC_USERNAME="spicemom" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>which one are you afraid of ? black/dark kids or white/pale kids??lol</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C5" RELC_DATE="2008-07-02 09:53:37" RELC_USERID="U62" RELC_USERNAME="smoke" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>You people seriously need to learn your colors...if a fair guy marries a dark girl they will have GREY kids! but anyways does it really matter what is the skin color?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C6" RELC_DATE="2008-07-02 09:56:36" RELC_USERID="U1227" RELC_USERNAME="Vivo Bonito" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>perhaps they might have a spotted black n white offspring... lolz... just kidding... naturally... genetic results depends largely on the chromosomes presence during mating of the reproductive cells... any either from a black or fair whichever has the superior genes will propel an expected results.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C7" RELC_DATE="2008-07-02 09:58:00" RELC_USERID="U3867" RELC_USERNAME="me ql user" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Doesn't matter. It depends on who gets married...Internal beauty(understanding; love and trust)is more important than the external.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C8" RELC_DATE="2008-07-02 10:02:30" RELC_USERID="U3868" RELC_USERNAME="smartboy" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Nothing.........At the end of the day everything is same...!!!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C9" RELC_DATE="2008-07-02 10:06:17" RELC_USERID="U3869" RELC_USERNAME="mhdkhal" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"Listen the song "" Mera aanganee mien "" from film lawaris in which amitabh bachchan sings ""Jiski biwi kali woska bhi bada naam hai aankhon mein basa lo surma ka kiya kam hai"""</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R19_C10" RELC_DATE="2008-07-02 10:10:08" RELC_USERID="U2054" RELC_USERNAME="Kareena74" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>What do you mean FARE??? DO you mean Fair?</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R27" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q219_R7">
+		<RelQuestion RELQ_ID="Q319_R27" RELQ_RANKING_ORDER="27" RELQ_CATEGORY="Politics" RELQ_DATE="2008-09-29 19:00:17" RELQ_USERID="U427" RELQ_USERNAME="Aisha-Taweela" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Sarah Palin interviews!</RelQSubject>
+			<RelQBody>These videos speak for themselves... First two are serious; I say this because there might be some confusion between what is serious and what is a joke; the third &amp; fourth is a joke. Enjoy.... http://www.youtube.com/watch?v=L8__aXxXPVc http://www.youtube.com/watch?v=xTJXtwJn050&amp;feature=user http://www.youtube.com/watch?v=G2gxrQrMGv0 http://www.nbc.com/Saturday_Night_Live/video/clips/couric-palin-open/704042/</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R27_C1" RELC_DATE="2008-09-29 19:07:11" RELC_USERID="U424" RELC_USERNAME="heero_yuy2" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"Maybe America's afraid of a woman who can hold guns and God in one place and they love to find any 'holes' in her campaign. LOL ""Everything in this book may be wrong."" Illusions: The Adventures of The Reluctant Messiah by Richard Bach"</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C2" RELC_DATE="2008-09-29 19:14:12" RELC_USERID="U4384" RELC_USERNAME="QT" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I shouldn't laugh; but it is sooooo funny!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C3" RELC_DATE="2008-09-29 19:20:52" RELC_USERID="U1001" RELC_USERNAME="labda06" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>heero; please tell me you're being sarcastic. Bad joke; right? ------------Virgos dont like chaos; gerrit? ----------</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C4" RELC_DATE="2008-09-29 19:22:58" RELC_USERID="U4384" RELC_USERNAME="QT" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Have you read his other jokes? Exactly... :)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C5" RELC_DATE="2008-09-29 19:24:28" RELC_USERID="U2289" RELC_USERNAME="Platao36" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>PM: I agree with you; she's a fake. Only God Can Judge Me الله فقط يمكنه محاكمتي I am you and you are me; if you love i love; if you suffer i suffer أنا أنت; و أنت أنا; إذا أحببت نفسك أحببت نفسي; إذا عانيتَ عانيتُ</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C6" RELC_DATE="2008-09-29 19:25:08" RELC_USERID="U2289" RELC_USERNAME="Platao36" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>QT: lol Only God Can Judge Me الله فقط يمكنه محاكمتي I am you and you are me; if you love i love; if you suffer i suffer أنا أنت; و أنت أنا; إذا أحببت نفسك أحببت نفسي; إذا عانيتَ عانيتُ</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C7" RELC_DATE="2008-09-29 19:25:17" RELC_USERID="U4384" RELC_USERNAME="QT" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>:)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C8" RELC_DATE="2008-09-29 19:25:22" RELC_USERID="U1001" RELC_USERNAME="labda06" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>QT; am I the only one holding out hope for the guy? ------------Virgos dont like chaos; gerrit? ----------</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C9" RELC_DATE="2008-09-29 19:26:19" RELC_USERID="U4384" RELC_USERNAME="QT" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>:P</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R27_C10" RELC_DATE="2008-09-29 19:38:34" RELC_USERID="U2289" RELC_USERNAME="Platao36" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>QT: I mean fake because at same time she's a conservative; or pretends to be a conservative. On Saturday while waiting on line to buy cakes; a student asked her what should be done concerning Paquistan; that protects terrorists (this aren't my words but what the student said to her). Than asked if they (the U.S.) should cross the border to Pakistan. She replied to him that's exactly what they should do; in the debate between Obama and McCain; that was Obama's position while McCain was against it. Only God Can Judge Me الله فقط يمكنه محاكمتي I am you and you are me; if you love i love; if you suffer i suffer أنا أنت; و أنت أنا; إذا أحببت نفسك أحببت نفسي; إذا عانيتَ عانيتُ</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R33" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q207_R67">
+		<RelQuestion RELQ_ID="Q319_R33" RELQ_RANKING_ORDER="33" RELQ_CATEGORY="Socialising" RELQ_DATE="2009-06-24 14:49:47" RELQ_USERID="U1414" RELQ_USERNAME="dev.in.doha" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Most beatiful girls in the world.....</RelQSubject>
+			<RelQBody>Which part of the world has most beautiful girls. i heard somewhere Lebanese and Egyptians are most beautiful......is it true??</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R33_C1" RELC_DATE="2009-06-24 14:53:17" RELC_USERID="U269" RELC_USERNAME="britexpat" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"No such thing as ""Most beautiful girls"". Each country has its fair share. Britain more than most ofcourse."</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C2" RELC_DATE="2009-06-24 14:58:23" RELC_USERID="U2161" RELC_USERNAME="Ambat" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>of Helen of Troy.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C3" RELC_DATE="2009-06-24 15:00:43" RELC_USERID="U1414" RELC_USERNAME="dev.in.doha" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>probably world will witness most beautiful girls from the Qatar adn other middle east countries; if they come out of burqa... dEV; eVeRyTHinG dEsIRAblE; Is eITHEr eXPEnSIVe; bAnnED; ilLOgiCal oR SeEING(maRRiED to) sOMEonE ElsE...... ;-)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C4" RELC_DATE="2009-06-24 15:04:15" RELC_USERID="U659" RELC_USERNAME="umm-salayum" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>beauty lies in the eyes of the holder :)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C5" RELC_DATE="2009-06-24 15:07:22" RELC_USERID="U1414" RELC_USERNAME="dev.in.doha" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>how about Russians? ..... they are also considered one of the most beautiful. dEV; eVeRyTHinG dEsIRAblE; Is eITHEr eXPEnSIVe; bAnnED; ilLOgiCal oR SeEING(maRRiED to) sOMEonE ElsE...... ;-)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C6" RELC_DATE="2009-06-24 15:10:18" RELC_USERID="U4510" RELC_USERNAME="bubbly1975" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>if we are talking about physical beauty; i say; people with mixed bloodlines... they hold the beauty of each race/country... dev; off the burqa; haven't seen much beauty in Qatar... syrians and saudi YES. i can attest to that. but then again; physical beauty is skin deep; it too will become wrinkly... hence the cliche above...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C7" RELC_DATE="2009-06-24 15:13:36" RELC_USERID="U601" RELC_USERNAME="Victory_278692" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>and FRANCE......Natural beauties...... Beauty is in the eye of the beholder.....hope u got one. Dev: I feel u r looking for makeup boxes not Girls...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C8" RELC_DATE="2009-06-24 15:16:53" RELC_USERID="U1414" RELC_USERNAME="dev.in.doha" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>well said bubbly... after all its nature of the person which counts; beauty is just for the first impression; till u open ur mouth...lols.. dEV; eVeRyTHinG dEsIRAblE; Is eITHEr eXPEnSIVe; bAnnED; ilLOgiCal oR SeEING(maRRiED to) sOMEonE ElsE...... ;-)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C9" RELC_DATE="2009-06-24 15:19:08" RELC_USERID="U4511" RELC_USERNAME="rifa_pink" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>well fr me....i too heard the same thing dat egyptians women r d prettiest!!ofcourse ARAB race in general r beautiful if they sacrifice their make up kits...they r naturally pretty so ARAB grls plz frget those 4hour long make up u do befre even going to d nearby grocery!ALLAH has made u guys in d best of d best form...try appreciating it.Say alhumdulilah atleast ones daily.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R33_C10" RELC_DATE="2009-06-24 15:29:16" RELC_USERID="U789" RELC_USERNAME="Vegas" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>You can't teach experience...</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R38" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q31_R27">
+		<RelQuestion RELQ_ID="Q319_R38" RELQ_RANKING_ORDER="38" RELQ_CATEGORY="Qatar Living Lounge" RELQ_DATE="2009-01-01 12:12:28" RELQ_USERID="U1251" RELQ_USERNAME="Dottie" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Garvey's closed down??</RelQSubject>
+			<RelQBody>What happened at Garvey's last night? I heard it got raided by police around 11pm and closed down. Something to do with their licence having expired?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R38_C1" RELC_DATE="2009-01-01 12:21:14" RELC_USERID="U211" RELC_USERNAME="DaRuDe" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>there werent you? because i didnt hear anything about it.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C2" RELC_DATE="2009-01-01 12:22:55" RELC_USERID="U1251" RELC_USERNAME="Dottie" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>No I wasn't there; but one of my friends was. Everyone had to leave immediately; couldn't even finish their drinks!!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C3" RELC_DATE="2009-01-01 12:34:48" RELC_USERID="U1252" RELC_USERNAME="biddy_lou" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>have heard the same from some one who lives at garveys; but the dont know the reason why</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C4" RELC_DATE="2009-01-01 12:43:24" RELC_USERID="U211" RELC_USERNAME="DaRuDe" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>bad means their midnight new year party was busted. no worries they can go and enjoy tonight.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C5" RELC_DATE="2009-01-01 12:46:16" RELC_USERID="U1251" RELC_USERNAME="Dottie" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>It's still closed today - was going to go and have lunch there; will have to find somewhere else now............</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C6" RELC_DATE="2009-01-01 12:53:20" RELC_USERID="U211" RELC_USERNAME="DaRuDe" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>no problem you can join me for lunch at midnight 2am on corniche hmm WELL IN FOG :D just dont forget to wear your rain coat</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C7" RELC_DATE="2009-01-01 13:02:11" RELC_USERID="U1251" RELC_USERNAME="Dottie" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Ha ha - will have to eat something before then to cure me of this hangover tho :(</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C8" RELC_DATE="2009-01-01 13:05:53" RELC_USERID="U211" RELC_USERNAME="DaRuDe" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>just go jump in a water tank and drink lots of water</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C9" RELC_DATE="2009-01-01 13:30:10" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Is going to take an act of God to close down. Garvey's was not close; they had to shut the doors to outsider obnoxious drunks from coming in; like your own friend. That place was loud and kicking it; last night. I had to pick up one of my best friend last night; He had too much to drink at 0200 am. He could not drive back.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R38_C10" RELC_DATE="2009-01-01 13:43:33" RELC_USERID="U1251" RELC_USERNAME="Dottie" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Hmmm Red Pope - well my friend was neither drunk nor obnoxious; and was celebrating with his wife and other friends. He actually rents a villa at Garvey's. Had just bought a bottle of champagne ready to see in the New Year when the police arrived. He had to leave it there so was a bit pissed off!! The DJ was telling people to leave; that it was not a joke. Maybe your friend was drinking at one of the houses/apartments on Garvey's compound?</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R40">
+		<RelQuestion RELQ_ID="Q319_R40" RELQ_RANKING_ORDER="40" RELQ_CATEGORY="Socialising" RELQ_DATE="2009-04-27 16:53:47" RELQ_USERID="U5546" RELQ_USERNAME="chen" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>"3rd cousin relationship; possible??</RelQSubject>
+			<RelQBody>is 3rd cousin relationship already accepted in church or in society? i mean like ""lovers""..."</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R40_C1" RELC_DATE="2009-04-27 17:00:04" RELC_USERID="U169" RELC_USERNAME="azilana7037" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Even the thought of it is a sin...yaiiiks!!!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C2" RELC_DATE="2009-04-27 17:04:01" RELC_USERID="U211" RELC_USERNAME="DaRuDe" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>IMAGE_LINK</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C3" RELC_DATE="2009-04-27 17:14:41" RELC_USERID="U429" RELC_USERNAME="tallg" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"I think in the UK it's legal for cousins to be ""lovers"". But any closer relation than that is illegal. Here I believe it's more common."</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C4" RELC_DATE="2009-04-27 17:19:43" RELC_USERID="U5546" RELC_USERNAME="chen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>3rd cousins is not a big deal; right?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C5" RELC_DATE="2009-04-27 17:19:46" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>one of the reason why a lot of abnormal child birth..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C6" RELC_DATE="2009-04-27 17:20:47" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>she/hes your 3rd cousin your DNA almost match...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C7" RELC_DATE="2009-04-27 17:26:47" RELC_USERID="U5546" RELC_USERNAME="chen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>pit; it occurs more with 1st cousins... and abnormal birth? its commonly caused by the pressure given to the mother</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C8" RELC_DATE="2009-04-27 17:29:07" RELC_USERID="U429" RELC_USERNAME="tallg" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Looking at this diagram I'd say 3rd cousins are so far apart there's no problem. And as I said; I think the UK even allows 1st cousin relationships.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C9" RELC_DATE="2009-04-27 17:29:30" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>it is already proven.just look around..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R40_C10" RELC_DATE="2009-04-27 17:32:21" RELC_USERID="U5546" RELC_USERNAME="chen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>thanks tallg; and yeah right pit; forgot to look at you :)</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R44">
+		<RelQuestion RELQ_ID="Q319_R44" RELQ_RANKING_ORDER="44" RELQ_CATEGORY="Politics" RELQ_DATE="2009-11-23 17:57:19" RELQ_USERID="U3" RELQ_USERNAME="anonymous" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>What makes Indian woman so exotic and erotic?</RelQSubject>
+			<RelQBody>Fill out your comments please.</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R44_C1" RELC_DATE="2009-11-23 17:58:29" RELC_USERID="U598" RELC_USERNAME="phoenix2009" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>is she?????? Yalla!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C2" RELC_DATE="2009-11-23 17:59:22" RELC_USERID="U4737" RELC_USERNAME="chinx_lady" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>hhmmmm.....really?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C3" RELC_DATE="2009-11-23 18:01:15" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Indian Woman- The most gorgeous woman in the world.. It's a mix of a number of things really from the skin complexion to the way they dress. I Loooooveeeeeeee women in Saris; they simply floor me.. It can be so seductive yet so traditional; amazing.. So many other things I can go on and on and on..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C4" RELC_DATE="2009-11-23 18:07:40" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>IMAGE_LINK</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C5" RELC_DATE="2009-11-23 18:07:47" RELC_USERID="U232" RELC_USERNAME="Pajju" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>my GF is really erotic</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C6" RELC_DATE="2009-11-23 18:09:52" RELC_USERID="U4737" RELC_USERNAME="chinx_lady" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>i thought you already have a wife pajju?;)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C7" RELC_DATE="2009-11-23 18:10:34" RELC_USERID="U232" RELC_USERNAME="Pajju" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>chinx i meant my mistress :P</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C8" RELC_DATE="2009-11-23 18:11:58" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>They look like filipinas; that makes them erotic.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C9" RELC_DATE="2009-11-23 18:13:20" RELC_USERID="U232" RELC_USERNAME="Pajju" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>MD indians look like philippina ?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R44_C10" RELC_DATE="2009-11-23 18:13:57" RELC_USERID="U4301" RELC_USERNAME="certified BisDak" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Boston...........pls call us anything u want just dont say we look like indians.....we are totally different............</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q319">
+	<OrgQSubject>"Mixed Marriages</OrgQSubject>
+	<OrgQBody>""With the world turning into a small village; mixed marriages have become more and more common. If you are in a mixed marriage relationship and living in Doha; Could you provide details on how you and your significant other met? where? how long have you been married for? and what are the goods and bads in a mixed marriage? Thank you;"""</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q319_R46" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q4_R9">
+		<RelQuestion RELQ_ID="Q319_R46" RELQ_RANKING_ORDER="46" RELQ_CATEGORY="Qatar Living Lounge" RELQ_DATE="2007-09-04 15:27:20" RELQ_USERID="U173" RELQ_USERNAME="nabil_munir" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>any favours for qatar born expatriates?</RelQSubject>
+			<RelQBody>well; as far as the western countries are concerned they are giving special care for the expat born there . i doesnt seem to happen here in qatar from the government point of view or i may dont know any such favours kindly reply with ur experience please.....</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q319_R46_C1" RELC_DATE="2007-09-04 15:51:23" RELC_USERID="U174" RELC_USERNAME="althaf22" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>absolutely nothing / 0.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C2" RELC_DATE="2007-09-04 16:04:59" RELC_USERID="U175" RELC_USERNAME="herne" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Don't expect anything!!!! This is Qatar; you won't get any benefit; not even if your grandfather was born here too. We all live under the same sky but we do not all have the same horizon.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C3" RELC_DATE="2007-09-04 16:20:32" RELC_USERID="U176" RELC_USERNAME="stealth" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>the new born child in Doha will be issued two years resident visa for free if parents have resident visa status here. Thats all you get</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C4" RELC_DATE="2007-09-04 18:14:03" RELC_USERID="U177" RELC_USERNAME="Imz" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I'm so agitated that I juss dont want to comment.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C5" RELC_DATE="2007-09-04 19:48:16" RELC_USERID="U178" RELC_USERNAME="Sushiwushi" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>oh please dont even think of it..being born here givs nothin......so forget abt it!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C6" RELC_DATE="2007-09-04 20:26:29" RELC_USERID="U179" RELC_USERNAME="dweller" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Two of my grandkids (twins) were born in Qatar and they gained no benefit. To the contrary; if they in turn have children born outside the UK; those children will not be guaranteed British passports. Be warned!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C7" RELC_DATE="2007-09-04 22:48:21" RELC_USERID="U180" RELC_USERNAME="thealjazeera" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>the person born here can get a job in royal force army</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C8" RELC_DATE="2007-09-05 09:46:18" RELC_USERID="U179" RELC_USERNAME="dweller" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>air force?. Do you mind!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C9" RELC_DATE="2007-09-05 09:59:38" RELC_USERID="U181" RELC_USERNAME="jassKat" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>If a female Qatari marries a non Qatari male; their children will not receive any benefits that Qatari's receive except a passport even if they are born and raised in Qatar!! tra la la</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q319_R46_C10" RELC_DATE="2007-09-05 10:04:39" RELC_USERID="U182" RELC_USERNAME="Gypsy" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"I find this so strange; shouldn't you beable to get the passport of the country you are born in? I mean; if you are born in Canada you are Canadian; that simple. ""I fight with love and I laugh with rage; you have to live light enough to see the humor and long enough to see some change."" Ani Difranco"</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R1">
+		<RelQuestion RELQ_ID="Q320_R1" RELQ_RANKING_ORDER="1" RELQ_CATEGORY="Advice and Help" RELQ_DATE="2014-09-10 11:30:44" RELQ_USERID="U5547" RELQ_USERNAME="Ahmed Nagieb" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Is it a good offer ?</RelQSubject>
+			<RelQBody>Dear all; I need your help please :) ; i got an offer from Habtoor leighton group for Planning Engineer position. They are offering 10K (plus medical insurance) without any other allowances. I have 2 years of experience; is it a good offer or i can have better ?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R1_C1" RELC_DATE="2014-09-10 11:55:24" RELC_USERID="U1966" RELC_USERNAME="doha expat00" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Its very good for a 2 years exp employee</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C2" RELC_DATE="2014-09-10 12:11:47" RELC_USERID="U640" RELC_USERNAME="acchabaccha" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Grab the offer.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C3" RELC_DATE="2014-09-10 12:17:39" RELC_USERID="U5548" RELC_USERNAME="YourConsultants" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Yes I agree with Doha expat00; for 2 years of experience it's a very good offer</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C4" RELC_DATE="2014-09-10 12:21:23" RELC_USERID="U5547" RELC_USERNAME="Ahmed Nagieb" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Thank you all for such quick responds. I was little worried that i could negotiate for a better offer</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C5" RELC_DATE="2014-09-10 12:24:37" RELC_USERID="U5547" RELC_USERNAME="Ahmed Nagieb" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>specially there's no allowances at all (flat; transportation; flight tickets and even phone calls)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C6" RELC_DATE="2014-09-10 12:32:54" RELC_USERID="U516" RELC_USERNAME="mast kalandar" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>you may be need to spend aroung 5-6k for single accomadation; food and phone internet bills balance you can save them for your future welcome to doha on your new assignment brother</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C7" RELC_DATE="2014-09-10 12:33:56" RELC_USERID="U5549" RELC_USERNAME="kamran.rasul" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Negotiate to get flight tickets and transportation allowance from them.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C8" RELC_DATE="2014-09-10 12:39:38" RELC_USERID="U5547" RELC_USERNAME="Ahmed Nagieb" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I'll try; Thanks a lot guys</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C9" RELC_DATE="2014-09-10 12:51:37" RELC_USERID="U514" RELC_USERNAME="muhammad yasir siddiqui" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>if this offer includes accomodation &amp; Tranportation then its fine other wise negotiate up to 12k at least...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R1_C10" RELC_DATE="2014-09-10 13:06:26" RELC_USERID="U5547" RELC_USERNAME="Ahmed Nagieb" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>They closed the door for any allowances; my hope to negotiate for a raise :)</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R2">
+		<RelQuestion RELQ_ID="Q320_R2" RELQ_RANKING_ORDER="2" RELQ_CATEGORY="Welcome to Qatar" RELQ_DATE="2012-12-09 18:29:42" RELQ_USERID="U5550" RELQ_USERNAME="ph-mizo" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Is it good offer ?</RelQSubject>
+			<RelQBody>Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R2_C1" RELC_DATE="2012-12-09 18:30:31" RELC_USERID="U5550" RELC_USERNAME="ph-mizo" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>very urgent</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C2" RELC_DATE="2012-12-09 18:58:45" RELC_USERID="U5551" RELC_USERNAME="french kiss" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>not really god offer !!!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C3" RELC_DATE="2012-12-09 19:05:43" RELC_USERID="U804" RELC_USERNAME="NimbuPani" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>What is your year of experience ?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C4" RELC_DATE="2012-12-09 19:06:40" RELC_USERID="U5550" RELC_USERNAME="ph-mizo" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>thanx my dear . bt wht abt the company it self is it good or not?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C5" RELC_DATE="2012-12-09 19:07:43" RELC_USERID="U5550" RELC_USERNAME="ph-mizo" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>8 years</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C6" RELC_DATE="2012-12-09 19:16:09" RELC_USERID="U5552" RELC_USERNAME="jhorn871992" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Good offer ; if they will release you aftervthe contract</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C7" RELC_DATE="2012-12-09 19:16:13" RELC_USERID="U5552" RELC_USERNAME="jhorn871992" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Good offer ; if they will release you aftervthe contract</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C8" RELC_DATE="2012-12-09 19:16:13" RELC_USERID="U5552" RELC_USERNAME="jhorn871992" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Good offer ; if they will release you aftervthe contract</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C9" RELC_DATE="2012-12-09 19:16:13" RELC_USERID="U5552" RELC_USERNAME="jhorn871992" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Good offer ; if they will release you aftervthe contract</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R2_C10" RELC_DATE="2012-12-09 19:16:14" RELC_USERID="U5552" RELC_USERNAME="jhorn871992" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Good offer ; if they will release you aftervthe contract</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R5">
+		<RelQuestion RELQ_ID="Q320_R5" RELQ_RANKING_ORDER="5" RELQ_CATEGORY="Welcome to Qatar" RELQ_DATE="2011-09-07 12:00:22" RELQ_USERID="U5553" RELQ_USERNAME="engineer1969" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>is it a good offer</RelQSubject>
+			<RelQBody>Hi all; I have an offer for approx 37000 Qriyals per month. I am an engineer with 18 years experience. Is this a good offer? Thanks</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R5_C1" RELC_DATE="2011-09-07 12:04:33" RELC_USERID="U5554" RELC_USERNAME="amazinglife" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>considering the cost of housing as QR 10000 pm ; u can judge; what u are getting than the present.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C2" RELC_DATE="2011-09-07 12:05:22" RELC_USERID="U5555" RELC_USERNAME="Faisaldesigner" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Don't think more. It is good &amp; best offer I think</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C3" RELC_DATE="2011-09-07 12:07:02" RELC_USERID="U757" RELC_USERNAME="galloper48" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>or aside from this you get other benefits like: housing; medical care; car; education expenses; ticket to your country...to say the least. If it's an all inclusive then the majority of the expenses are going to be housing and education. If all other expenses/allowances are to be added then it is a terrific offer. Take it!!! Regards!!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C4" RELC_DATE="2011-09-07 12:11:10" RELC_USERID="U129" RELC_USERNAME="s_isale" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>since you have already accepted the offer; whats the point in asking whether it is good or bad?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C5" RELC_DATE="2011-09-07 12:52:01" RELC_USERID="U1107" RELC_USERNAME="mesolazy" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>no its not a good offer. its too much money per month..what will u do with all that money..... more money = more tension = heart problems = death. since u r already in your 40s u have already lived ure life...the money u earn now will cause problems for others around u...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C6" RELC_DATE="2011-09-07 13:09:57" RELC_USERID="U5556" RELC_USERNAME="be_happy_cool" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>go ahead.............</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C7" RELC_DATE="2011-09-07 13:17:29" RELC_USERID="U537" RELC_USERNAME="xedesmarie" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>engineer1969 if this offer is inclusive of everything; which means (transportation;accommodation; etc.) and you are not a luxurious type of person; its a good offer. even you will bring your family with you; you can live with this offer. but; of course; as what i am saying; it depends on how you live your life. there are expats here with families and receiving lower than that but they are here for a long time already. hope this will help you. ~smile always~</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C8" RELC_DATE="2011-09-07 13:24:19" RELC_USERID="U353" RELC_USERNAME="ghazalz" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>It's a good offer! People manage comfortable living even with half of this amount...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C9" RELC_DATE="2011-09-07 22:03:26" RELC_USERID="U1709" RELC_USERNAME="tigabaguio" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>what company is that??? im an engineer too.. em sure your white.. too bad my skin si brown.. my basic is un imaginable.. but better than my salary back home so i still took the job.. and i pitty my self knowing ur offer asking if it is a good offer or not.. with the same job our wage differ much bec of our skin colour lol..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R5_C10" RELC_DATE="2011-09-08 07:32:37" RELC_USERID="U5557" RELC_USERNAME="lhegs" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>He is 'pana' coz if he is white then that offer is not enough for him due to high standard living in western country.</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R8">
+		<RelQuestion RELQ_ID="Q320_R8" RELQ_RANKING_ORDER="8" RELQ_CATEGORY="Salary and Allowances" RELQ_DATE="2009-06-02 17:03:34" RELQ_USERID="U5558" RELQ_USERNAME="Hussla77" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>IS THIS A GOOD OFFER</RelQSubject>
+			<RelQBody>Hi I have just been offered a job in Qatar and was wondering if you can tell me if this is a good offer: 9200 basic salary (month) 5000 Accomodation (Month) 2000 Transport (Month) 10000 Furniture allowance (once off) I am a single guy from Australia; hoping to get a place of my own. Would 5000 cover a fully furnished place or even an unfurnished 2 bedroom? What sort of car can i buy for 2000 per month?? Hope you can help out thanks in advance..</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R8_C1" RELC_DATE="2009-06-02 17:07:43" RELC_USERID="U1383" RELC_USERNAME="tubelight" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>depends on what it is for (responsibilities/govt or pvt sector)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C2" RELC_DATE="2009-06-02 17:13:09" RELC_USERID="U5558" RELC_USERNAME="Hussla77" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Im employed as a retail manager...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C3" RELC_DATE="2009-06-02 17:26:38" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>People with an Austraian passport generally get more.. ...Avada Kedavra..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C4" RELC_DATE="2009-06-02 17:27:46" RELC_USERID="U373" RELC_USERNAME="Mandilulur" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>It's kinda on the edge of being not-so-good. Do you make more where you are now? Mandi</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C5" RELC_DATE="2009-06-02 17:39:41" RELC_USERID="U5559" RELC_USERNAME="ishqia" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>the rent 5000 is less even for an unfurnished house here ------------------------------------------------------- i want to learn until i die; if u have some knowledge then share it with me. -------------------------------------------------------</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C6" RELC_DATE="2009-06-02 17:40:32" RELC_USERID="U5559" RELC_USERNAME="ishqia" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>i meant for 2 bedrooms ... ------------------------------------------------------- i want to learn until i die; if u have some knowledge then share it with me. -------------------------------------------------------</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C7" RELC_DATE="2009-06-02 17:54:02" RELC_USERID="U244" RELC_USERNAME="deedee" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>check the classifieds to see what 5000 can get you. I think it would be bordering on ghetto accomodations.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C8" RELC_DATE="2009-06-02 17:54:07" RELC_USERID="U5558" RELC_USERNAME="Hussla77" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I do earn alot more here in Australia but Im coming for the experience and hope more opportunities arise ... I just really want to know if i can live off of this and still enjoy myself...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C9" RELC_DATE="2009-06-02 17:56:16" RELC_USERID="U659" RELC_USERNAME="umm-salayum" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>that is a good offer for a single guy; we are 8 ppl in the family and we live good with 8000 are month . BUT on the end that depends on your life style .</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R8_C10" RELC_DATE="2009-06-02 18:01:15" RELC_USERID="U5558" RELC_USERNAME="Hussla77" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I dont drink alcohol; I just like to stay fit so gym is important. Im really there for an experience; I live pretty simple life; do love eating hahaha what aussie dosnt.. I like running so hopefully some good places to run there.. But dont really think id spend much on anything really..</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R10">
+		<RelQuestion RELQ_ID="Q320_R10" RELQ_RANKING_ORDER="10" RELQ_CATEGORY="Salary and Allowances" RELQ_DATE="2013-10-09 23:58:41" RELQ_USERID="U5560" RELQ_USERNAME="Offerdoha" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Job Offer</RelQSubject>
+			<RelQBody>HI; I just have been offered 7000 QR as salary.. plus medical insurance; studio apartment close to the airport; transportation to the hotel and all 3 meals at the hotel cafeteria.. I am single.. don't drink alcohol; don't smoke ..hahaha Can somebody give me their opinion about the offer (offer is for Spa Manager)? Can I safe some money from it if I go out for some dinners; taxis etc ... ?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R10_C1" RELC_DATE="2013-10-10 00:34:02" RELC_USERID="U7" RELC_USERNAME="t_coffee_or_me" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>don't drink alcohol; don't smoke ..hahaha Why hahaha?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C2" RELC_DATE="2013-10-10 00:48:10" RELC_USERID="U5560" RELC_USERNAME="Offerdoha" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I don't like it .. can you please give some info about this offer? I got an offer of 7000 QR salary; studio apt by myself; transportation from home to work; meals cafeteria at the hotel for all 3 meals; medical insurance; 30 vacation days a year; one round flight ticket a year to home country... Offer is in a hotel as a Spa Manager..can somebody tell if this is a good salary and conditions? Can I go out as being single and how much that can cost me? Internet and phone?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C3" RELC_DATE="2013-10-10 01:05:27" RELC_USERID="U1570" RELC_USERNAME="nafeels" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>offer is fine the biggest expense in doha is rent this is equuivalent to 12k if u do everthing else on ur own so yes there is enough saving depends upon what kind of spender u r</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C4" RELC_DATE="2013-10-10 01:08:33" RELC_USERID="U7" RELC_USERNAME="t_coffee_or_me" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>The offer is good go for it. Internet+Cable TV+phone 3 in one package also known Mozaic is QR250/- per month. internet+phone is QR200/- per month.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C5" RELC_DATE="2013-10-10 01:10:10" RELC_USERID="U5560" RELC_USERNAME="Offerdoha" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>thank you so much nafeels said offer is fine the biggest ... and t_coffee_or_me said The offer is good go for ...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C6" RELC_DATE="2013-10-10 01:10:25" RELC_USERID="U1009" RELC_USERNAME="gene_lv" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Take it; a very good offer. Welcome to Doha</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C7" RELC_DATE="2013-10-10 01:19:22" RELC_USERID="U5560" RELC_USERNAME="Offerdoha" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>sorry guys ..but still didn't ask... how much are deductions from the salary?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C8" RELC_DATE="2013-10-10 01:27:20" RELC_USERID="U7" RELC_USERNAME="t_coffee_or_me" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>No salary tax over here; You get to take home the full salary.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C9" RELC_DATE="2013-10-10 02:59:56" RELC_USERID="U5561" RELC_USERNAME="TETO12" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>it is good one ;goooo</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R10_C10" RELC_DATE="2013-10-10 04:21:30" RELC_USERID="U5562" RELC_USERNAME="TodoMundoBem" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Good Luck!!....Bem Vindo...</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R12">
+		<RelQuestion RELQ_ID="Q320_R12" RELQ_RANKING_ORDER="12" RELQ_CATEGORY="Salary and Allowances" RELQ_DATE="2012-07-22 21:05:10" RELQ_USERID="U5563" RELQ_USERNAME="walid106" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Qatar air ways offer ! is it good ??</RelQSubject>
+			<RelQBody>Hello; Please i want to know about a offer that i have with Qatar air ways; The company will provide an accomodation (or 5000 QAR if not ) and a salary 6500 QAR per month; one ticket of travel per year to go back to our country and its all so please advice me about this offer and let me do the right choice I don't have much time i must say yes or not so be generous on your comments ;)</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R12_C1" RELC_DATE="2012-07-22 21:21:36" RELC_USERID="U66" RELC_USERNAME="Molten Metal" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Very good; hope you shall be happy ...</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C2" RELC_DATE="2012-07-22 21:22:04" RELC_USERID="U5564" RELC_USERNAME="missmeever" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I would say; its not bad. go for it</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C3" RELC_DATE="2012-07-22 21:25:03" RELC_USERID="U7" RELC_USERNAME="t_coffee_or_me" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Cannot say as we don't know the Position you have been offered.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C4" RELC_DATE="2012-07-22 21:33:48" RELC_USERID="U1758" RELC_USERNAME="Elegance" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Good for a start if you are a young bachelor with no commitments to family.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C5" RELC_DATE="2012-07-22 21:41:04" RELC_USERID="U5563" RELC_USERNAME="walid106" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I'm an aircraft mechanic with 5 years experience; i'm married without kids; 6500 qar is fix and the company will choose if they provide accomodation or pay 5000 qar back if not please advice me</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C6" RELC_DATE="2012-07-22 21:42:13" RELC_USERID="U2415" RELC_USERNAME="amitsen.amitsen" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>or in management compare the salaries with other corporate clients</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C7" RELC_DATE="2012-07-22 21:42:18" RELC_USERID="U361" RELC_USERNAME="flanostu" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Geeez; that's how much it costs me to fly back home.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C8" RELC_DATE="2012-07-22 22:25:38" RELC_USERID="U2666" RELC_USERNAME="ambiguous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>that's a good offer dude! seize it!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C9" RELC_DATE="2012-07-22 22:38:24" RELC_USERID="U97" RELC_USERNAME="jubilantks" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>its ok; until u have the series of kids.... if it is added with kids schooling; family medical; transportation etc; then i think u should join it</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R12_C10" RELC_DATE="2012-07-22 22:45:12" RELC_USERID="U5565" RELC_USERNAME="ricochet" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Offer is good. If you want; you can get the allowance for the accommodation and rent a room which costs QR 1500-3000 it's a big savings!</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R20">
+		<RelQuestion RELQ_ID="Q320_R20" RELQ_RANKING_ORDER="20" RELQ_CATEGORY="Welcome to Qatar" RELQ_DATE="2012-07-03 06:16:30" RELQ_USERID="U5566" RELQ_USERNAME="Selvacool" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Is it a good offer 8300 QR?</RelQSubject>
+			<RelQBody>Hi i'm basically from India; i got an offer in Doha with 8300 QR+accomodation+transaport+one time air ticket+ medical insurance. And im right now single. Will it be a good offer to accept for decent living and savings. Or Should i go for some other offer?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R20_C1" RELC_DATE="2012-07-03 06:22:17" RELC_USERID="U2771" RELC_USERNAME="YAZLEB" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Its only good depending on what is your work? how many hours? will u be able to save? only u can answer that as only u know ur lifestyle!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C2" RELC_DATE="2012-07-03 06:34:24" RELC_USERID="U5566" RELC_USERNAME="Selvacool" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Im an IT professional and going to work for Qatar Airways as a test engineer. Mostly will spend on food &amp; entertainment;and will be using Internet?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C3" RELC_DATE="2012-07-03 07:50:47" RELC_USERID="U5567" RELC_USERNAME="newqatari" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Ofcourse..don't think for a second opinion.. but i think salary and benefits is always based on experience..Based on current situation in QATAR this offer is always good..as you are still SINGLE..!!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C4" RELC_DATE="2012-07-03 08:11:26" RELC_USERID="U578" RELC_USERNAME="flexicode" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Compare it with your current status or anything other than this in hand; if it is better; its good else bad.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C5" RELC_DATE="2012-07-03 08:14:31" RELC_USERID="U5568" RELC_USERNAME="san3212k" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>AS a single.. and if you just started u career in oversea it's good offer.... get some experience and later on try somewhere else..</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C6" RELC_DATE="2012-07-03 08:37:42" RELC_USERID="U5569" RELC_USERNAME="bombayboy" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>the salary is good ... housing the very expensive in doha so if that is taken care you should atlest save 5000 qar every month. compare this amount with your indian salary and decide whether this amount is good enough to come here. Also note here changing a job is impossible; you will have to stick with qatar airways unless you get something outside qatar.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C7" RELC_DATE="2012-07-03 08:43:08" RELC_USERID="U5570" RELC_USERNAME="lobwedge2012" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>If it's better than what you have in India then go for it - for the experience at least. However; Qatar is expensive so you will have to watch your money. Also there are more men than women so you are likely to remain single so be prepared for some loneliness.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C8" RELC_DATE="2012-07-03 09:15:32" RELC_USERID="U3786" RELC_USERNAME="Johnson566" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>If you want a family visa ;you should get a minimum QR 10;000.So Try to negotiate little bit more.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C9" RELC_DATE="2012-07-03 11:07:18" RELC_USERID="U483" RELC_USERNAME="Colt45" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>What grade are you being offered?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R20_C10" RELC_DATE="2012-07-05 09:52:47" RELC_USERID="U5571" RELC_USERNAME="rdas2440" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Selvacool ; that depends on from where u hired..u hired from india or in qatar.</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R26" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q159_R14">
+		<RelQuestion RELQ_ID="Q320_R26" RELQ_RANKING_ORDER="26" RELQ_CATEGORY="Salary and Allowances" RELQ_DATE="2010-12-11 20:13:21" RELQ_USERID="U3883" RELQ_USERNAME="justloverman" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>is this offer is good or bad ?</RelQSubject>
+			<RelQBody>is this offer is ggod or bad ? hi there good day is this offer is good enougph or what ? basic 5000 housing 3000 transportaiton 1000 ticket allowance 1000 market adjusment 3500 ------------------------- furniture allowance 25000 for a bank corporate officer with wife and daughter in qatar egyption 3 years exp please help</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R26_C1" RELC_DATE="2010-12-11 20:22:44" RELC_USERID="U2019" RELC_USERNAME="PRIYA CHANDRASEKARAN" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>U R WELCOME TO QATAR.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C2" RELC_DATE="2010-12-11 20:25:22" RELC_USERID="U1367" RELC_USERNAME="shapil" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>whats good for me; maybe bad for you.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C3" RELC_DATE="2010-12-11 20:28:56" RELC_USERID="U2001" RELC_USERNAME="corcaoich" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>what do you expect Maybe this is good; I dont think so. Housing is expensive! Better to get them to give you accommodation. Have you thought of education costs? Better to ask someone in your own situation! i think this is not a great offer for someone who has to work in a suit! Think carefully!</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C4" RELC_DATE="2010-12-11 20:38:16" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>lousy and the market adjustment is separate so no bonus no end of service and possible during leave you done get. basic should be 15-18k min and everything on top how about schooling? this is expensive here 20k x 4</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C5" RELC_DATE="2010-12-11 20:43:45" RELC_USERID="U3884" RELC_USERNAME="rdsouza" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>The lowest grade accomodation costs at least 4500; Schooling for your child costs at least 1000 per month with transportation in ordinary arab or asian schools; your own transport and utility will be at least 2000; food expenses wont be less than 2000 ;yearly ticket to your country for the whole family would be at least 6000 per year. That leaves not much. But if you have a worse condition over there then grab at the opportunity. You will be able to find better prospect later on.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C6" RELC_DATE="2010-12-11 20:43:57" RELC_USERID="U361" RELC_USERNAME="flanostu" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>double it</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C7" RELC_DATE="2010-12-11 20:56:22" RELC_USERID="U3883" RELC_USERNAME="justloverman" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>thanks all but there is plus the above monthly allocation 13500 a bounus + profit share + medic insurance for whole family + life insurance + furniture allowance every 4 years + end of service one month over every year and my child is still 8 month old far away from school i could get pormoted or something and here in egypt not very good than that :( and i still 25 years old so what do u think</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C8" RELC_DATE="2010-12-11 20:58:34" RELC_USERID="U246" RELC_USERNAME="Xena" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>I am just trying to understand. Your ticket allowance - will they pay you for your ticket on a monthly basis? or will they only give you QR1000 when you are leaving to go home? Sorry your breakdown doesn't make any sense. I get the Basic Salary and Car Allowance and Housing.... What is a ticket allowance 1000; market adjusment 3500; furniture allowance 25000? Are they giving you money to furnish your home? You might as well pocket that money and use it towards getting furnished apartment - which for a 2 bedroom is about QR8;000 - If you are only earning QR13;500; your salary diminishes drastically and you are only left with QR5;500 for a Car; monthly utilities; groceries; school fees and entertainment.... and if you are only getting QR1000 for your airticket home; then you are going to need to save for the rest of your ticket and that of your wife and child.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C9" RELC_DATE="2010-12-11 21:16:08" RELC_USERID="U3883" RELC_USERNAME="justloverman" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>the monthly allocation is as follows : work on grade 11 basic 5000 housing 3000 transportaiton 1000 ticket allowance 1000 market adjusment 3500 --------------------- total of 13500 per month --------------------- and 25000 for furnishing my apartement plus the following Medical for me and my family + Life insurance + Bounous + profit share thats all i'm 25 years i have 3 years of exp; thanks alot.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R26_C10" RELC_DATE="2010-12-11 21:28:08" RELC_USERID="U3885" RELC_USERNAME="the-investor" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"Hello; i am egyptian as well but older than you. Listen you can accept the offer but do not expect to save a lot as you will pay almost 4000 for rent; about 1500 to 2000 as car monthly installment &amp; about 3000 at least for monthly expenses without having too much fun. so you will be able to save about 1000 USD per month which is fine for somebody in your age. but if you are expecting to save more then do not come or ask for more.For furniture allowance it is going to be depriciated over 4 years but they will not pay it to u every for year check with them again;for end of year profit share do not expect more than two to three month for the basic maximum. also for promotions it is not that easy may be after 3 or 4 years.So you may accept the offer to gain the gulf expriance then you can start searching for another job in gulf as they always say for egyptians "" you do not have gulf experiance"""</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R43" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q32_R22">
+		<RelQuestion RELQ_ID="Q320_R43" RELQ_RANKING_ORDER="43" RELQ_CATEGORY="Salary and Allowances" RELQ_DATE="2008-12-31 03:58:19" RELQ_USERID="U3" RELQ_USERNAME="anonymous" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Working in Hamad Medical Center; is it good?</RelQSubject>
+			<RelQBody>Anyone here who's a Filipino working for Hamad Medical Center? Was it ok to work there? As a Filipino who will be getting QR 6;500 is that enough?</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R43_C1" RELC_DATE="2008-12-31 07:11:52" RELC_USERID="U1264" RELC_USERNAME="Kristine9582" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Is that QR 6500 altogether including your allowances or is it just you basic salary?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C2" RELC_DATE="2008-12-31 07:22:25" RELC_USERID="U624" RELC_USERNAME="somwerNdmiddle" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>if you're single and does not have a big responsibility to provide financially for your family then it's more than enough. btw; is that you're basic salary only or the whole package? =Dura Lex Sed Lex=</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C3" RELC_DATE="2008-12-31 08:32:31" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>That is the total Package...all inclusive. Obviously they are not giving you housing allowance (QR5;000). Then they should be providing housing. I guess thats the BEST package that Qatar has to offer. If they can house you at the Medical City (with shuttle bus service to work) then it will be the best.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C4" RELC_DATE="2009-01-04 22:00:47" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>5500 is just the salary; allowance is at 1000 total of 6500</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C5" RELC_DATE="2009-01-04 22:02:00" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Housing is free by the way; Thanks for answering my questions</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C6" RELC_DATE="2009-01-04 22:05:09" RELC_USERID="U597" RELC_USERNAME="greentea" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"no housing/accommodation; no annual airfare... only basic; transport allowance and 30 or 40 days annual leave (depends if you're senior or junior staff) ""No one is born happy... But all of us are born with the ability to create happiness..."" -anonymous"</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C7" RELC_DATE="2009-01-04 22:12:56" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Are you guys Filipinos?; is there night life in Qatar?</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C8" RELC_DATE="2009-01-04 22:14:58" RELC_USERID="U1017" RELC_USERNAME="junarc2003" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>hi there delldude... u might as well wanna check this.. http://qatarliving.com/group/filipino-expatriates-in-qatar</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C9" RELC_DATE="2009-01-04 22:15:25" RELC_USERID="U115" RELC_USERNAME="GodFather." RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>GT is the expert trust me.. she is. Read carefully what she writes ----------------- HE WHO DARES WINS</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R43_C10" RELC_DATE="2009-01-04 22:28:13" RELC_USERID="U597" RELC_USERNAME="greentea" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>"you're starting the recruitment? should we suggest it be included in the HMC manual for Filipino recruits? :D) Hi UkEng! wanna give ST to your pinoy friends? junarc and I are online right now :D) . ""No one is born happy... But all of us are born with the ability to create happiness..."" -anonymous"</RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+
+<OrgQuestion ORGQ_ID="Q320">
+	<OrgQSubject>"Is it good offer ?</OrgQSubject>
+	<OrgQBody>""Hi Frds;i QA supervisor with 8 years exp in pharmaceutical industries have got job offer from Qatar pharma company; Salary which they have offered to me is 5000QAR + Accommodation + Food. one time air ticket+ medical insurance. Will it be a good offer to accept for decent living and savings. and what abt this company ; is it good or not? Please share your thoughts about this. Thanks :)"</OrgQBody>
+
+	<Thread THREAD_SEQUENCE="Q320_R57" SubtaskA_Skip_Because_Same_As_RelQuestion_ID="Q246_R15">
+		<RelQuestion RELQ_ID="Q320_R57" RELQ_RANKING_ORDER="57" RELQ_CATEGORY="Advice and Help" RELQ_DATE="2013-05-02 19:43:00" RELQ_USERID="U4882" RELQ_USERNAME="ankukuma" RELQ_RELEVANCE2ORGQ="?">
+			<RelQSubject>Best Bank</RelQSubject>
+			<RelQBody>Hi Guys; I need to open a new bank accoount. Which is the best bank in Qatar ? I assume all of them will roughly be the same; but stll which has a slight edge (Money transfer; benifits etc) Thanks !!!</RelQBody>
+		</RelQuestion>
+
+		<RelComment RELC_ID="Q320_R57_C1" RELC_DATE="2013-05-03 07:23:20" RELC_USERID="U594" RELC_USERNAME="Dilgeer" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Commercial bank/IBQ</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C2" RELC_DATE="2013-05-03 12:58:13" RELC_USERID="U979" RELC_USERNAME="Speedysid" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>The best bank in Qatar for you would be the one that fits in your requirements.I suggest you visit the major banks here; and approach the Customer Relations person there to guide you with the facilities the bank offers. They include: -Current Accounts facilities -Savings Account facilities - Money Transfer (However; I highly recommend using the bank transfer only in emergency cases. There are money transfer agents which offer better exchange rates; and lower service fees) - Tie-ups with any bank in your home country to ease transfers</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C3" RELC_DATE="2013-05-03 12:58:25" RELC_USERID="U979" RELC_USERNAME="Speedysid" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>- Credit / Debit card facilities - Customer Care services - Promotional services - Bank Loans facilities; etc. I recommend that you visit the nearest banks and gather all info.it'll just take you a couple of days to arrive at the decision.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C4" RELC_DATE="2013-05-03 22:25:47" RELC_USERID="U4883" RELC_USERNAME="puru1600" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Commercial Bank</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C5" RELC_DATE="2013-05-04 07:04:50" RELC_USERID="U4884" RELC_USERNAME="usmi" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Any bank other than Doha Bank ;)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C6" RELC_DATE="2013-05-04 13:02:51" RELC_USERID="U4885" RELC_USERNAME="kiekie212" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>QNB is now strongest bank in the world http://dohanews.co/post/49438355258/bloomberg-qatar-beats-out-singapore-as-home-of-worlds</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C7" RELC_DATE="2013-05-04 13:35:31" RELC_USERID="U4886" RELC_USERNAME="binoyy" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Commercial Bank of Qatar is the best bank in Qatar. Login to the website for more details. http://www.cbq.qa/EN/Personal/Bank-Accounts/Pages/default.aspx</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C8" RELC_DATE="2013-05-04 16:50:50" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>Any Islamic bank. Had bad XP w/ CBQ; very bad bank.</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C9" RELC_DATE="2013-05-04 17:04:12" RELC_USERID="U3" RELC_USERNAME="anonymous" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>very well said...Any islamic bank..iam with kookie or i second after the comment of kookie...however CBQ is a good bank too :)...any help you want for CBQ bank please PM me :)</RelCText>
+		</RelComment>
+
+		<RelComment RELC_ID="Q320_R57_C10" RELC_DATE="2013-05-04 17:27:20" RELC_USERID="U4882" RELC_USERNAME="ankukuma" RELC_RELEVANCE2ORGQ="?" RELC_RELEVANCE2RELQ="?">
+			<RelCText>@ Boxbe Well; i am just waiting for my RP and dont wanna waste time in deciding on the bank. From the advice it seems most people are goin with CBQ. Your help will be appreciated. Basically; i want a cheque book ASAP so that i can sign a contract for the </RelCText>
+		</RelComment>
+	</Thread>
+</OrgQuestion>
+</xml>
