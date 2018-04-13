@@ -714,7 +714,7 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
       result += '\n'.join(orgmodeline(line) for line in matrix)
       return result
 
-  filters_descr = {
+  all_filters_descr = {
       'gtr1': '$\leq 1$',
       'gtr2': '$\leq 2$',
       'gtr3': '$\leq 3$',
@@ -730,7 +730,7 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
       'lemmas': 'Lemmes',
   }
 
-  doctrees_years = {
+  all_doctrees_descr = {
       '_'.join((model, corpus, extractor)): corpus
       for model, corpus, extractor in product(models, corpuses, extractors)
   }
@@ -809,7 +809,7 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
               ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
 
           line = [all_indicators_descr[indicator],
-                  ', '.join(filters_descr[key] for key in fltrs),
+                  ', '.join(all_filters_descr[key] for key in fltrs),
                   score.stdout.decode('utf-8').strip('\n')]
 
           restable.append(line)
@@ -817,7 +817,7 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
       restable.sort(key=lambda x: x[2], reverse=True)
       restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
       print()
-      print('\\newpage\n' + '*année ' + doctrees_years[doctree] + '*' + '\n')
+      print('\\newpage\n' + '*année ' + all_doctrees_descr[doctree] + '*' + '\n')
       print(orgmodetable(restable, header=True))
 
 #+END_SRC
@@ -957,7 +957,7 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
               ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
 
           line = [all_indicators_descr[indicator],
-                  ', '.join(filters_descr[key] for key in filterspartition),
+                  ', '.join(all_filters_descr[key] for key in filterspartition),
                   score.stdout.decode('utf-8').strip('\n')]
 
           resulttable.append(line)
@@ -968,7 +968,7 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
       restable.sort(key=lambda x: x[2], reverse=True)
       restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
       print()
-      print('\\newpage\n' + '*année ' + doctrees_years[doctree] + '*' + '\n')
+      print('\\newpage\n' + '*année ' + all_doctrees_descr[doctree] + '*' + '\n')
       print(orgmodetable(restable, header=True))
 #+END_SRC
 
