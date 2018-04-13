@@ -64,7 +64,6 @@ extractors = {
 
 MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
 
-
 def isnotstopword(word):
     return word not in STOP_WORDS
 
@@ -89,6 +88,32 @@ filters.update(lenfilters)
 filters.update(nolenfilters)
 filters.update({ 'nofilter': lambda x: True })
 
+def nonemptypartitions(iterable):
+    for i in range(1, len(iterable) + 1):
+        for perm in combinations(iterable, i):
+            yield perm
+
+
+def join_predicates(iterable_preds):
+    def joinedlocal(element):
+        for pred in iterable_preds:
+            if not pred(element):
+                return False
+        return True
+    print('joining', *(pred for pred in iterable_preds))
+    return joinedlocal
+
+
+filters_partition = list(nonemptypartitions(nolenfilters))
+
+for len_and_nolen in product(nolenfilters, lenfilters):
+    filters_partition.append(len_and_nolen)
+
+for lenfilter in lenfilters:
+    filters_partition.append((lenfilter,))
+
+filters_partition.append(('nofilter',))
+
 def extracttext(tok):
     return tok.text
 
@@ -112,15 +137,29 @@ sentenceextractors = {
     'document': lambda x: x,
 }
 
-bowmakers = {
-    'named_entities_text': ('text', 'entities'),
-    'named_entities_label': ('label', 'entities'),
+# bowmakers = {
+#     'named_entities_text': ('text', 'entities'),
+#     'named_entities_label': ('label', 'entities'),
+#     'tokens': ('text', 'document'),
+#     'lemmas': ('lemma', 'document'),
+# }
+
+morphologic_indicators = {
     'tokens': ('text', 'document'),
     'lemmas': ('lemma', 'document'),
 }
 
-def getbowmakerfunctions(key):
-    return (wordextractors[bowmakers[key][0]], sentenceextractors[bowmakers[key][1]])
+ner_indicators = {
+    'named_entities_text': ('text', 'entities'),
+    'named_entities_label': ('label', 'entities'),
+}
+
+all_indicators = {}
+all_indicators.update(morphologic_indicators)
+all_indicators.update(ner_indicators)
+
+def getindicatorfunctions(key):
+    return (wordextractors[all_indicators[key][0]], sentenceextractors[all_indicators[key][1]])
 
 def createbowmaker(wordextractor, sentenceextractor, filters):
     def bowmaker(document):
@@ -152,36 +191,10 @@ doctrees = {
     for model, corpus, extractor in product(models, corpuses, extractors)
 }
 
-def nonemptypartitions(iterable):
-    for i in range(1, len(iterable) + 1):
-        for perm in combinations(iterable, i):
-            yield perm
+approches_combinatoires = list(product(doctrees, all_indicators, filters_partition))
 
-
-def join_predicates(iterable_preds):
-    def joinedlocal(element):
-        for pred in iterable_preds:
-            if not pred(element):
-                return False
-        return True
-    print('joining', *(pred for pred in iterable_preds))
-    return joinedlocal
-
-
-filters_partition = list(nonemptypartitions(nolenfilters))
-
-for len_and_nolen in product(nolenfilters, lenfilters):
-    filters_partition.append(len_and_nolen)
-
-for lenfilter in lenfilters:
-    filters_partition.append((lenfilter,))
-
-filters_partition.append(('nofilter',))
-
-approches_combinatoires = list(product(doctrees, bowmakers, filters_partition))
-
-def getpredfilename(doctree, bowmaker, filterspartition):
-    return '_'.join((doctree, bowmaker, *filterspartition, 'scores.pred'))
+def getpredfilename(doctree, indicator, filterspartition):
+    return '_'.join((doctree, indicator, *filterspartition, 'scores.pred'))
 
 
 # inversedocfreqs = transformtree(
@@ -199,13 +212,13 @@ inversedocfreqs = {
          for org in training_doctree.values()
          for doc in org.values()]
     )
-    for wordex, sentex in bowmakers.values()
+    for wordex, sentex in all_indicators.values()
 }
 
 out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
-for doctree, bowmaker, filterspartition in approches_combinatoires:
-    wordex, sentex = bowmakers[bowmaker]
+for doctree, indicator, filterspartition in approches_combinatoires:
+    wordex, sentex = all_indicators[indicator]
     # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
     #                               [filters[filterkey] for filterkey in filterspartition])
 
@@ -223,5 +236,7 @@ for doctree, bowmaker, filterspartition in approches_combinatoires:
         )
     )
 
-    prediction_file = getpredfilename(doctree, bowmaker, filterspartition)
+    prediction_file = getpredfilename(doctree, indicator, filterspartition)
     write_scores_to_file(scores, prediction_file, verbose=True)
+
+

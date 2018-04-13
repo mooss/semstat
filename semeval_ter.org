@@ -558,7 +558,6 @@ Les mots d'un sac de mots peuvent être filtrés ou non selon un prédicat.
 #+BEGIN_SRC ipython
   MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
 
-
   def isnotstopword(word):
       return word not in STOP_WORDS
 
@@ -583,6 +582,36 @@ Les mots d'un sac de mots peuvent être filtrés ou non selon un prédicat.
   filters.update(nolenfilters)
   filters.update({ 'nofilter': lambda x: True })
 #+END_SRC
+
+La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
+#+BEGIN_SRC ipython
+  def nonemptypartitions(iterable):
+      for i in range(1, len(iterable) + 1):
+          for perm in combinations(iterable, i):
+              yield perm
+
+
+  def join_predicates(iterable_preds):
+      def joinedlocal(element):
+          for pred in iterable_preds:
+              if not pred(element):
+                  return False
+          return True
+      print('joining', *(pred for pred in iterable_preds))
+      return joinedlocal
+
+
+  filters_partition = list(nonemptypartitions(nolenfilters))
+
+  for len_and_nolen in product(nolenfilters, lenfilters):
+      filters_partition.append(len_and_nolen)
+
+  for lenfilter in lenfilters:
+      filters_partition.append((lenfilter,))
+
+  filters_partition.append(('nofilter',))
+#+END_SRC
+
 
 #+BEGIN_SRC ipython :tangle no :exports none :results silent
   filters_descr = {
@@ -624,19 +653,33 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
       'document': lambda x: x,
   }
 
-  bowmakers = {
-      'named_entities_text': ('text', 'entities'),
-      'named_entities_label': ('label', 'entities'),
+  # bowmakers = {
+  #     'named_entities_text': ('text', 'entities'),
+  #     'named_entities_label': ('label', 'entities'),
+  #     'tokens': ('text', 'document'),
+  #     'lemmas': ('lemma', 'document'),
+  # }
+
+  morphologic_indicators = {
       'tokens': ('text', 'document'),
       'lemmas': ('lemma', 'document'),
   }
 
-  def getbowmakerfunctions(key):
-      return (wordextractors[bowmakers[key][0]], sentenceextractors[bowmakers[key][1]])
+  ner_indicators = {
+      'named_entities_text': ('text', 'entities'),
+      'named_entities_label': ('label', 'entities'),
+  }
+
+  all_indicators = {}
+  all_indicators.update(morphologic_indicators)
+  all_indicators.update(ner_indicators)
+
+  def getindicatorfunctions(key):
+      return (wordextractors[all_indicators[key][0]], sentenceextractors[all_indicators[key][1]])
 #+END_SRC
 
 #+BEGIN_SRC ipython :tangle no :exports none :results silent
-  bowmakers_descr = {
+  all_indicators_descr = {
       'named_entities_text': 'Textes des entités nommées',
       'named_entities_label': 'Étiquettes des entités nommées',
       'tokens': 'Tokens',
@@ -644,7 +687,7 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
   }
 #+END_SRC
 
-Les fonctions associées aux éléments de =bowmakers= sont destinés à être passés à la fonction =createbowmaker=, retournant une fonction permettant de construire un sac de mots selon les modalité voulues.
+Les fonctions associées aux éléments de =all_indicators= sont destinés à être passés à la fonction =createbowmaker=, retournant une fonction permettant de construire un sac de mots selon les modalité voulues.
 
 #+BEGIN_SRC ipython
   def createbowmaker(wordextractor, sentenceextractor, filters):
@@ -683,12 +726,6 @@ Les fonctions associées aux éléments de =bowmakers= sont destinés à être p
   }
 #+END_SRC
 
-** Approches bruteforce
-*** Création des approches bruteforce
-Les approches combinatoires correspondent ici à une approche en force brute.
-Sont testées toutes les combinaisons de sacs de mots et de filtres.
-
-Les arbres des documents sont précalculés pour éviter de répéter cette opération coûteuse.
 
 #+BEGIN_SRC ipython :tangle no :exports none :results silent
   doctrees_years = {
@@ -697,39 +734,13 @@ Les arbres des documents sont précalculés pour éviter de répéter cette opé
   }
 #+END_SRC
 
-La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
-#+BEGIN_SRC ipython
-  def nonemptypartitions(iterable):
-      for i in range(1, len(iterable) + 1):
-          for perm in combinations(iterable, i):
-              yield perm
-
-
-  def join_predicates(iterable_preds):
-      def joinedlocal(element):
-          for pred in iterable_preds:
-              if not pred(element):
-                  return False
-          return True
-      print('joining', *(pred for pred in iterable_preds))
-      return joinedlocal
-
-
-  filters_partition = list(nonemptypartitions(nolenfilters))
-
-  for len_and_nolen in product(nolenfilters, lenfilters):
-      filters_partition.append(len_and_nolen)
-
-  for lenfilter in lenfilters:
-      filters_partition.append((lenfilter,))
-
-  filters_partition.append(('nofilter',))
-#+END_SRC
-
+** Approches bruteforce
+*** Création des approches bruteforce
+Les approches bruteforce correspondent à tester toutes les combinaisons d'arbres de documents, de sacs de mots et de filtres.
 Les approches combinatoires sont crées en faisant le produit cartésien des dimensions envisagées.
 
 #+BEGIN_SRC ipython
-  approches_combinatoires = list(product(doctrees, bowmakers, filters_partition))
+  approches_combinatoires = list(product(doctrees, all_indicators, filters_partition))
 #+END_SRC
 
 *** Exécution des approches bruteforce
@@ -737,8 +748,8 @@ Les approches combinatoires sont crées en faisant le produit cartésien des dim
 Chacune des approches précédemment générées est exécutée et les scores produits sont écrits dans les fichiers correspondants.
 
 #+BEGIN_SRC ipython
-  def getpredfilename(doctree, bowmaker, filterspartition):
-      return '_'.join((doctree, bowmaker, *filterspartition, 'scores.pred'))
+  def getpredfilename(doctree, indicator, filterspartition):
+      return '_'.join((doctree, indicator, *filterspartition, 'scores.pred'))
 
 
   # inversedocfreqs = transformtree(
@@ -756,13 +767,13 @@ Chacune des approches précédemment générées est exécutée et les scores pr
            for org in training_doctree.values()
            for doc in org.values()]
       )
-      for wordex, sentex in bowmakers.values()
+      for wordex, sentex in all_indicators.values()
   }
 
   out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
-  for doctree, bowmaker, filterspartition in approches_combinatoires:
-      wordex, sentex = bowmakers[bowmaker]
+  for doctree, indicator, filterspartition in approches_combinatoires:
+      wordex, sentex = all_indicators[indicator]
       # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
       #                               [filters[filterkey] for filterkey in filterspartition])
 
@@ -780,8 +791,21 @@ Chacune des approches précédemment générées est exécutée et les scores pr
           )
       )
 
-      prediction_file = getpredfilename(doctree, bowmaker, filterspartition)
+      prediction_file = getpredfilename(doctree, indicator, filterspartition)
       write_scores_to_file(scores, prediction_file, verbose=True)
+#+END_SRC
+
+
+** Approches de pondération
+
+Le but des approches de pondération est de d'utiliser plusieurs indicateurs au sein d'une même méthode.
+Un exemple d'approche de pondération est d'utiliser les lemmes pour estimer la similarité de phrases,
+et de donner une plus grande importance aux lemmes communs qui sont également des entités nommées.
+
+*** Création des approches de pondération
+
+#+BEGIN_SRC ipython
+
 #+END_SRC
 
 * Debug                          :noexport:
@@ -878,14 +902,14 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 
   def makerestable(doctree):
       resulttable=[]
-      for bowmaker, filterspartition in product(bowmakers, filters_partition):
+      for indicator, filterspartition in product(all_indicators, filters_partition):
           predfilename = getpredfilename(
-              doctree, bowmaker, filterspartition)
+              doctree, indicator, filterspartition)
 
           score = subprocess.run(
               ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
 
-          line = [bowmakers_descr[bowmaker],
+          line = [all_indicators_descr[indicator],
                   ', '.join(filters_descr[key] for key in filterspartition),
                   score.stdout.decode('utf-8').strip('\n')]
 
