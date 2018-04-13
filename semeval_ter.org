@@ -392,6 +392,9 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       return score
 #+END_SRC
 
+#+RESULTS:
+: # Out[3]:
+
 Où =bag_maker= est une fonction retournant un sac de mots.
 
 **** ajouter avec normalisation, ex div par len phrase can
@@ -399,7 +402,7 @@ Où =bag_maker= est une fonction retournant un sac de mots.
 * TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
 * Évaluation des approches (=semeval_executable.py=)
 :PROPERTIES:
-:header-args: :tangle semeval_executable.py :exports code :session semexec :results output silent :eval no-export
+:header-args: :tangle semeval_executable.py :exports code :session semexec :eval no-export
 :END:
 ** Imports
 
@@ -689,8 +692,46 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
   }
 #+END_SRC
 
-** Méthodes bruteforce
-*** Création des méthodes bruteforce
+
+** Méthodes
+=getpredfilename= permet de s'assurer que les fichiers de prédiction sont tous construits de la même manière.
+
+#+BEGIN_SRC ipython
+  def getpredfilename(doctree, indicator, filterspartition, methodcategory):
+      return '_'.join((doctree, indicator, *filterspartition,
+                       methodcategory, 'scores.pred'))
+#+END_SRC
+
+*** hidden utils                                                   :noexport:
+
+#+BEGIN_SRC ipython :tangle no
+  import subprocess
+  def orgmodetable(matrix, header=False):
+      maxlen = [0] * len(matrix[0])
+      for line in matrix:
+          for i, cell in enumerate(line):
+              if len(maxlen) <= i or len(cell) > maxlen[i]:
+                  maxlen[i] = len(cell)
+
+      def orgmodeline(line, fill=' '):
+          joinsep = fill + '|' + fill
+          return '|' + fill + joinsep.join(
+              cell + fill * (mlen - len(cell))
+              for cell, mlen in zip(line, maxlen)
+          ) + fill + '|'
+
+      result = ''
+      if header:
+          result = orgmodeline(matrix[0]) + '\n' + \
+              orgmodeline(('-') * len(maxlen), fill='-') + '\n'
+          matrix = matrix[1:]
+
+      result += '\n'.join(orgmodeline(line) for line in matrix)
+      return result
+#+END_SRC
+
+*** Méthodes bruteforce
+**** Création des méthodes bruteforce
 Les méthodes bruteforce correspondent à tester toutes les combinaisons d'arbres de documents, de sacs de mots et de filtres.
 Les méthodes bruteforce sont crées en faisant le produit cartésien des dimensions envisagées.
 
@@ -698,15 +739,11 @@ Les méthodes bruteforce sont crées en faisant le produit cartésien des dimens
   bruteforce_methods = (doctrees, all_indicators, filters_partition)
 #+END_SRC
 
-*** Exécution des méthodes bruteforce
+**** Exécution des méthodes bruteforce
 
 Les méthodes précédemment générées sont exécutées et les scores produits sont écrits dans les fichiers correspondants.
 
 #+BEGIN_SRC ipython
-  def getpredfilename(doctree, indicator, filterspartition):
-      return '_'.join((doctree, indicator, *filterspartition, 'scores.pred'))
-
-
   inversedocfreqs = {
       wordex + '_' + sentex: inverse_document_frequencies(
           [[wordextractors[wordex](tok) for tok in sentenceextractors[sentex](doc)]
@@ -732,22 +769,120 @@ Les méthodes précédemment générées sont exécutées et les scores produits
           )
       )
 
-      prediction_file = getpredfilename(doctree, indicator, filterspartition)
+      prediction_file = getpredfilename(doctree, indicator, filterspartition, 'bruteforce')
       write_scores_to_file(scores, prediction_file, verbose=True)
 #+END_SRC
 
 
-** Méthodes pondérées
+*** Méthodes pondérées
 
 Le but des méthodes pondérées est d'utiliser plusieurs indicateurs au sein d'une même méthode.
 Un exemple d'approche de pondération est d'utiliser les lemmes pour estimer la similarité de phrases,
 et de donner une plus grande importance aux lemmes communs qui sont également des entités nommées.
 
-*** Création des approches de pondération
+**** Pondération par entités nommées
 
 #+BEGIN_SRC ipython
-  ponderated_methods = (doctrees, morphologic_indicators, ner_indicators, filters_partition)
+  ponderated_methods = (doctrees, morphologic_indicators, filters_partition)
+
+  for doctree, indicator, fltrs in product(*ponderated_methods):
+      wordex, sentex = all_indicators[indicator]
+
+      scores = make_score_tree(
+          doctrees[doctree],
+          lambda a, b: entityweight_scorer(
+              wordextractors[wordex],
+              [filters[filterkey] for filterkey in fltrs],
+              a, b, inversedocfreqs[wordex + '_' + sentex],
+              out_of_corpus_value
+          )
+      )
+
+      prediction_file = getpredfilename(doctree, indicator, fltrs, 'nerponderation')
+      write_scores_to_file(scores, prediction_file, verbose=True)
 #+END_SRC
+
+#+BEGIN_SRC ipython :tangle no :exports results :results output drawer replace
+
+  for doctree in doctrees:
+      restable = []
+      for indicator, fltrs in product(*ponderated_methods[1:]):
+
+          predfilename = getpredfilename(
+              doctree, indicator, fltrs, 'nerponderation')
+
+          score = subprocess.run(
+              ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
+
+          line = [all_indicators_descr[indicator],
+                  ', '.join(filters_descr[key] for key in fltrs),
+                  score.stdout.decode('utf-8').strip('\n')]
+
+          restable.append(line)
+
+      restable.sort(key=lambda x: x[2], reverse=True)
+      restable.insert(0, ['Sac de mots', 'Filtres', 'Score MAP'])
+      print()
+      print('\\newpage\n' + '*année ' + doctrees_years[doctree] + '*' + '\n')
+      print(orgmodetable(restable, header=True))
+
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+
+\newpage
+*année 2016*
+
+| Sac de mots | Filtres               | Score MAP |
+|-------------|-----------------------|-----------|
+| Lemmes      | Mots outils, $\leq 2$ | 0.7663    |
+| Tokens      | Mots outils, $\leq 2$ | 0.7497    |
+| Lemmes      | Mots outils, $\leq 1$ | 0.7474    |
+| Tokens      | Mots outils, $\leq 1$ | 0.7446    |
+| Tokens      | Mots outils, $\leq 3$ | 0.7430    |
+| Tokens      | Mots outils, $\leq 4$ | 0.7422    |
+| Lemmes      | Mots outils           | 0.7405    |
+| Tokens      | Mots outils           | 0.7319    |
+| Lemmes      | Mots outils, $\leq 3$ | 0.7301    |
+| Lemmes      | $\leq 4$              | 0.7292    |
+| Lemmes      | $\leq 2$              | 0.7287    |
+| Tokens      | $\leq 4$              | 0.7264    |
+| Tokens      | $\leq 2$              | 0.7254    |
+| Lemmes      | $\leq 1$              | 0.7239    |
+| Lemmes      | $\leq 3$              | 0.7237    |
+| Tokens      | $\leq 3$              | 0.7214    |
+| Lemmes      | Mots outils, $\leq 4$ | 0.7202    |
+| Lemmes      | Pas de filtre         | 0.7167    |
+| Tokens      | $\leq 1$              | 0.7142    |
+| Tokens      | Pas de filtre         | 0.7078    |
+
+\newpage
+*année 2017*
+
+| Sac de mots | Filtres               | Score MAP |
+|-------------|-----------------------|-----------|
+| Tokens      | Mots outils, $\leq 1$ | 0.4725    |
+| Lemmes      | Mots outils, $\leq 1$ | 0.4707    |
+| Tokens      | Mots outils, $\leq 3$ | 0.4658    |
+| Tokens      | Mots outils, $\leq 2$ | 0.4651    |
+| Tokens      | Mots outils           | 0.4622    |
+| Tokens      | $\leq 2$              | 0.4621    |
+| Lemmes      | Mots outils, $\leq 2$ | 0.4618    |
+| Lemmes      | Mots outils           | 0.4599    |
+| Tokens      | Mots outils, $\leq 4$ | 0.4521    |
+| Lemmes      | Pas de filtre         | 0.4509    |
+| Lemmes      | $\leq 1$              | 0.4477    |
+| Tokens      | $\leq 1$              | 0.4475    |
+| Lemmes      | Mots outils, $\leq 3$ | 0.4432    |
+| Lemmes      | $\leq 2$              | 0.4424    |
+| Lemmes      | Mots outils, $\leq 4$ | 0.4413    |
+| Tokens      | $\leq 3$              | 0.4412    |
+| Tokens      | Pas de filtre         | 0.4412    |
+| Lemmes      | $\leq 3$              | 0.4387    |
+| Lemmes      | $\leq 4$              | 0.4252    |
+| Tokens      | $\leq 4$              | 0.4124    |
+:END:
 
 * Debug                          :noexport:
 #+BEGIN_SRC ipython :results output replace drawer :eval noexport :session semexec :tangle no
@@ -816,37 +951,13 @@ Le script shell suivant est utilisé pour extraire le score MAP d'un fichier de 
 ** tableaux des scores
 
 #+BEGIN_SRC ipython :exports results :results drawer output :tangle no :session semexec
-  def orgmodetable(matrix, header=False):
-      maxlen = [0] * len(matrix[0])
-      for line in matrix:
-          for i, cell in enumerate(line):
-              if len(maxlen) <= i or len(cell) > maxlen[i]:
-                  maxlen[i] = len(cell)
 
-      def orgmodeline(line, fill=' '):
-          joinsep = fill + '|' + fill
-          return '|' + fill + joinsep.join(
-              cell + fill * (mlen - len(cell))
-              for cell, mlen in zip(line, maxlen)
-          ) + fill + '|'
-
-      result = ''
-      if header:
-          result = orgmodeline(matrix[0]) + '\n' + \
-              orgmodeline(('-') * len(maxlen), fill='-') + '\n'
-          matrix = matrix[1:]
-
-      result += '\n'.join(orgmodeline(line) for line in matrix)
-      return result
-
-
-  import subprocess
 
   def makerestable(doctree):
       resulttable=[]
       for indicator, filterspartition in product(*bruteforce_methods[1:]):
           predfilename = getpredfilename(
-              doctree, indicator, filterspartition)
+              doctree, indicator, filterspartition, 'bruteforce')
 
           score = subprocess.run(
               ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)

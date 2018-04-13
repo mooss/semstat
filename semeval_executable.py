@@ -137,13 +137,6 @@ sentenceextractors = {
     'document': lambda x: x,
 }
 
-# bowmakers = {
-#     'named_entities_text': ('text', 'entities'),
-#     'named_entities_label': ('label', 'entities'),
-#     'tokens': ('text', 'document'),
-#     'lemmas': ('lemma', 'document'),
-# }
-
 morphologic_indicators = {
     'tokens': ('text', 'document'),
     'lemmas': ('lemma', 'document'),
@@ -191,20 +184,11 @@ doctrees = {
     for model, corpus, extractor in product(models, corpuses, extractors)
 }
 
+def getpredfilename(doctree, indicator, filterspartition, methodcategory):
+    return '_'.join((doctree, indicator, *filterspartition,
+                     methodcategory, 'scores.pred'))
+
 bruteforce_methods = (doctrees, all_indicators, filters_partition)
-
-def getpredfilename(doctree, indicator, filterspartition):
-    return '_'.join((doctree, indicator, *filterspartition, 'scores.pred'))
-
-
-# inversedocfreqs = transformtree(
-#     lambda wordextractor: inverse_document_frequencies(
-#         [[wordextractor(tok) for tok in doc]
-#          for org in training_doctree.values()
-#          for doc in org.values()]
-#     ),
-#     wordextractors
-# )
 
 inversedocfreqs = {
     wordex + '_' + sentex: inverse_document_frequencies(
@@ -219,14 +203,9 @@ out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
 for doctree, indicator, filterspartition in product(*bruteforce_methods):
     wordex, sentex = all_indicators[indicator]
-    # bowmakerfunc = createbowmaker(wordextractors[wordex], sentenceextractors[sentex],
-    #                               [filters[filterkey] for filterkey in filterspartition])
-
     scores = make_score_tree(
         doctrees[doctree],
-        # lambda a, b: tf_idf_bow_scorer(
-        #     bowmakerfunc, a, b,
-        #     inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
+
         lambda a, b: customizable_scorer(
             wordextractors[wordex],
             sentenceextractors[sentex],
@@ -236,7 +215,23 @@ for doctree, indicator, filterspartition in product(*bruteforce_methods):
         )
     )
 
-    prediction_file = getpredfilename(doctree, indicator, filterspartition)
+    prediction_file = getpredfilename(doctree, indicator, filterspartition, 'bruteforce')
     write_scores_to_file(scores, prediction_file, verbose=True)
 
-ponderated_methods = (doctrees, morphologic_indicators, ner_indicators, filters_partition)
+ponderated_methods = (doctrees, morphologic_indicators, filters_partition)
+
+for doctree, indicator, fltrs in product(*ponderated_methods):
+    wordex, sentex = all_indicators[indicator]
+
+    scores = make_score_tree(
+        doctrees[doctree],
+        lambda a, b: entityweight_scorer(
+            wordextractors[wordex],
+            [filters[filterkey] for filterkey in fltrs],
+            a, b, inversedocfreqs[wordex + '_' + sentex],
+            out_of_corpus_value
+        )
+    )
+
+    prediction_file = getpredfilename(doctree, indicator, fltrs, 'nerponderation')
+    write_scores_to_file(scores, prediction_file, verbose=True)
