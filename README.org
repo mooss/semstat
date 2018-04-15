@@ -1,2 +1,2 @@
 * semstat
-Simple statistical analysis of data from SemEval third task (Community Question Aswering)
+Notes et code source du TER "Appariement de questions/réponses"
