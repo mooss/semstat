@@ -209,15 +209,14 @@ for doctree, indicator, filterspartition in product(*bruteforce_methods):
         wordextractors[wordex],
         sentenceextractors[sentex],
         [filters[filterkey] for filterkey in filterspartition],
-        tf_idf_scorer)
+        inversedocfreqs[wordex + '_' + sentex],
+        out_of_corpus_value,
+        tf_idf_scorer
+    )
 
     scores = make_score_tree(
         doctrees[doctree],
-        lambda a, b: customscorer.get_score(
-            a, b,
-            inversedocfreqs[wordex + '_' + sentex],
-            out_of_corpus_value
-        )
+        customscorer.get_score
     )
 
     prediction_file = getpredfilename(doctree, indicator, filterspartition, 'bruteforce')

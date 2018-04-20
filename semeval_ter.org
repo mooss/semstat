@@ -296,6 +296,39 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
 #+END_SRC
 
 ** Similarité de documents
+La classe =scorer= regroupe les informations nécessaires pour comparer deux document à l'aide de TF-IDF. Les différents scorer se construisent en fournissant une fonction de score (argument =scorerfunction=) à =scorer=.
+
+#+BEGIN_SRC ipython
+
+  class scorer(object):
+      def __init__(self, wordex, sentex, filters,
+                   inversedocfreqs, out_of_corpus_value,
+                   scorerfunction):
+          """
+
+          Parameters
+          ----------
+          wordex : 
+
+          sentex : 
+
+          filters : 
+
+          Returns
+          -------
+          out : 
+
+          """
+          self.wordex = wordex
+          self.sentex = sentex
+          self.filters = filters
+          self.inversedocfreqs = inversedocfreqs
+          self.out_of_corpus_value = out_of_corpus_value
+          self.scorerfunction = scorerfunction
+
+      def get_score(self, *args):
+          return self.scorerfunction(self, *args)
+#+END_SRC
 *** Bruteforce
 
 #+BEGIN_SRC ipython
@@ -340,7 +373,7 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
       return intersection_score(counta, countb, inversedocfreqs,
                                 out_of_corpus_value, score_multiplier)
 
-  def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
+  def tf_idf_scorer(self, doca, docb):
       """
       Parameters
       ----------
@@ -368,37 +401,10 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
       return sum(
           tf_idf(term,
                  termfreq,
-                 inversedocfreqs,
-                 out_of_corpus_value) * len(intersection)
+                 self.inversedocfreqs,
+                 self.out_of_corpus_value) * len(intersection)
           for term, occurences in intersection.items()
       )
-
-  class scorer(object):
-      def __init__(self, wordex, sentex, filters, scorerfunction):
-          """
-
-          Parameters
-          ----------
-          wordex : 
-
-          sentex : 
-
-          filters : 
-
-          Returns
-          -------
-          out : 
-
-          """
-          self.wordex = wordex
-          self.sentex = sentex
-          self.filters = filters
-          self.scorerfunction = scorerfunction
-
-      def get_score(self, *args):
-          return self.scorerfunction(self, *args)
-
-
 #+END_SRC
 
 *** Pondération des entités nommées
@@ -841,15 +847,14 @@ Les méthodes précédemment générées sont exécutées et les scores produits
           wordextractors[wordex],
           sentenceextractors[sentex],
           [filters[filterkey] for filterkey in filterspartition],
-          tf_idf_scorer)
+          inversedocfreqs[wordex + '_' + sentex],
+          out_of_corpus_value,
+          tf_idf_scorer
+      )
 
       scores = make_score_tree(
           doctrees[doctree],
-          lambda a, b: customscorer.get_score(
-              a, b,
-              inversedocfreqs[wordex + '_' + sentex],
-              out_of_corpus_value
-          )
+          customscorer.get_score
       )
 
       prediction_file = getpredfilename(doctree, indicator, filterspartition, 'bruteforce')
@@ -1100,15 +1105,15 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
               wordextractors[wordex],
               sentenceextractors[sentex],
               [filters[filterkey] for filterkey in filterspartition],
+              inversedocfreqs[wordex + '_' + sentex],
+              out_of_corpus_value,
               tf_idf_scorer
           )
 
           scores = make_score_tree(
               doctrees[doctree],
               lambda a, b: customscorer.get_score(
-                  a, b,
-                  inversedocfreqs[wordex + '_' + sentex],
-                  out_of_corpus_value))
+                  a, b))
 
           printsubset = {'Q318'}
           print({k: scores[k] for k in scores.keys() & printsubset})

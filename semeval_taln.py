@@ -88,6 +88,35 @@ def tf_idf_bow(bag, termfreq, inversedocfreq, out_of_corpus_value):
     return sum(tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value) * occurences
                for term, occurences in bag.items())
 
+class scorer(object):
+    def __init__(self, wordex, sentex, filters,
+                 inversedocfreqs, out_of_corpus_value,
+                 scorerfunction):
+        """
+
+        Parameters
+        ----------
+        wordex : 
+
+        sentex : 
+
+        filters : 
+
+        Returns
+        -------
+        out : 
+
+        """
+        self.wordex = wordex
+        self.sentex = sentex
+        self.filters = filters
+        self.inversedocfreqs = inversedocfreqs
+        self.out_of_corpus_value = out_of_corpus_value
+        self.scorerfunction = scorerfunction
+
+    def get_score(self, *args):
+        return self.scorerfunction(self, *args)
+
 def create_unit_dict(wordex, sentex, filters, doc):
     result = defaultdict(list)
     for unit in sentex(doc):
@@ -129,7 +158,7 @@ def bruteforce_scorer(
     return intersection_score(counta, countb, inversedocfreqs,
                               out_of_corpus_value, score_multiplier)
 
-def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
+def tf_idf_scorer(self, doca, docb):
     """
     Parameters
     ----------
@@ -157,35 +186,10 @@ def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
     return sum(
         tf_idf(term,
                termfreq,
-               inversedocfreqs,
-               out_of_corpus_value) * len(intersection)
+               self.inversedocfreqs,
+               self.out_of_corpus_value) * len(intersection)
         for term, occurences in intersection.items()
     )
-
-class scorer(object):
-    def __init__(self, wordex, sentex, filters, scorerfunction):
-        """
-
-        Parameters
-        ----------
-        wordex : 
-
-        sentex : 
-
-        filters : 
-
-        Returns
-        -------
-        out : 
-
-        """
-        self.wordex = wordex
-        self.sentex = sentex
-        self.filters = filters
-        self.scorerfunction = scorerfunction
-
-    def get_score(self, *args):
-        return self.scorerfunction(self, *args)
 
 def entity_weighter(unita, unitb, weight):
     entcount = 0
