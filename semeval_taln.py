@@ -117,47 +117,6 @@ class scorer(object):
     def get_score(self, *args):
         return self.scorerfunction(self, *args)
 
-def create_unit_dict(wordex, sentex, filters, doc):
-    result = defaultdict(list)
-    for unit in sentex(doc):
-        if all(flt(wordex(unit)) for flt in filters):
-            result[wordex(unit)].append(unit)
-    return result
-
-def intersection_score(baga, bagb,
-                       inversedocfreqs,
-                       out_of_corpus_value,
-                       score_multiplier='interlen'):
-    score = 0
-    intersection = baga & bagb
-    termfreq = term_frequencies(baga + bagb)
-
-    if score_multiplier == 'interocc':
-        for el, count in intersection.items():
-            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                     * count
-    else:
-        for el in intersection:
-            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                     * len(intersection)
-
-    return score
-
-
-def bruteforce_scorer(
-        wordex, sentex, filters,
-        doca, docb, inversedocfreqs,
-        out_of_corpus_value,
-        score_multiplier='interlen'):
-    unitsa = create_unit_dict(wordex, sentex, filters, doca)
-    unitsb = create_unit_dict(wordex, sentex, filters, docb)
-
-    counta = Counter(word for word, occ in unitsa.items() for _ in occ)
-    countb = Counter(word for word, occ in unitsb.items() for _ in occ)
-
-    return intersection_score(counta, countb, inversedocfreqs,
-                              out_of_corpus_value, score_multiplier)
-
 def tf_idf_scorer(self, doca, docb):
     """
     Parameters
@@ -187,9 +146,17 @@ def tf_idf_scorer(self, doca, docb):
         tf_idf(term,
                termfreq,
                self.inversedocfreqs,
-               self.out_of_corpus_value) * len(intersection)
+               self.out_of_corpus_value) * len(intersection)# * occurences
         for term, occurences in intersection.items()
     )
+
+def create_unit_dict(wordex, sentex, filters, doc):
+    result = defaultdict(list)
+    for unit in sentex(doc):
+        if all(flt(wordex(unit)) for flt in filters):
+            result[wordex(unit)].append(unit)
+    return result
+
 
 def entity_weighter(unita, unitb, weight):
     entcount = 0
@@ -200,6 +167,7 @@ def entity_weighter(unita, unitb, weight):
         return weight
     else:
         return 1-weight
+
 
 def entityweight_scorer(
         wordex, filters,

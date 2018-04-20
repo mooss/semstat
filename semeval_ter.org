@@ -332,47 +332,6 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
 *** Bruteforce
 
 #+BEGIN_SRC ipython
-  def create_unit_dict(wordex, sentex, filters, doc):
-      result = defaultdict(list)
-      for unit in sentex(doc):
-          if all(flt(wordex(unit)) for flt in filters):
-              result[wordex(unit)].append(unit)
-      return result
-
-  def intersection_score(baga, bagb,
-                         inversedocfreqs,
-                         out_of_corpus_value,
-                         score_multiplier='interlen'):
-      score = 0
-      intersection = baga & bagb
-      termfreq = term_frequencies(baga + bagb)
-
-      if score_multiplier == 'interocc':
-          for el, count in intersection.items():
-              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                       ,* count
-      else:
-          for el in intersection:
-              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                       ,* len(intersection)
-
-      return score
-
-
-  def bruteforce_scorer(
-          wordex, sentex, filters,
-          doca, docb, inversedocfreqs,
-          out_of_corpus_value,
-          score_multiplier='interlen'):
-      unitsa = create_unit_dict(wordex, sentex, filters, doca)
-      unitsb = create_unit_dict(wordex, sentex, filters, docb)
-
-      counta = Counter(word for word, occ in unitsa.items() for _ in occ)
-      countb = Counter(word for word, occ in unitsb.items() for _ in occ)
-
-      return intersection_score(counta, countb, inversedocfreqs,
-                                out_of_corpus_value, score_multiplier)
-
   def tf_idf_scorer(self, doca, docb):
       """
       Parameters
@@ -402,13 +361,20 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
           tf_idf(term,
                  termfreq,
                  self.inversedocfreqs,
-                 self.out_of_corpus_value) * len(intersection)
+                 self.out_of_corpus_value) * len(intersection)# * occurences
           for term, occurences in intersection.items()
       )
 #+END_SRC
 
 *** Pondération des entités nommées
 #+BEGIN_SRC ipython
+  def create_unit_dict(wordex, sentex, filters, doc):
+      result = defaultdict(list)
+      for unit in sentex(doc):
+          if all(flt(wordex(unit)) for flt in filters):
+              result[wordex(unit)].append(unit)
+      return result
+
 
   def entity_weighter(unita, unitb, weight):
       entcount = 0
@@ -419,6 +385,7 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
           return weight
       else:
           return 1-weight
+
 
   def entityweight_scorer(
           wordex, filters,
@@ -448,11 +415,6 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
 
 
 #+END_SRC
-
-#+RESULTS:
-: # Out[3]:
-
-Où =bag_maker= est une fonction retournant un sac de mots.
 
 *** ajouter avec normalisation, ex div par len phrase can
 
@@ -685,20 +647,6 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
 
   def getindicatorfunctions(key):
       return (wordextractors[all_indicators[key][0]], sentenceextractors[all_indicators[key][1]])
-#+END_SRC
-
-Les fonctions associées aux éléments de =all_indicators= sont destinés à être passés à la fonction =createbowmaker=, retournant une fonction permettant de construire un sac de mots selon les modalité voulues.
-
-#+BEGIN_SRC ipython
-  def createbowmaker(wordextractor, sentenceextractor, filters):
-      def bowmaker(document):
-          return Counter(
-              list(filter(lambda x: all(f(x) for f in filters),
-                     map(wordextractor, sentenceextractor(document))))
-              )
-
-      return bowmaker
-
 #+END_SRC
 
 *** Création des arbres de documents
@@ -1084,22 +1032,6 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
   if debug_mode:
       for filterspartition in filters_partition:
           wordex, sentex = 'label', 'entities'
-          bowmakerfunc = createbowmaker(
-              wordextractors[wordex], sentenceextractors[sentex],
-              [filters[filterkey] for filterkey in filterspartition])
-
-
-          custom_scores = make_score_tree(
-              doctrees['spacy_en_debug_questions'],
-              lambda a, b: bruteforce_scorer(
-                  wordextractors[wordex],
-                  sentenceextractors[sentex],
-                  [filters[filterkey] for filterkey in filterspartition],
-                  a, b, inversedocfreqs[wordex + '_' + sentex],
-                  out_of_corpus_value
-              )
-          )
-          print({k: custom_scores[k] for k in custom_scores.keys() & printsubset})
 
           customscorer = scorer(
               wordextractors[wordex],

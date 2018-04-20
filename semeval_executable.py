@@ -155,15 +155,6 @@ all_indicators.update(ner_indicators)
 def getindicatorfunctions(key):
     return (wordextractors[all_indicators[key][0]], sentenceextractors[all_indicators[key][1]])
 
-def createbowmaker(wordextractor, sentenceextractor, filters):
-    def bowmaker(document):
-        return Counter(
-            list(filter(lambda x: all(f(x) for f in filters),
-                   map(wordextractor, sentenceextractor(document))))
-            )
-
-    return bowmaker
-
 training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
 
 training_doctree = make_or_load_document_tree(
