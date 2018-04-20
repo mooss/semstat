@@ -88,16 +88,6 @@ def tf_idf_bow(bag, termfreq, inversedocfreq, out_of_corpus_value):
     return sum(tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value) * occurences
                for term, occurences in bag.items())
 
-def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_value):
-    baga = bag_maker(doca)
-    bagb = bag_maker(docb)
-    intersection = baga & bagb
-    termfreq = term_frequencies(baga + bagb)
-
-    return (sum(tf_idf(term, termfreq, inversedocfreqs, out_of_corpus_value) * occurences
-               for term, occurences in intersection.items()) * sum(intersection.values()))
-
-
 def create_unit_dict(wordex, sentex, filters, doc):
     result = defaultdict(list)
     for unit in sentex(doc):
@@ -113,8 +103,6 @@ def intersection_score(baga, bagb,
     intersection = baga & bagb
     termfreq = term_frequencies(baga + bagb)
 
-
-
     if score_multiplier == 'interocc':
         for el, count in intersection.items():
             score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
@@ -126,7 +114,8 @@ def intersection_score(baga, bagb,
 
     return score
 
-def customizable_scorer(
+
+def bruteforce_scorer(
         wordex, sentex, filters,
         doca, docb, inversedocfreqs,
         out_of_corpus_value,
@@ -140,7 +129,71 @@ def customizable_scorer(
     return intersection_score(counta, countb, inversedocfreqs,
                               out_of_corpus_value, score_multiplier)
 
-def entity_weighter(unita, unitb, weight=0.6):
+
+class scorer(object):
+    def __init__(self, wordex, sentex, filters, scorerfunction=None):
+        """
+
+        Parameters
+        ----------
+        wordex : 
+
+        sentex : 
+
+        filters : 
+
+        Returns
+        -------
+        out : 
+
+        """
+        self.wordex = wordex
+        self.sentex = sentex
+        self.filters = filters
+        if scorerfunction == None:
+            self.scorerfunction = self.tf_idf_scorer
+        else:
+            self.scorerfunction = scorerfunction
+
+
+    def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
+        """
+
+        Parameters
+        ----------
+        doca : 
+
+        docb : 
+
+        inversedocfreqs : 
+
+        out_of_corpus_value : 
+
+        Returns
+        -------
+        out : 
+        """
+        def bag_maker(doc):
+            return Counter(word
+                    for word in map(self.wordex, self.sentex(doc))
+                    if all(flt(word) for flt in self.filters))
+        baga = bag_maker(doca)
+        bagb = bag_maker(docb)
+        intersection = baga & bagb
+        termfreq = term_frequencies(baga + bagb)
+
+        return sum(
+            tf_idf(term,
+                   termfreq,
+                   inversedocfreqs,
+                   out_of_corpus_value) * len(intersection)
+            for term, occurences in intersection.items()
+        )
+
+    def get_score(self, *args):
+        return self.scorerfunction(*args)
+
+def entity_weighter(unita, unitb, weight):
     entcount = 0
     for tok in chain(unita, unitb):
         if tok.ent_type != 0:
@@ -154,7 +207,8 @@ def entityweight_scorer(
         wordex, filters,
         doca, docb, inversedocfreqs,
         out_of_corpus_value,
-        score_multiplier='interlen'):
+        score_multiplier='interlen',
+        weight=0.6):
     unitsa = create_unit_dict(wordex, lambda x: x, filters, doca)
     unitsb = create_unit_dict(wordex, lambda x: x, filters, docb)
 
@@ -168,9 +222,9 @@ def entityweight_scorer(
     if score_multiplier == 'interocc':
         for el, count in intersection.items():
             score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                     * count * entity_weighter(unitsa[el], unitsb[el])
+                     * count * entity_weighter(unitsa[el], unitsb[el], weight)
     else:
         for el in intersection:
             score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                     * len(intersection) * entity_weighter(unitsa[el], unitsb[el])
+                     * len(intersection) * entity_weighter(unitsa[el], unitsb[el], weight)
     return score

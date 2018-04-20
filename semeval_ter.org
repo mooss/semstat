@@ -295,25 +295,10 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
                  for term, occurences in bag.items())
 #+END_SRC
 
-**** Similarité de documents
-Le score de similarité entre deux documents correspond au score TF-IDF du sac de mots qu'ils forment.
-
-$$similarit \acute e(doc_a, doc_b, corpus) = \var{score_{TF-IDF}}(SAC_{doc_a} \cap SAC_{doc_b}, SAC_{doc_a} \cup SAC_{doc_b}, corpus)$$
-Où $SAC_{doc}$ est le sac de mots de $doc$.
-
-Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmétriques, c'est pourquoi le sac de mots envoyé à $\var{score_{TF-IDF}}$ est leur union.
+** Similarité de documents
+*** Bruteforce
 
 #+BEGIN_SRC ipython
-  def tf_idf_bow_scorer(bag_maker, doca, docb, inversedocfreqs, out_of_corpus_value):
-      baga = bag_maker(doca)
-      bagb = bag_maker(docb)
-      intersection = baga & bagb
-      termfreq = term_frequencies(baga + bagb)
-
-      return (sum(tf_idf(term, termfreq, inversedocfreqs, out_of_corpus_value) * occurences
-                 for term, occurences in intersection.items()) * sum(intersection.values()))
-
-
   def create_unit_dict(wordex, sentex, filters, doc):
       result = defaultdict(list)
       for unit in sentex(doc):
@@ -329,8 +314,6 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       intersection = baga & bagb
       termfreq = term_frequencies(baga + bagb)
 
-
-
       if score_multiplier == 'interocc':
           for el, count in intersection.items():
               score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
@@ -342,7 +325,8 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
 
       return score
 
-  def customizable_scorer(
+
+  def bruteforce_scorer(
           wordex, sentex, filters,
           doca, docb, inversedocfreqs,
           out_of_corpus_value,
@@ -356,7 +340,77 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       return intersection_score(counta, countb, inversedocfreqs,
                                 out_of_corpus_value, score_multiplier)
 
-  def entity_weighter(unita, unitb, weight=0.6):
+
+  class scorer(object):
+      def __init__(self, wordex, sentex, filters, scorerfunction=None):
+          """
+
+          Parameters
+          ----------
+          wordex : 
+
+          sentex : 
+
+          filters : 
+
+          Returns
+          -------
+          out : 
+
+          """
+          self.wordex = wordex
+          self.sentex = sentex
+          self.filters = filters
+          if scorerfunction == None:
+              self.scorerfunction = self.tf_idf_scorer
+          else:
+              self.scorerfunction = scorerfunction
+
+
+      def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
+          """
+
+          Parameters
+          ----------
+          doca : 
+
+          docb : 
+
+          inversedocfreqs : 
+
+          out_of_corpus_value : 
+
+          Returns
+          -------
+          out : 
+          """
+          def bag_maker(doc):
+              return Counter(word
+                      for word in map(self.wordex, self.sentex(doc))
+                      if all(flt(word) for flt in self.filters))
+          baga = bag_maker(doca)
+          bagb = bag_maker(docb)
+          intersection = baga & bagb
+          termfreq = term_frequencies(baga + bagb)
+
+          return sum(
+              tf_idf(term,
+                     termfreq,
+                     inversedocfreqs,
+                     out_of_corpus_value) * len(intersection)
+              for term, occurences in intersection.items()
+          )
+
+      def get_score(self, *args):
+          return self.scorerfunction(*args)
+
+
+#+END_SRC
+
+*** Pondération des entités nommées
+#+BEGIN_SRC ipython
+
+  def entity_weighter(unita, unitb, weight):
       entcount = 0
       for tok in chain(unita, unitb):
           if tok.ent_type != 0:
@@ -370,7 +424,8 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
           wordex, filters,
           doca, docb, inversedocfreqs,
           out_of_corpus_value,
-          score_multiplier='interlen'):
+          score_multiplier='interlen',
+          weight=0.6):
       unitsa = create_unit_dict(wordex, lambda x: x, filters, doca)
       unitsb = create_unit_dict(wordex, lambda x: x, filters, docb)
 
@@ -384,12 +439,14 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
       if score_multiplier == 'interocc':
           for el, count in intersection.items():
               score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                       ,* count * entity_weighter(unitsa[el], unitsb[el])
+                       ,* count * entity_weighter(unitsa[el], unitsb[el], weight)
       else:
           for el in intersection:
               score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                       ,* len(intersection) * entity_weighter(unitsa[el], unitsb[el])
+                       ,* len(intersection) * entity_weighter(unitsa[el], unitsb[el], weight)
       return score
+
+
 #+END_SRC
 
 #+RESULTS:
@@ -397,7 +454,7 @@ Les documents $doc_a$ et $doc_b$ sont considérées comme ayant un rôle symmét
 
 Où =bag_maker= est une fonction retournant un sac de mots.
 
-**** ajouter avec normalisation, ex div par len phrase can
+*** ajouter avec normalisation, ex div par len phrase can
 
 * TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
 * Évaluation des approches (=semeval_executable.py=)
@@ -599,7 +656,7 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
       return ent.label_ if hasattr(ent, 'label_') else None
 
   def getentities(doc):
-      return doc.ents
+      return doc.ents or list()
 
   wordextractors = {
       'text': extracttext,
@@ -678,7 +735,7 @@ Les fonctions associées aux éléments de =all_indicators= sont destinés à ê
   }
 #+END_SRC
 
-** Méthodes
+** Méthodes                                                          :export:
 =getpredfilename= permet de s'assurer que les noms des fichiers de prédiction sont tous construits de la même manière.
 
 #+BEGIN_SRC ipython
@@ -707,33 +764,32 @@ Un script shell est utilisé pour extraire le score MAP d'un fichier de prédict
   python2 scorer/ev.py $reference $prediction | grep "^MAP" | sed 's/ \+/;/g' | cut -f 4 -d ';'
 #+END_SRC
 
-
 *** hidden utils                                                   :noexport:
 
 #+BEGIN_SRC ipython :tangle no :exports none :results silent
   import subprocess
 
-  def orgmodetable(matrix, header=False):
-      maxlen = [0] * len(matrix[0])
-      for line in matrix:
-          for i, cell in enumerate(line):
-              if len(maxlen) <= i or len(cell) > maxlen[i]:
-                  maxlen[i] = len(cell)
+  # def orgmodetable(matrix, header=False):
+  #     maxlen = [0] * len(matrix[0])
+  #     for line in matrix:
+  #         for i, cell in enumerate(line):
+  #             if len(maxlen) <= i or len(cell) > maxlen[i]:
+  #                 maxlen[i] = len(cell)
 
-      def orgmodeline(line, fill=' '):
-          joinsep = fill + '|' + fill
-          return '|' + fill + joinsep.join(
-              cell + fill * (mlen - len(cell))
-              for cell, mlen in zip(line, maxlen)
-          ) + fill + '|'
+  #     def orgmodeline(line, fill=' '):
+  #         joinsep = fill + '|' + fill
+  #         return '|' + fill + joinsep.join(
+  #             cell + fill * (mlen - len(cell))
+  #             for cell, mlen in zip(line, maxlen)
+  #         ) + fill + '|'
 
-      result = ''
-      if header:
-          result = orgmodeline(matrix[0]) + '\n' + \
-              orgmodeline(('-') * len(maxlen), fill='-') + '\n'
-          matrix = matrix[1:]
-      result += '\n'.join(orgmodeline(line) for line in matrix)
-      return result
+  #     result = ''
+  #     if header:
+  #         result = orgmodeline(matrix[0]) + '\n' + \
+  #             orgmodeline(('-') * len(maxlen), fill='-') + '\n'
+  #         matrix = matrix[1:]
+  #     result += '\n'.join(orgmodeline(line) for line in matrix)
+  #     return result
 
 
   all_filters_descr = {
@@ -787,16 +843,17 @@ Les méthodes précédemment générées sont exécutées et les scores produits
 
   for doctree, indicator, filterspartition in product(*bruteforce_methods):
       wordex, sentex = all_indicators[indicator]
+      customscorer = scorer(
+          wordextractors[wordex],
+          sentenceextractors[sentex],
+          [filters[filterkey] for filterkey in filterspartition])
+
       scores = make_score_tree(
           doctrees[doctree],
-
-          lambda a, b: customizable_scorer(
-              wordextractors[wordex],
-              sentenceextractors[sentex],
-              [filters[filterkey] for filterkey in filterspartition],
-              a, b, inversedocfreqs[wordex + '_' + sentex],
-              out_of_corpus_value
-          )
+          lambda a, b: customscorer.get_score(
+              a, b,
+              inversedocfreqs[wordex + '_' + sentex],
+              out_of_corpus_value)
       )
 
       prediction_file = getpredfilename(doctree, indicator, filterspartition, 'bruteforce')
@@ -921,7 +978,6 @@ Les méthodes précédemment générées sont exécutées et les scores produits
 
 
 
-
 *** Méthodes pondérées
 
 Le but des méthodes pondérées est d'utiliser plusieurs indicateurs au sein d'une même méthode.
@@ -1034,7 +1090,7 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
 
           custom_scores = make_score_tree(
               doctrees['spacy_en_debug_questions'],
-              lambda a, b: customizable_scorer(
+              lambda a, b: bruteforce_scorer(
                   wordextractors[wordex],
                   sentenceextractors[sentex],
                   [filters[filterkey] for filterkey in filterspartition],
@@ -1042,17 +1098,21 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
                   out_of_corpus_value
               )
           )
+          print({k: custom_scores[k] for k in custom_scores.keys() & printsubset})
 
+          customscorer = scorer(
+              wordextractors[wordex],
+              sentenceextractors[sentex],
+              [filters[filterkey] for filterkey in filterspartition])
 
           scores = make_score_tree(
-              doctrees['spacy_en_debug_questions'],
-              lambda a, b: tf_idf_bow_scorer(
-                  bowmakerfunc, a, b,
-                  inversedocfreqs[wordex + '_' + sentex], out_of_corpus_value)
-          )
+              doctrees[doctree],
+              lambda a, b: customscorer.get_score(
+                  a, b,
+                  inversedocfreqs[wordex + '_' + sentex],
+                  out_of_corpus_value))
 
           printsubset = {'Q318'}
-          print({k: custom_scores[k] for k in custom_scores.keys() & printsubset})
           print({k: scores[k] for k in scores.keys() & printsubset})
           print()
           # prediction_file = getpredfilename('spacy_en_2016_questions', 'named_entities_label', filterspartition)
@@ -1066,6 +1126,10 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
 
 
 * perspectives
+
+ - Ajouter des dimensions (catégorie grammaticale, etc) et ne conserver que les $n$ meilleurs et les $n$ pires, en partant du principe qu'il est plus intéressant d'analyser les combinaisons de paramètres ne fonctionnant pas et celles fonctionnant.
+
+
 dictionnaire synonymes
 + de filtres
 combinaison entités et (lemmes ou texte)

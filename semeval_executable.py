@@ -125,7 +125,7 @@ def extractlabel(ent):
     return ent.label_ if hasattr(ent, 'label_') else None
 
 def getentities(doc):
-    return doc.ents
+    return doc.ents or list()
 
 wordextractors = {
     'text': extracttext,
@@ -195,7 +195,7 @@ doctrees = {
 }
 
 def getpredfilename(doctree, indicator, filterspartition, methodcategory):
-    return '_'.join((doctree, indicator, *filterspartition,
+    return 'predictions/' + '_'.join((doctree, indicator, *filterspartition,
                      methodcategory, 'scores.pred'))
 
 bruteforce_methods = (doctrees, all_indicators, filters_partition)
@@ -205,16 +205,17 @@ out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
 for doctree, indicator, filterspartition in product(*bruteforce_methods):
     wordex, sentex = all_indicators[indicator]
+    customscorer = scorer(
+        wordextractors[wordex],
+        sentenceextractors[sentex],
+        [filters[filterkey] for filterkey in filterspartition])
+
     scores = make_score_tree(
         doctrees[doctree],
-
-        lambda a, b: customizable_scorer(
-            wordextractors[wordex],
-            sentenceextractors[sentex],
-            [filters[filterkey] for filterkey in filterspartition],
-            a, b, inversedocfreqs[wordex + '_' + sentex],
-            out_of_corpus_value
-        )
+        lambda a, b: customscorer.get_score(
+            a, b,
+            inversedocfreqs[wordex + '_' + sentex],
+            out_of_corpus_value)
     )
 
     prediction_file = getpredfilename(doctree, indicator, filterspartition, 'bruteforce')
