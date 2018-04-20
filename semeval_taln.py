@@ -1,6 +1,7 @@
 import os.path
 import math
 from itertools import chain
+from functools import reduce
 from collections import Counter, defaultdict
 from semeval_xml import get_semeval_id, get_related_threads, xmlextract
 from semeval_util import save_object, load_object
@@ -168,6 +169,29 @@ def entity_weighter(unita, unitb, weight):
     else:
         return 1-weight
 
+def generic_weighter(unita, unitb, weight, predicat):
+    for tok in chain(unita, unitb):
+        if predicat(tok):
+            return weight
+    return 1 - weight
+
+def noun_weighter(unita, unitb, weight):
+    return generic_weighter(
+        unita, unitb, weight,
+        lambda x: x.pos_ == 'NOUN'
+    )
+
+def adjective_weighter(unita, unitb, weight):
+    return generic_weighter(
+        unita, unitb, weight,
+        lambda x: x.pos_ == 'ADJ'
+    )
+
+def verb_weighter(unita, unitb, weight):
+    return generic_weighter(
+        unita, unitb, weight,
+        lambda x: x.pos_ == 'VERB'
+    )
 
 def entityweight_scorer(
         wordex, filters,
@@ -194,3 +218,43 @@ def entityweight_scorer(
             score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
                      * len(intersection) * entity_weighter(unitsa[el], unitsb[el], weight)
     return score
+
+
+def generic_weights_scorer(self, doca, docb, weights_functions):
+    """
+
+    Parameters
+    ----------
+    doca : document
+
+    docb : document
+
+    weights_functions : list(tuple(float, function))
+        List of weights and functions to which they apply.
+
+    Returns
+    -------
+    out : float
+        Similarity score of the documents.
+    """
+    unitsa = create_unit_dict(self.wordex, lambda x: x, self.filters, doca)
+    unitsb = create_unit_dict(self.wordex, lambda x: x, self.filters, docb)
+
+    counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+    countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+
+    score = 0
+    intersection = counta & countb
+    termfreq = term_frequencies(counta + countb)
+
+    for el in intersection:
+        coef = reduce(lambda x, y: x * y,
+                          (weighter(unitsa[el], unitsb[el], weight)
+                           for weight, weighter in weights_functions),
+                          1)
+        tfidf = tf_idf(el, termfreq, self.inversedocfreqs, self.out_of_corpus_value)
+        # print('el =', el, 'coef =', coef, 'tfidf =', tfidf, 'oov', self.out_of_corpus_value)
+        # print(inversedocfreqs)
+        score += tfidf * coef
+    # print('score', score, intersection, 'weight == ', weights_functions)
+    return score * len(intersection)

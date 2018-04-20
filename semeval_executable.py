@@ -8,7 +8,7 @@ from semeval_xml import get_semeval_content
 from semeval_taln import *
 
 debug_mode = False;
-seek_optimal_ner_ponderation = True
+seek_optimal_ner_ponderation = False
 
 def compute_relqs_scores(orgqnode, scorer):
     return {relid: scorer(orgqnode['org'], orgqnode[relid])
@@ -174,6 +174,7 @@ inversedocfreqs = {
     for wordex, sentex in all_indicators.values()
 }
 
+out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 doctrees = {
     '_'.join((model, corpus, extractor)): make_or_load_document_tree(
         corpuses[corpus],
@@ -191,8 +192,6 @@ def getpredfilename(doctree, indicator, filterspartition, methodcategory):
 
 bruteforce_methods = (doctrees, all_indicators, filters_partition)
 
-
-out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
 for doctree, indicator, filterspartition in product(*bruteforce_methods):
     wordex, sentex = all_indicators[indicator]
@@ -218,14 +217,23 @@ ponderated_methods = (doctrees, morphologic_indicators, filters_partition)
 for doctree, indicator, fltrs in product(*ponderated_methods):
     wordex, sentex = all_indicators[indicator]
 
+    customscorer = scorer(
+        wordextractors[wordex],
+        sentenceextractors[sentex],
+        [filters[filterkey] for filterkey in fltrs],
+        inversedocfreqs[wordex + '_' + sentex],
+        out_of_corpus_value,
+        lambda this, a, b : generic_weights_scorer(this, a, b, [(0.6, entity_weighter)])
+    )
     scores = make_score_tree(
         doctrees[doctree],
-        lambda a, b: entityweight_scorer(
-            wordextractors[wordex],
-            [filters[filterkey] for filterkey in fltrs],
-            a, b, inversedocfreqs[wordex + '_' + sentex],
-            out_of_corpus_value
-        )
+        customscorer.get_score
+        # lambda a, b: entityweight_scorer(
+        #     wordextractors[wordex],
+        #     [filters[filterkey] for filterkey in fltrs],
+        #     a, b, inversedocfreqs[wordex + '_' + sentex],
+        #     out_of_corpus_value
+        # )
     )
 
     prediction_file = getpredfilename(doctree, indicator, fltrs, 'nerponderation')

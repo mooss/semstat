@@ -1,7 +1,7 @@
 #+TITLE:Appariement de questions/réponses
 #+AUTHOR:Félix Jamet
 # -*- org-export-babel-evaluate: t -*-
-#+PROPERTY: header-args:ipython :session semexec :eval no-export :results output silent
+#+PROPERTY: header-args:ipython :session semexec :eval no-export :results output silent :exports results
 #+OPTIONS: toc:nil title:nil
 
 \newpage
@@ -142,6 +142,7 @@ On utilise pickle pour sauvegarder et charger des objets qu'il serait long de re
   import os.path
   import math
   from itertools import chain
+  from functools import reduce
   from collections import Counter, defaultdict
   from semeval_xml import get_semeval_id, get_related_threads, xmlextract
   from semeval_util import save_object, load_object
@@ -329,6 +330,7 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
       def get_score(self, *args):
           return self.scorerfunction(self, *args)
 #+END_SRC
+
 *** Bruteforce
 
 #+BEGIN_SRC ipython
@@ -367,6 +369,7 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
 #+END_SRC
 
 *** Pondération des entités nommées
+
 #+BEGIN_SRC ipython
   def create_unit_dict(wordex, sentex, filters, doc):
       result = defaultdict(list)
@@ -386,6 +389,29 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
       else:
           return 1-weight
 
+  def generic_weighter(unita, unitb, weight, predicat):
+      for tok in chain(unita, unitb):
+          if predicat(tok):
+              return weight
+      return 1 - weight
+
+  def noun_weighter(unita, unitb, weight):
+      return generic_weighter(
+          unita, unitb, weight,
+          lambda x: x.pos_ == 'NOUN'
+      )
+
+  def adjective_weighter(unita, unitb, weight):
+      return generic_weighter(
+          unita, unitb, weight,
+          lambda x: x.pos_ == 'ADJ'
+      )
+
+  def verb_weighter(unita, unitb, weight):
+      return generic_weighter(
+          unita, unitb, weight,
+          lambda x: x.pos_ == 'VERB'
+      )
 
   def entityweight_scorer(
           wordex, filters,
@@ -414,9 +440,45 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
       return score
 
 
-#+END_SRC
+  def generic_weights_scorer(self, doca, docb, weights_functions):
+      """
 
-*** ajouter avec normalisation, ex div par len phrase can
+      Parameters
+      ----------
+      doca : document
+
+      docb : document
+
+      weights_functions : list(tuple(float, function))
+          List of weights and functions to which they apply.
+
+      Returns
+      -------
+      out : float
+          Similarity score of the documents.
+      """
+      unitsa = create_unit_dict(self.wordex, lambda x: x, self.filters, doca)
+      unitsb = create_unit_dict(self.wordex, lambda x: x, self.filters, docb)
+
+      counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+      countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+
+      score = 0
+      intersection = counta & countb
+      termfreq = term_frequencies(counta + countb)
+
+      for el in intersection:
+          coef = reduce(lambda x, y: x * y,
+                            (weighter(unitsa[el], unitsb[el], weight)
+                             for weight, weighter in weights_functions),
+                            1)
+          tfidf = tf_idf(el, termfreq, self.inversedocfreqs, self.out_of_corpus_value)
+          # print('el =', el, 'coef =', coef, 'tfidf =', tfidf, 'oov', self.out_of_corpus_value)
+          # print(inversedocfreqs)
+          score += tfidf * coef
+      # print('score', score, intersection, 'weight == ', weights_functions)
+      return score * len(intersection)
+#+END_SRC
 
 * TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
 * Évaluation des approches (=semeval_executable.py=)
@@ -439,7 +501,7 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
 
 #+BEGIN_SRC ipython
   debug_mode = False;
-  seek_optimal_ner_ponderation = True
+  seek_optimal_ner_ponderation = False
 #+END_SRC
 
 ** Scores
@@ -602,7 +664,7 @@ La fonction =nonemptypartitions= est utilisée pour combiner les filtres.
   filters_partition.append(('nofilter',))
 #+END_SRC
 
-*** Construction des sacs de mots
+*** Extraction de mots et de phrases
 Les sacs de mots sont construits à l'aide de deux fonctions.
 La première est une fonction d'extraction de caractéristique, qui étant donné un token, renvoie la caractéristique désirée de celui-ci. La deuxième est une fonction d'extraction de phrase, qui étant donné un document, renvoie un itérable contenant des mots.
 
@@ -652,6 +714,7 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
 *** Création des arbres de documents
 
 #+BEGIN_SRC ipython
+
   training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
 
   training_doctree = make_or_load_document_tree(
@@ -671,6 +734,7 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
       for wordex, sentex in all_indicators.values()
   }
 
+  out_of_corpus_value = max(inversedocfreqs['text_document'].values())
   doctrees = {
       '_'.join((model, corpus, extractor)): make_or_load_document_tree(
           corpuses[corpus],
@@ -786,8 +850,6 @@ Les méthodes précédemment générées sont exécutées et les scores produits
 #+BEGIN_SRC ipython
   bruteforce_methods = (doctrees, all_indicators, filters_partition)
 
-
-  out_of_corpus_value = max(inversedocfreqs['text_document'].values())
 
   for doctree, indicator, filterspartition in product(*bruteforce_methods):
       wordex, sentex = all_indicators[indicator]
@@ -942,14 +1004,23 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
   for doctree, indicator, fltrs in product(*ponderated_methods):
       wordex, sentex = all_indicators[indicator]
 
+      customscorer = scorer(
+          wordextractors[wordex],
+          sentenceextractors[sentex],
+          [filters[filterkey] for filterkey in fltrs],
+          inversedocfreqs[wordex + '_' + sentex],
+          out_of_corpus_value,
+          lambda this, a, b : generic_weights_scorer(this, a, b, [(0.6, entity_weighter)])
+      )
       scores = make_score_tree(
           doctrees[doctree],
-          lambda a, b: entityweight_scorer(
-              wordextractors[wordex],
-              [filters[filterkey] for filterkey in fltrs],
-              a, b, inversedocfreqs[wordex + '_' + sentex],
-              out_of_corpus_value
-          )
+          customscorer.get_score
+          # lambda a, b: entityweight_scorer(
+          #     wordextractors[wordex],
+          #     [filters[filterkey] for filterkey in fltrs],
+          #     a, b, inversedocfreqs[wordex + '_' + sentex],
+          #     out_of_corpus_value
+          # )
       )
 
       prediction_file = getpredfilename(doctree, indicator, fltrs, 'nerponderation')
@@ -1026,12 +1097,15 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
 
 :END:
 
+* TODO student t test
+et insister sur l'analyse manuelle, en particulier de ce qui n'a pas marché
+
 * Debug                          :noexport:
 #+BEGIN_SRC ipython :results output replace drawer :eval noexport :session semexec :tangle no
 
   if debug_mode:
       for filterspartition in filters_partition:
-          wordex, sentex = 'label', 'entities'
+          wordex, sentex = 'lemma', 'document'
 
           customscorer = scorer(
               wordextractors[wordex],
@@ -1039,7 +1113,8 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
               [filters[filterkey] for filterkey in filterspartition],
               inversedocfreqs[wordex + '_' + sentex],
               out_of_corpus_value,
-              tf_idf_scorer
+              lambda self, a, b : generic_weights_scorer(self, a, b, [(0.6, entity_weighter)])
+  #            tf_idf_scorer
           )
 
           scores = make_score_tree(
