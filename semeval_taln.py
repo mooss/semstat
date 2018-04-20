@@ -129,9 +129,41 @@ def bruteforce_scorer(
     return intersection_score(counta, countb, inversedocfreqs,
                               out_of_corpus_value, score_multiplier)
 
+def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
+    """
+    Parameters
+    ----------
+    doca : 
+
+    docb : 
+
+    inversedocfreqs : 
+
+    out_of_corpus_value : 
+
+    Returns
+    -------
+    out : 
+    """
+    def bag_maker(doc):
+        return Counter(word
+                for word in map(self.wordex, self.sentex(doc))
+                if all(flt(word) for flt in self.filters))
+    baga = bag_maker(doca)
+    bagb = bag_maker(docb)
+    intersection = baga & bagb
+    termfreq = term_frequencies(baga + bagb)
+
+    return sum(
+        tf_idf(term,
+               termfreq,
+               inversedocfreqs,
+               out_of_corpus_value) * len(intersection)
+        for term, occurences in intersection.items()
+    )
 
 class scorer(object):
-    def __init__(self, wordex, sentex, filters, scorerfunction=None):
+    def __init__(self, wordex, sentex, filters, scorerfunction):
         """
 
         Parameters
@@ -150,48 +182,10 @@ class scorer(object):
         self.wordex = wordex
         self.sentex = sentex
         self.filters = filters
-        if scorerfunction == None:
-            self.scorerfunction = self.tf_idf_scorer
-        else:
-            self.scorerfunction = scorerfunction
-
-
-    def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
-        """
-
-        Parameters
-        ----------
-        doca : 
-
-        docb : 
-
-        inversedocfreqs : 
-
-        out_of_corpus_value : 
-
-        Returns
-        -------
-        out : 
-        """
-        def bag_maker(doc):
-            return Counter(word
-                    for word in map(self.wordex, self.sentex(doc))
-                    if all(flt(word) for flt in self.filters))
-        baga = bag_maker(doca)
-        bagb = bag_maker(docb)
-        intersection = baga & bagb
-        termfreq = term_frequencies(baga + bagb)
-
-        return sum(
-            tf_idf(term,
-                   termfreq,
-                   inversedocfreqs,
-                   out_of_corpus_value) * len(intersection)
-            for term, occurences in intersection.items()
-        )
+        self.scorerfunction = scorerfunction
 
     def get_score(self, *args):
-        return self.scorerfunction(*args)
+        return self.scorerfunction(self, *args)
 
 def entity_weighter(unita, unitb, weight):
     entcount = 0

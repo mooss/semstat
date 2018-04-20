@@ -340,9 +340,41 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
       return intersection_score(counta, countb, inversedocfreqs,
                                 out_of_corpus_value, score_multiplier)
 
+  def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
+      """
+      Parameters
+      ----------
+      doca : 
+
+      docb : 
+
+      inversedocfreqs : 
+
+      out_of_corpus_value : 
+
+      Returns
+      -------
+      out : 
+      """
+      def bag_maker(doc):
+          return Counter(word
+                  for word in map(self.wordex, self.sentex(doc))
+                  if all(flt(word) for flt in self.filters))
+      baga = bag_maker(doca)
+      bagb = bag_maker(docb)
+      intersection = baga & bagb
+      termfreq = term_frequencies(baga + bagb)
+
+      return sum(
+          tf_idf(term,
+                 termfreq,
+                 inversedocfreqs,
+                 out_of_corpus_value) * len(intersection)
+          for term, occurences in intersection.items()
+      )
 
   class scorer(object):
-      def __init__(self, wordex, sentex, filters, scorerfunction=None):
+      def __init__(self, wordex, sentex, filters, scorerfunction):
           """
 
           Parameters
@@ -361,48 +393,10 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
           self.wordex = wordex
           self.sentex = sentex
           self.filters = filters
-          if scorerfunction == None:
-              self.scorerfunction = self.tf_idf_scorer
-          else:
-              self.scorerfunction = scorerfunction
-
-
-      def tf_idf_scorer(self, doca, docb, inversedocfreqs, out_of_corpus_value):
-          """
-
-          Parameters
-          ----------
-          doca : 
-
-          docb : 
-
-          inversedocfreqs : 
-
-          out_of_corpus_value : 
-
-          Returns
-          -------
-          out : 
-          """
-          def bag_maker(doc):
-              return Counter(word
-                      for word in map(self.wordex, self.sentex(doc))
-                      if all(flt(word) for flt in self.filters))
-          baga = bag_maker(doca)
-          bagb = bag_maker(docb)
-          intersection = baga & bagb
-          termfreq = term_frequencies(baga + bagb)
-
-          return sum(
-              tf_idf(term,
-                     termfreq,
-                     inversedocfreqs,
-                     out_of_corpus_value) * len(intersection)
-              for term, occurences in intersection.items()
-          )
+          self.scorerfunction = scorerfunction
 
       def get_score(self, *args):
-          return self.scorerfunction(*args)
+          return self.scorerfunction(self, *args)
 
 
 #+END_SRC
@@ -846,14 +840,16 @@ Les méthodes précédemment générées sont exécutées et les scores produits
       customscorer = scorer(
           wordextractors[wordex],
           sentenceextractors[sentex],
-          [filters[filterkey] for filterkey in filterspartition])
+          [filters[filterkey] for filterkey in filterspartition],
+          tf_idf_scorer)
 
       scores = make_score_tree(
           doctrees[doctree],
           lambda a, b: customscorer.get_score(
               a, b,
               inversedocfreqs[wordex + '_' + sentex],
-              out_of_corpus_value)
+              out_of_corpus_value
+          )
       )
 
       prediction_file = getpredfilename(doctree, indicator, filterspartition, 'bruteforce')
@@ -1103,7 +1099,9 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
           customscorer = scorer(
               wordextractors[wordex],
               sentenceextractors[sentex],
-              [filters[filterkey] for filterkey in filterspartition])
+              [filters[filterkey] for filterkey in filterspartition],
+              tf_idf_scorer
+          )
 
           scores = make_score_tree(
               doctrees[doctree],
