@@ -1,5 +1,12 @@
 import re
 import operator
+import pickle
+
+def save_object(obj, filename):
+    pickle.dump(obj, open(filename, 'wb'))
+
+def load_object(filename):
+    return pickle.load(open(filename, 'rb'))
 
 def transformtree_deep(func, tree):
     """Transform a tree by applying a function to its leaves.
@@ -71,3 +78,4 @@ def natural_sort_key(key):
     def convert(text):
         return int(text) if text.isdigit() else text
     return [convert(c) for c in re.split('([0-9]+)', key)]
+

@@ -4,7 +4,7 @@ from itertools import chain
 from functools import reduce
 from collections import Counter, defaultdict
 from semeval_xml import get_semeval_id, get_related_threads, xmlextract
-from semeval_util import save_object, load_object
+from plasem_algostruct import save_object, load_object
 
 def make_document_tree(original_questions, model, content_extractor):
     result = {}

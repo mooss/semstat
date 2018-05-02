@@ -2,10 +2,9 @@
 from itertools import product, combinations
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
-from semeval_struct import *
-from semeval_util import *
+from plasem_algostruct import *
+from plasem_taln import *
 from semeval_xml import get_semeval_content
-from semeval_taln import *
 
 debug_mode = False;
 seek_optimal_ner_ponderation = False
