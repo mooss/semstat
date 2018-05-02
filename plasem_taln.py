@@ -1,10 +1,7 @@
-import os.path
 import math
 from itertools import chain
 from functools import reduce
 from collections import Counter, defaultdict
-from semeval_xml import get_semeval_id, get_related_threads, xmlextract
-from plasem_algostruct import save_object, load_object
 
 def term_frequencies(bag):
     documentlen = sum(bag.values())
