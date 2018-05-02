@@ -480,7 +480,6 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
       return score * len(intersection)
 #+END_SRC
 
-* TODO trouver la différence, si elle existe entre mesure, indicateur et score :noexport:
 * Évaluation des approches (=semeval_executable.py=)
 :PROPERTIES:
 :header-args: :ipython: :tangle semeval_executable.py :exports code :session semexec :eval no-export
