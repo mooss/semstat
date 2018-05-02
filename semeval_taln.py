@@ -169,9 +169,9 @@ def entity_weighter(unita, unitb, weight):
     else:
         return 1-weight
 
-def generic_weighter(unita, unitb, weight, predicat):
+def generic_weighter(unita, unitb, weight, predicate):
     for tok in chain(unita, unitb):
-        if predicat(tok):
+        if predicate(tok):
             return weight
     return 1 - weight
 
@@ -253,8 +253,5 @@ def generic_weights_scorer(self, doca, docb, weights_functions):
                            for weight, weighter in weights_functions),
                           1)
         tfidf = tf_idf(el, termfreq, self.inversedocfreqs, self.out_of_corpus_value)
-        # print('el =', el, 'coef =', coef, 'tfidf =', tfidf, 'oov', self.out_of_corpus_value)
-        # print(inversedocfreqs)
         score += tfidf * coef
-    # print('score', score, intersection, 'weight == ', weights_functions)
     return score * len(intersection)
