@@ -1,0 +1,122 @@
+#+TITLE: Rapport de TER appariement de questions/réponses
+#+AUTHOR: Félix Jamet
+#+OPTIONS: tags:nil
+#+LATEX_HEADER: \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+#+LATEX_HEADER: \newcommand{\var}[1]{{\operatorname{\mathit{#1}}}}
+
+
+* Présentation du sujet
+Avec la démocratisation d'Internet, les communautés de questions/réponses telles que StackExchange, AskUbuntu ou Quora ont proliféré, produisant ainsi une masse conséquente d'informations.
+
+Il est paradoxalement difficile de trouver la réponse idéale à une question parmi une telle quantité d'informations. C'est ce problème qui est investigué depuis 2015 dans le cadre de la tâche 3 de SemEval[fn:semevaltask3].
+
+[fn:semevaltask3] Voir http://alt.qcri.org/semeval2017/task3/.
+
+
+SemEval est un /WorkShop/ ayant pour but d'évaluer des approches d'interprétation automatique de la sémantique du langage naturel.
+La tâche 3 est concernée par l'appariement questions/réponses, autrement dit, étant donné une question, trouver la ou les meilleures réponses y correspondant.
+
+La sous-tâche B de la tâche 3 de SemEval consiste à faire de l'appariement question/question, c'est à dire étant donné deux questions, déterminer elles sont similaires.
+C'est cette sous-tâche qui est traitée dans ce TER.
+
+Les méthodes proposées par les participants des éditions 2016 et 2017 de SemEval pour résoudre cette étape sont des techniques d'apprentissage automatique allant du SVM au /deep learning/. *(pas sûr ; le rapport de semeval 2016 stipule de (Franco-Salvador et al., 2016) que "They use distributed representations of words, knowledge graphs generated with BabelNet, and frames from FrameNet.", j'ai pas l'impression que c'est du /machine learning/)*
+
+Ce TER a pour but de regarder l'efficacité que pourrait avoir une approche plus simple, d'avantage ancrée dans la linguistique computationnelle que dans l'apprentissage automatique.
+Pour cela, trois objectifs sont distingués :
+ - Réfléchir à la manière de détecter des questions similaires en termes de caractéristiques linguistiques.(d'indicateurs et de marqueurs linguistiques.)
+ - Mettre en oeuvre une méthode pour les détecter automatiquement.
+ - Travailler sur une évaluation de l'approche proposée.
+
+* SemEval - Tâche 3 - Similarité question/question
+Afin de comparer différentes approches, SemEval fournit des données d'entrainement, de développement et de test, ainsi qu'un /scorer/ permettant d'associer un score à une approche.
+
+Les données proviennent des forums de /Qatar Living/, un site centré autour d'une communauté d'expatriés vivant au Qatar.
+Ces données sont organisées sous forme de documents XML contenant $N$ questions dites originales.
+À chaque question originale sont associées 10 questions reliées, et à chaque question reliée sont associés 10 commentaires.
+
+Dans le cadre de la sous-tâche B, il est demandé à une approche d'ordonner les questions reliées selon leur pertinence par rapport à la question originale.
+Le /scorer/ utilise cet ordre prédit pour évaluer une approche, en utilisant l'indicateur MAP (/Mean Average Precision/).
+La MAP d'une liste de prédiction reflète non seulement l'exactitude des prédictions mais également à quel point l'ordre des prédictions est correct.
+
+* Méthodes proposées
+Plusieurs méthodes sont envisagées. Il a été choisi de mesurer leur efficacité individuellement dans un premier temps, puis de chercher des manières pour les combiner les unes avec les autres.
+
+Le problème est abordé comme un problème de /scoring/. Il s'agit de donner un score de similarité entre une question reliée et sa question originale. L'ordre des questions est établi en triant les questions dans l'ordre décroissant selon leur score de similarité.
+
+Les méthodes proposées utilisent des sacs de mots. Une approche à base de sacs de mots consiste à représenter un document en utilisant un multi-ensemble de mots (un multi-ensemble est un ensemble pouvant contenir plusieurs occurences d'un même élément).
+Une conséquence de cette approche est que l'ordre des mots est ignoré.
+
+Un autre point commun des méthodes envisagées est qu'elles ont toutes recours au TF-IDF pour pondérer les mots selon leur fréquence.
+La TF (/Term Frequency/) d'un mot correspond à sa fréquence d'apparition dans l'ensemble des documents.
+L'IDF (/Inverse Document Frequency/) d'un mot est proportionnelle à l'inverse du nombre de documents dans lesquels il apparaît.
+La TF-IDF d'un mot correspond à une combinaison de sa TF et de son IDF.
+Plus formellement,
+
+$$TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}$$
+$$IDF(terme, corpus) = log \left( \frac{taille(corpus)}
+{\norm{\{doc / doc \in corpus \land terme \in doc\}}} \right)$$
+$$\var{TF-IDF}(terme, document, corpus) = TF(terme, document) \times IDF(terme, corpus)$$
+
+La méthode de référence que nous proposons consiste à travailler avec l'intersection des sacs de mots des questions à comparer. Le score de similarité est établi comme la somme des valeurs TF-IDF des sacs de mots.
+
+$$similarit\acute{e}_{r\acute{e}f\acute{e}rence}(Q_1, Q_2, document, corpus) =
+\sum_{terme \in Q_1 \cap Q_2} \var{TF-IDF}(terme, document, corpus)$$
+
+** 
+* Indicateurs envisagés
+** Nature grammaticale des mots
+Identifier la nature grammaticale d'un mot peut donner un indice sur sa pertinence.
+Une hypothèse vraisemblable est qu'un nom participera davantage au sens d'une phrase, tandis qu'un adjectif aura moins d'impact.
+La nature d'un mot peut être détectée à l'aide d'étiqueteurs morpho-syntaxiques.
+
+** Reconnaissance d'entité nommées
+Une entité nommée est un mot ou groupe de mots designant une entité du monde.
+La reconnaissance d'entités nommées est une technique permettant de detecter ces entités et de les classifier.
+
+Les classes de ces entité comprennent des noms d'individus, des produits, des villes, ou encore des entreprises.
+
+La reconnaissance d'entités nommées est intéressante pour la problématique de ce TER car beaucoup de questions portent sur des entités nommées.
+
+
+*** Multi-ensembles d'entités nommées
+Étant donné une phrase $s$, on peut créer plusieurs multi-ensembles à partir de ses entités nommées :
+ - $CAT_s$, le multi-ensemble contenant les catégories des entités nommées de la phrase $s$.
+ - $TOK_s$, le multi-ensemble contenant les tokens des entités nommées de la phrase $s$.
+
+En prenant $s = \text{"Google and Apple headquarters are in California"}$, on a
+$CAT_s = \{\text{ORG}, \text{ORG}, \text{GPE}\}$ et $TOK_s = \{\text{Google}, \text{Apple}, \text{California}\}$
+
+
+* Pré-traitements
+L'étape de pré-traitement consiste à utiliser des techniques simples
+
+** Mots-outils
+
+** Filtres
+
+** Majuscules
+
+* Techniques de TALN (à incorporer au fur et à mesure de l'écriture)
+
+** Racinisation (/stemming/) et lemmatisation
+Le but des ces deux techniques est de modifier un mot (typiquement d'ôter des suffixes) afin d'en obtenir une forme simplifiée.
+Cette forme simplifiée permet d'associer des mots dérivant d'une même racine.
+
+La différence entre ces deux techniques se situe dans la forme simplifiée qu'elle permettent d'obtenir.
+Un racinisateur permet de générer une racine (ou radical), qui est une forme artificielle, tandis qu'un lemmatisateur génère un lemme, correspondant à un terme d'usage.
+Par exemple, le mot "chercher" pourra être racinisé en "cherch", mais sera lemmatisé en "cherche".
+
+Cette technique a son utilité dans la tâche de modifier des textes afin de mieux pouvoir les comparer, car elle permet d'une part de donner une forme commune à des termes proches, les rendant ainsi directement comparable, et d'autre part de réduire la diversité linguistique tout en préservant la semantique.
+
+* Perspectives
+
+** Dictionnaire de synonymes (wordnet)
+
+** Suppression de bruit
+Signatures, nombres, "utilisation créative des signes de ponctuation", détection de fautes, obligations sociales et remerciements, abbréviations
+
+** Vocabulaire spécifique
+Comparer avec d'autres corpus (corpora ?) pour voir quels termes sont spécifiques à quatar living et réfléchir à comment traiter les termes spécifiques
+
+** Forme interrogative
+La forme interrogative est à priori simple à détecter en anglais et pourrait être un bon critère pour extraire les passages les plus importants.
