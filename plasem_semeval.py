@@ -24,7 +24,7 @@ def make_or_load_semeval_document_tree(xml_source, saved_path, model, content_ex
             print('Creating document tree. This might take a while...')
 
         extractor = xmlextract(xml_source)
-        result = make_document_tree(
+        result = make_semeval_document_tree(
             extractor.get_org_elements(), model, content_extractor)
 
         if verbose:
