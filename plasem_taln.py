@@ -48,12 +48,7 @@ def tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value):
         return 0
     if term not in inversedocfreq:
         return out_of_corpus_value
-
     return termfreq[term] * inversedocfreq[term]
-
-def tf_idf_bow(bag, termfreq, inversedocfreq, out_of_corpus_value):
-    return sum(tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value) * occurences
-               for term, occurences in bag.items())
 
 class scorer(object):
     def __init__(self, wordex, sentex, filters,
