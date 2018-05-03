@@ -5,7 +5,7 @@ from spacy.lang.en.stop_words import STOP_WORDS
 from plasem_algostruct import *
 from plasem_taln import *
 from semeval_xml import get_semeval_content
-from plasem_semeval import make_or_load_semeval_document_tree
+from plasem_semeval import make_or_load_semeval_document_tree, write_scores_to_file
 
 debug_mode = False;
 seek_optimal_ner_ponderation = False
@@ -21,28 +21,7 @@ def make_score_tree(document_tree, scorer):
         0
     )
 
-def write_scores_to_file(scores, filename, verbose=False):
-    """Write a semeval score tree to a prediction file.
 
-    Parameters
-    ----------
-    scores : dict of dict of float
-        The scores to write.
-
-    filename : str
-       The name of the output file.
-    """
-    linebuffer = [(orgid, relid, str(0), str(score), 'true')
-                  for orgid, relqs in scores.items()
-                  for relid, score in relqs.items()]
-
-    linebuffer.sort(key=lambda x: natural_sort_key(x[1]))
-
-    if verbose:
-        print('writing scores to', prediction_file)
-
-    with open(filename, 'w') as out:
-        out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
 
 models = {
     'spacy_en': spacy.load('en')

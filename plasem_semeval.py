@@ -1,5 +1,5 @@
 import os.path
-from plasem_algostruct import save_object, load_object
+from plasem_algostruct import save_object, load_object, natural_sort_key
 from semeval_xml import get_semeval_id, get_related_threads, xmlextract
 
 def make_semeval_document_tree(original_questions, model, content_extractor):
@@ -32,3 +32,26 @@ def make_or_load_semeval_document_tree(xml_source, saved_path, model, content_ex
         save_object(result, saved_path)
 
         return result
+    
+def write_scores_to_file(scores, filename, verbose=False):
+    """Write a semeval score tree to a prediction file.
+    
+    Parameters
+    ----------
+    scores : dict of dict of float
+        The scores to write.
+
+    filename : str
+       The name of the output file.
+    """
+    linebuffer = [(orgid, relid, str(0), str(score), 'true')
+                  for orgid, relqs in scores.items()
+                  for relid, score in relqs.items()]
+
+    linebuffer.sort(key=lambda x: natural_sort_key(x[1]))
+
+    if verbose:
+        print('writing scores to', filename)
+
+    with open(filename, 'w') as out:
+        out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
