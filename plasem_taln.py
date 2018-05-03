@@ -54,7 +54,8 @@ class scorer(object):
     def __init__(self, wordex, sentex, filters,
                  inversedocfreqs, out_of_corpus_value,
                  scorerfunction):
-        """
+        """All informations needed to compute a score.
+        The score is computed using an external custom similarity function which works by accessing to the informations set here.
 
         Parameters
         ----------
@@ -78,6 +79,31 @@ class scorer(object):
 
     def get_score(self, *args):
         return self.scorerfunction(self, *args)
+
+class dotdict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+class comparator(dotdict):
+    """Minimalistic class that provides context to compare two questions
+    """
+    def __init__(self, context, similarity):
+        """
+        Parameters
+        ----------
+        context : dict
+        
+        similarity : function(context, reference, candidate)
+            Similarity function that will use the context to determine the similarity between two questions.
+        """
+        super().__init__(context)
+        self.similarity = similarity
+
+    def getscore(self, reference, candidate):
+        return self.similarity(self, reference, candidate)
+        
 
 def tf_idf_scorer(self, doca, docb):
     """
@@ -111,6 +137,39 @@ def tf_idf_scorer(self, doca, docb):
                self.out_of_corpus_value) * len(intersection)# * occurences
         for term, occurences in intersection.items()
     )
+
+#def plain_comparator
+def baseline_similarity(context, reference, candidate):
+    """Computes the similarity score of two questions, using only bag of words and TF-IDF.
+
+    Parameters
+    ----------
+    context : Namespace
+        Necessary informations accessibles with dot notation.
+        
+    reference : Container of words
+        Document of the reference sentence.
+
+    candidate : Container of words
+        Document of the candidate sentence.
+
+    Returns
+    -------
+    out : float
+        The baseline similarity score.
+    """
+    bagref = Counter(word for word in reference)
+    bagcan = Counter(word for word in candidate)
+    termfreq = term_frequencies(bagref + bagcan)
+    intersection = bagref & bagcan
+    
+    similarity = sum(
+        tf_idf(term, termfreq, context.inversedocfreqs, context.outofcorpusvalue)
+        for term in intersection
+    )
+
+    return similarity
+    
 
 def create_unit_dict(wordex, sentex, filters, doc):
     result = defaultdict(list)
