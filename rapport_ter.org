@@ -95,6 +95,9 @@
        for doc in org.values()]
   )
   outofcorpusvalue = max(inversedocfreqs.values())
+
+  context = {'inversedocfreqs': inversedocfreqs,
+             'outofcorpusvalue': outofcorpusvalue}
 #+END_SRC
 
 #+NAME: scoringboilerplate
@@ -106,22 +109,21 @@
   <<loaddoctrees>>
 #+END_SRC
 
-#+NAME: plaincomparator
+#+NAME: baseline_similarity
 #+BEGIN_SRC ipython
-  from plasem_taln import comparator, baseline_similarity
-  comp = comparator({'inversedocfreqs': inversedocfreqs,
-                     'outofcorpusvalue': outofcorpusvalue},
-                    baseline_similarity)
+  from plasem_taln import baseline_similarity
+  similarity = baseline_similarity
 #+END_SRC
 
 #+NAME: writescores
 #+BEGIN_SRC ipython
   from plasem_semeval import write_scores_to_file
+  from plasem_taln import comparator
+  comp = comparator(context, similarity)
   scores = make_score_tree(
       doctrees[corpus],
       comp.getscore
   )
-
   predfile = getpredfilename(methodname, corpus)
   write_scores_to_file(scores, predfile)
 #+END_SRC
@@ -212,10 +214,9 @@ La table [[refnofilter]] indique les scores MAP de la méthode de référence su
   <<scoringboilerplate>>
   methodname = 'baseline'
   name = 'refnofilter'
-  caption = 'Scores méthode de référence'
+  caption = 'Scores MAP - méthode de référence'
+  <<baseline_similarity>>
   for corpus in corpora:
-      <<plaincomparator>>
-
       <<writescores>>
 
   <<printscores>>

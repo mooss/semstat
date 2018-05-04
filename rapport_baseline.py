@@ -75,21 +75,22 @@ inversedocfreqs = inverse_document_frequencies(
      for doc in org.values()]
 )
 outofcorpusvalue = max(inversedocfreqs.values())
+
+context = {'inversedocfreqs': inversedocfreqs,
+           'outofcorpusvalue': outofcorpusvalue}
 methodname = 'baseline'
 name = 'refnofilter'
-caption = 'Scores méthode de référence'
+caption = 'Scores MAP - méthode de référence'
+from plasem_taln import baseline_similarity
+similarity = baseline_similarity
 for corpus in corpora:
-    from plasem_taln import comparator, baseline_similarity
-    comp = comparator({'inversedocfreqs': inversedocfreqs,
-                       'outofcorpusvalue': outofcorpusvalue},
-                      baseline_similarity)
-
     from plasem_semeval import write_scores_to_file
+    from plasem_taln import comparator
+    comp = comparator(context, similarity)
     scores = make_score_tree(
         doctrees[corpus],
         comp.getscore
     )
-    
     predfile = getpredfilename(methodname, corpus)
     write_scores_to_file(scores, predfile)
 
