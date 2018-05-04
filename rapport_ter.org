@@ -3,7 +3,8 @@
 #+OPTIONS: tags:nil
 #+LATEX_HEADER: \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 #+LATEX_HEADER: \newcommand{\var}[1]{{\operatorname{\mathit{#1}}}}
-
+#+LATEX_HEADER: \let\oldtextbf\textbf
+#+LATEX_HEADER: \renewcommand{\textbf}[1]{\textcolor{red}{\oldtextbf{#1}}}
 #+PROPERTY: header-args:ipython :eval no-export :results output drawer replace :exports results
 * noweb                                                            :noexport:
 :PROPERTIES:
@@ -89,7 +90,7 @@
       get_semeval_content)
 
   inversedocfreqs = inverse_document_frequencies(
-      [[tok for tok in doc]
+      [[str(tok) for tok in doc]
        for org in traindoctree.values()
        for doc in org.values()]
   )
@@ -133,26 +134,12 @@
 
   restable.sort(key=lambda x: x[1], reverse=True)
   restable.insert(0, ['Corpus', 'Score MAP'])
+  print('#+NAME:', name)
   print('#+CAPTION:', caption)
   print(orgmodetable(restable, header=True))
   print()
 #+END_SRC
 
-#+BEGIN_SRC ipython :eval no-export :noweb yes :session baselineexec :tangle rapport_baseline.py :shebang "#!/usr/bin/env python3"
-  <<scoringboilerplate>>
-  methodname = 'baseline'
-
-  caption = 'Scores méthode de référence'
-  for corpus in corpora:
-      <<plaincomparator>>
-
-      <<writescores>>
-
-  <<printscores>>
-#+END_SRC
-
-#+RESULTS:
-: # Out[18]:
 
 * Présentation du sujet
 Avec la démocratisation d'Internet, les communautés de questions/réponses telles que StackExchange, AskUbuntu ou Quora ont proliféré, produisant ainsi une masse conséquente d'informations.
@@ -202,23 +189,65 @@ La TF-IDF d'un mot présent dans le corpus correspond à une combinaison de sa T
 Si un mot est absent du corpus, sa TF-IDF est égale à l'IDF du terme le plus rare. *pas sûr que ça soit la bonne manière de faire*
 Plus formellement,
 
-$$TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}$$
-$$IDF(terme, corpus) = log \left( \frac{taille(corpus)}
-{\norm{\{doc / doc \in corpus \land terme \in doc\}}} \right)$$
-$$\var{TF-IDF}(terme, document, corpus) =
+\[TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}\]
+\[IDF(terme, corpus) = log \left( \frac{taille(corpus)}
+{\norm{\{doc / doc \in corpus \land terme \in doc\}}} \right)\]
+\[\var{TF-IDF}(terme, document, corpus) =
 \begin{cases}
 TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 \min(\{IDF(el, corpus) / el \in corpus\}) & \text{sinon}
-\end{cases}$$
-
+\end{cases}\]
 
 Les méthodes sont testées sur les données de test des années 2016 et 2017 de la tâche 3 de SemEval et sont entrainées sur les données d'entrainement fournies pour ces années.
 
-** Méthode de référence
+** Mise au point d'une méthode de référence
 La méthode de référence que nous proposons consiste à travailler avec l'intersection des sacs de mots des questions à comparer. Le score de similarité est établi comme la somme des valeurs TF-IDF des sacs de mots. Les valeurs TF-IDF sont calculées en utilisant comme corpus le texte de toutes les questions originales et reliées extraites des données d'entrainement et comme document les deux questions mises bout à bout.
 
-$$similarit\acute{e}_{r\acute{e}f\acute{e}rence}(Q_1, Q_2) =
-\sum_{terme \in Q_1 \cap Q_2} \var{TF-IDF}(terme, Q_1 \cup Q_2, texte_{entrainement})$$
+\[similarit\acute{e}_{r\acute{e}f\acute{e}rence}(Q_1, Q_2) =
+\sum_{terme \in Q_1 \cap Q_2} \var{TF-IDF}(terme, Q_1 \cup Q_2, texte_{entrainement})\]
+
+La table [[refnofilter]] indique les scores MAP de la méthode de référence sur les éditions 2016 et 2017 de SemEval.
+
+#+BEGIN_SRC ipython :eval no-export :noweb yes :session baselineexec :tangle rapport_baseline.py :shebang "#!/usr/bin/env python3" :results output drawer replace
+  <<scoringboilerplate>>
+  methodname = 'baseline'
+  name = 'refnofilter'
+  caption = 'Scores méthode de référence'
+  for corpus in corpora:
+      <<plaincomparator>>
+
+      <<writescores>>
+
+  <<printscores>>
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+NAME: refnofilter
+#+CAPTION: Scores MAP - méthode de référence
+| Corpus | Score MAP |
+|--------|-----------|
+| 2016   | 0.7148    |
+| 2017   | 0.4421    |
+
+:END:
+
+#+NAME: bestof2016
+#+CAPTION: Meilleurs scores MAP - SemEval 2016
+| Méthode               | Scores MAP |
+|-----------------------+------------|
+| UH-PRHLT-contrastive2 |      77.33 |
+| UH-PRHLT-primary      |      76.70 |
+| UH-PRHLT-contrastive1 |      76.56 |
+
+#+NAME: bestof2017
+#+CAPTION: Meilleurs scores MAP - SemEval 2017
+| Méthode             | Scores MAP |
+|---------------------+------------|
+| KeLP-contrastive1   |      49.00 |
+| SimBow-contrastive2 |      47.87 |
+| SimBow-primary      |      47.22 |
+
 
 ** Lemmatisation
 * Indicateurs envisagés

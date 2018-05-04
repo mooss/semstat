@@ -70,13 +70,13 @@ traindoctree = make_or_load_semeval_document_tree(
     get_semeval_content)
 
 inversedocfreqs = inverse_document_frequencies(
-    [[tok for tok in doc]
+    [[str(tok) for tok in doc]
      for org in traindoctree.values()
      for doc in org.values()]
 )
 outofcorpusvalue = max(inversedocfreqs.values())
 methodname = 'baseline'
-
+name = 'refnofilter'
 caption = 'Scores méthode de référence'
 for corpus in corpora:
     from plasem_taln import comparator, baseline_similarity
@@ -99,6 +99,7 @@ restable = [[corpus,
 
 restable.sort(key=lambda x: x[1], reverse=True)
 restable.insert(0, ['Corpus', 'Score MAP'])
+print('#+NAME:', name)
 print('#+CAPTION:', caption)
 print(orgmodetable(restable, header=True))
 print()

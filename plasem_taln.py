@@ -158,8 +158,8 @@ def baseline_similarity(context, reference, candidate):
     out : float
         The baseline similarity score.
     """
-    bagref = Counter(word for word in reference)
-    bagcan = Counter(word for word in candidate)
+    bagref = Counter(str(word) for word in reference)
+    bagcan = Counter(str(word) for word in candidate)
     termfreq = term_frequencies(bagref + bagcan)
     intersection = bagref & bagcan
     
