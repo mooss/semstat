@@ -38,7 +38,7 @@ else:
     }
 
 extractors = {
-    'questions': lambda x: get_semeval_content(x).lower(),
+    'questions': lambda x: get_semeval_content(x),
    # 'questions_with_comments': get_semeval_content_with_relcomments
 }
 
@@ -140,7 +140,7 @@ training_doctree = make_or_load_semeval_document_tree(
     training_file,
     'train_2016_part1.pickle',
     models['spacy_en'],
-    get_semeval_content,
+    lambda x: get_semeval_content(x),
     verbose=True
 )
 
