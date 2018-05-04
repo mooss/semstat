@@ -49,20 +49,29 @@ Une conséquence de cette approche est que l'ordre des mots est ignoré.
 Un autre point commun des méthodes envisagées est qu'elles ont toutes recours au TF-IDF pour pondérer les mots selon leur fréquence.
 La TF (/Term Frequency/) d'un mot correspond à sa fréquence d'apparition dans l'ensemble des documents.
 L'IDF (/Inverse Document Frequency/) d'un mot est proportionnelle à l'inverse du nombre de documents dans lesquels il apparaît.
-La TF-IDF d'un mot correspond à une combinaison de sa TF et de son IDF.
+La TF-IDF d'un mot présent dans le corpus correspond à une combinaison de sa TF et de son IDF.
+Si un mot est absent du corpus, sa TF-IDF est égale à l'IDF du terme le plus rare. *pas sûr que ça soit la bonne manière de faire*
 Plus formellement,
 
 $$TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}$$
 $$IDF(terme, corpus) = log \left( \frac{taille(corpus)}
 {\norm{\{doc / doc \in corpus \land terme \in doc\}}} \right)$$
-$$\var{TF-IDF}(terme, document, corpus) = TF(terme, document) \times IDF(terme, corpus)$$
+$$\var{TF-IDF}(terme, document, corpus) =
+\begin{cases}
+TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
+\min(\{IDF(el, corpus) / el \in corpus\}) & \text{sinon}
+\end{cases}$$
 
-La méthode de référence que nous proposons consiste à travailler avec l'intersection des sacs de mots des questions à comparer. Le score de similarité est établi comme la somme des valeurs TF-IDF des sacs de mots.
 
-$$similarit\acute{e}_{r\acute{e}f\acute{e}rence}(Q_1, Q_2, document, corpus) =
-\sum_{terme \in Q_1 \cap Q_2} \var{TF-IDF}(terme, document, corpus)$$
+Les méthodes sont testées sur les données de test des années 2016 et 2017 de la tâche 3 de SemEval et sont entrainées sur les données d'entrainement fournies pour ces années.
 
-** 
+** Méthode de référence
+La méthode de référence que nous proposons consiste à travailler avec l'intersection des sacs de mots des questions à comparer. Le score de similarité est établi comme la somme des valeurs TF-IDF des sacs de mots. Les valeurs TF-IDF sont calculées en utilisant comme corpus le texte de toutes les questions originales et reliées extraites des données d'entrainement et comme document les deux questions mises bout à bout.
+
+$$similarit\acute{e}_{r\acute{e}f\acute{e}rence}(Q_1, Q_2) =
+\sum_{terme \in Q_1 \cap Q_2} \var{TF-IDF}(terme, Q_1 \cup Q_2, texte_{entrainement})$$
+
+** Lemmatisation
 * Indicateurs envisagés
 ** Nature grammaticale des mots
 Identifier la nature grammaticale d'un mot peut donner un indice sur sa pertinence.
