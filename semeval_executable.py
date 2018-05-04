@@ -38,7 +38,7 @@ else:
     }
 
 extractors = {
-    'questions': lambda x: get_semeval_content(x),
+    'questions': get_semeval_content,
    # 'questions_with_comments': get_semeval_content_with_relcomments
 }
 
@@ -132,7 +132,8 @@ all_indicators.update(morphologic_indicators)
 all_indicators.update(ner_indicators)
 
 def getindicatorfunctions(key):
-    return (wordextractors[all_indicators[key][0]], sentenceextractors[all_indicators[key][1]])
+    return (wordextractors[all_indicators[key][0]],
+            sentenceextractors[all_indicators[key][1]])
 
 training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
 
@@ -140,7 +141,7 @@ training_doctree = make_or_load_semeval_document_tree(
     training_file,
     'train_2016_part1.pickle',
     models['spacy_en'],
-    lambda x: get_semeval_content(x),
+    get_semeval_content,
     verbose=True
 )
 

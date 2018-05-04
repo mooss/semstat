@@ -100,7 +100,7 @@ Deux manières d'extraire du contenu sont envisagées. Elles se différencient a
 
 #+BEGIN_SRC ipython
   extractors = {
-      'questions': lambda x: get_semeval_content(x),
+      'questions': get_semeval_content,
      # 'questions_with_comments': get_semeval_content_with_relcomments
   }
 #+END_SRC
@@ -211,7 +211,8 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
   all_indicators.update(ner_indicators)
 
   def getindicatorfunctions(key):
-      return (wordextractors[all_indicators[key][0]], sentenceextractors[all_indicators[key][1]])
+      return (wordextractors[all_indicators[key][0]],
+              sentenceextractors[all_indicators[key][1]])
 #+END_SRC
 
 *** Création des arbres de documents
@@ -224,7 +225,7 @@ Chaque méthode de construction de sacs de mots utilise ces deux fonctions.
       training_file,
       'train_2016_part1.pickle',
       models['spacy_en'],
-      lambda x: get_semeval_content(x),
+      get_semeval_content,
       verbose=True
   )
 
@@ -395,29 +396,29 @@ Les méthodes précédemment générées sont exécutées et les scores produits
 
 | Sac de mots                    | Filtres               | Score MAP |
 |--------------------------------|-----------------------|-----------|
-| Lemmes                         | Mots outils, $\leq 2$ | 0.7721    |
-| Lemmes                         | Mots outils, $\leq 1$ | 0.7661    |
-| Lemmes                         | Mots outils           | 0.7541    |
-| Lemmes                         | Mots outils, $\leq 3$ | 0.7491    |
+| Lemmes                         | Mots outils, $\leq 2$ | 0.7717    |
+| Lemmes                         | Mots outils, $\leq 1$ | 0.7590    |
+| Lemmes                         | Mots outils, $\leq 3$ | 0.7489    |
+| Lemmes                         | Mots outils           | 0.7469    |
 | Textes des entités nommées     | Mots outils, $\leq 4$ | 0.7406    |
 | Tokens                         | Mots outils, $\leq 4$ | 0.7405    |
 | Tokens                         | Mots outils, $\leq 1$ | 0.7372    |
 | Tokens                         | Mots outils, $\leq 2$ | 0.7348    |
-| Lemmes                         | Pas de filtre         | 0.7348    |
-| Lemmes                         | $\leq 1$              | 0.7337    |
 | Textes des entités nommées     | $\leq 4$              | 0.7319    |
+| Lemmes                         | $\leq 1$              | 0.7309    |
 | Textes des entités nommées     | Mots outils           | 0.7298    |
-| Lemmes                         | $\leq 2$              | 0.7296    |
+| Lemmes                         | $\leq 4$              | 0.7295    |
 | Textes des entités nommées     | Mots outils, $\leq 2$ | 0.7293    |
-| Lemmes                         | $\leq 4$              | 0.7292    |
 | Textes des entités nommées     | Mots outils, $\leq 1$ | 0.7284    |
+| Lemmes                         | $\leq 2$              | 0.7279    |
 | Textes des entités nommées     | Mots outils, $\leq 3$ | 0.7266    |
 | Tokens                         | Mots outils, $\leq 3$ | 0.7261    |
 | Tokens                         | $\leq 2$              | 0.7247    |
-| Lemmes                         | $\leq 3$              | 0.7243    |
+| Lemmes                         | $\leq 3$              | 0.7242    |
+| Lemmes                         | Pas de filtre         | 0.7231    |
 | Textes des entités nommées     | Pas de filtre         | 0.7228    |
 | Textes des entités nommées     | $\leq 2$              | 0.7223    |
-| Lemmes                         | Mots outils, $\leq 4$ | 0.7206    |
+| Lemmes                         | Mots outils, $\leq 4$ | 0.7204    |
 | Textes des entités nommées     | $\leq 1$              | 0.7199    |
 | Textes des entités nommées     | $\leq 3$              | 0.7194    |
 | Tokens                         | $\leq 4$              | 0.7190    |
@@ -440,47 +441,47 @@ Les méthodes précédemment générées sont exécutées et les scores produits
 *année 2017*
 
 | Sac de mots                    | Filtres               | Score MAP |
-|--------------------------------|-----------------------|-----------|
-| Lemmes                         | Mots outils, $\leq 1$ | 0.4728    |
-| Lemmes                         | Mots outils           | 0.4651    |
-| Tokens                         | Mots outils, $\leq 1$ | 0.4617    |
-| Lemmes                         | Mots outils, $\leq 2$ | 0.4611    |
-| Lemmes                         | Pas de filtre         | 0.4590    |
-| Tokens                         | Mots outils, $\leq 3$ | 0.4571    |
-| Tokens                         | Mots outils, $\leq 2$ | 0.4568    |
-| Tokens                         | $\leq 2$              | 0.4559    |
-| Lemmes                         | $\leq 1$              | 0.4543    |
-| Lemmes                         | $\leq 2$              | 0.4460    |
-| Tokens                         | Mots outils           | 0.4450    |
-| Tokens                         | Pas de filtre         | 0.4423    |
-| Lemmes                         | $\leq 3$              | 0.4409    |
-| Tokens                         | $\leq 1$              | 0.4406    |
-| Lemmes                         | Mots outils, $\leq 3$ | 0.4389    |
-| Lemmes                         | Mots outils, $\leq 4$ | 0.4389    |
-| Tokens                         | Mots outils, $\leq 4$ | 0.4265    |
-| Tokens                         | $\leq 3$              | 0.4262    |
-| Lemmes                         | $\leq 4$              | 0.4257    |
-| Tokens                         | $\leq 4$              | 0.4139    |
-| Textes des entités nommées     | Mots outils, $\leq 4$ | 0.4083    |
-| Textes des entités nommées     | $\leq 4$              | 0.4083    |
-| Étiquettes des entités nommées | Mots outils, $\leq 3$ | 0.4051    |
-| Étiquettes des entités nommées | $\leq 3$              | 0.4051    |
-| Textes des entités nommées     | Mots outils, $\leq 3$ | 0.4021    |
-| Étiquettes des entités nommées | Mots outils, $\leq 4$ | 0.4020    |
-| Étiquettes des entités nommées | $\leq 4$              | 0.4020    |
-| Textes des entités nommées     | $\leq 3$              | 0.4019    |
-| Textes des entités nommées     | Mots outils           | 0.4000    |
-| Textes des entités nommées     | Mots outils, $\leq 1$ | 0.4000    |
-| Textes des entités nommées     | Mots outils, $\leq 2$ | 0.4000    |
-| Textes des entités nommées     | $\leq 1$              | 0.3998    |
-| Textes des entités nommées     | $\leq 2$              | 0.3998    |
-| Textes des entités nommées     | Pas de filtre         | 0.3998    |
-| Étiquettes des entités nommées | Mots outils           | 0.3300    |
-| Étiquettes des entités nommées | Mots outils, $\leq 1$ | 0.3300    |
-| Étiquettes des entités nommées | Mots outils, $\leq 2$ | 0.3300    |
-| Étiquettes des entités nommées | $\leq 1$              | 0.3300    |
-| Étiquettes des entités nommées | $\leq 2$              | 0.3300    |
-| Étiquettes des entités nommées | Pas de filtre         | 0.3300    |
+|--------------------------------+-----------------------+-----------|
+| Lemmes                         | Mots outils, $\leq 1$ |    0.4700 |
+| Lemmes                         | Mots outils           |    0.4636 |
+| Tokens                         | Mots outils, $\leq 1$ |    0.4617 |
+| Lemmes                         | Mots outils, $\leq 2$ |    0.4607 |
+| Tokens                         | Mots outils, $\leq 3$ |    0.4571 |
+| Tokens                         | Mots outils, $\leq 2$ |    0.4568 |
+| Tokens                         | $\leq 2$              |    0.4559 |
+| Lemmes                         | Pas de filtre         |    0.4487 |
+| Lemmes                         | $\leq 1$              |    0.4469 |
+| Tokens                         | Mots outils           |    0.4450 |
+| Tokens                         | Pas de filtre         |    0.4423 |
+| Tokens                         | $\leq 1$              |    0.4406 |
+| Lemmes                         | Mots outils, $\leq 3$ |    0.4404 |
+| Lemmes                         | $\leq 3$              |    0.4400 |
+| Lemmes                         | Mots outils, $\leq 4$ |    0.4389 |
+| Lemmes                         | $\leq 2$              |    0.4388 |
+| Tokens                         | Mots outils, $\leq 4$ |    0.4265 |
+| Tokens                         | $\leq 3$              |    0.4262 |
+| Lemmes                         | $\leq 4$              |    0.4257 |
+| Tokens                         | $\leq 4$              |    0.4139 |
+| Textes des entités nommées     | Mots outils, $\leq 4$ |    0.4083 |
+| Textes des entités nommées     | $\leq 4$              |    0.4083 |
+| Étiquettes des entités nommées | Mots outils, $\leq 3$ |    0.4051 |
+| Étiquettes des entités nommées | $\leq 3$              |    0.4051 |
+| Textes des entités nommées     | Mots outils, $\leq 3$ |    0.4021 |
+| Étiquettes des entités nommées | Mots outils, $\leq 4$ |    0.4020 |
+| Étiquettes des entités nommées | $\leq 4$              |    0.4020 |
+| Textes des entités nommées     | $\leq 3$              |    0.4019 |
+| Textes des entités nommées     | Mots outils           |    0.4000 |
+| Textes des entités nommées     | Mots outils, $\leq 1$ |    0.4000 |
+| Textes des entités nommées     | Mots outils, $\leq 2$ |    0.4000 |
+| Textes des entités nommées     | $\leq 1$              |    0.3998 |
+| Textes des entités nommées     | $\leq 2$              |    0.3998 |
+| Textes des entités nommées     | Pas de filtre         |    0.3998 |
+| Étiquettes des entités nommées | Mots outils           |    0.3300 |
+| Étiquettes des entités nommées | Mots outils, $\leq 1$ |    0.3300 |
+| Étiquettes des entités nommées | Mots outils, $\leq 2$ |    0.3300 |
+| Étiquettes des entités nommées | $\leq 1$              |    0.3300 |
+| Étiquettes des entités nommées | $\leq 2$              |    0.3300 |
+| Étiquettes des entités nommées | Pas de filtre         |    0.3300 |
 
 :END:
 
@@ -552,20 +553,20 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
 | Sac de mots | Filtres               | Score MAP |
 |-------------|-----------------------|-----------|
 | Lemmes      | Mots outils, $\leq 2$ | 0.7700    |
-| Lemmes      | Mots outils, $\leq 1$ | 0.7646    |
-| Lemmes      | Mots outils           | 0.7528    |
-| Lemmes      | Mots outils, $\leq 3$ | 0.7509    |
-| Lemmes      | $\leq 2$              | 0.7414    |
+| Lemmes      | Mots outils, $\leq 1$ | 0.7656    |
+| Lemmes      | Mots outils, $\leq 3$ | 0.7507    |
+| Lemmes      | Mots outils           | 0.7479    |
 | Tokens      | Mots outils, $\leq 4$ | 0.7396    |
 | Tokens      | Mots outils, $\leq 1$ | 0.7383    |
 | Tokens      | Mots outils, $\leq 2$ | 0.7377    |
-| Lemmes      | $\leq 4$              | 0.7349    |
-| Lemmes      | Pas de filtre         | 0.7334    |
-| Lemmes      | $\leq 1$              | 0.7280    |
+| Lemmes      | $\leq 4$              | 0.7348    |
+| Lemmes      | Pas de filtre         | 0.7323    |
+| Lemmes      | $\leq 1$              | 0.7290    |
+| Lemmes      | $\leq 2$              | 0.7259    |
 | Tokens      | Mots outils, $\leq 3$ | 0.7256    |
-| Lemmes      | $\leq 3$              | 0.7248    |
+| Lemmes      | $\leq 3$              | 0.7247    |
 | Tokens      | $\leq 2$              | 0.7246    |
-| Lemmes      | Mots outils, $\leq 4$ | 0.7195    |
+| Lemmes      | Mots outils, $\leq 4$ | 0.7192    |
 | Tokens      | $\leq 3$              | 0.7177    |
 | Tokens      | $\leq 4$              | 0.7173    |
 | Tokens      | Mots outils           | 0.7100    |
@@ -580,18 +581,18 @@ et de donner une plus grande importance aux lemmes communs qui sont également d
 | Tokens      | Mots outils, $\leq 1$ | 0.4661    |
 | Tokens      | Mots outils, $\leq 2$ | 0.4627    |
 | Lemmes      | Mots outils, $\leq 1$ | 0.4625    |
-| Lemmes      | Pas de filtre         | 0.4621    |
-| Lemmes      | $\leq 1$              | 0.4618    |
 | Tokens      | Mots outils, $\leq 3$ | 0.4599    |
 | Tokens      | $\leq 2$              | 0.4575    |
-| Lemmes      | Mots outils           | 0.4557    |
-| Lemmes      | $\leq 2$              | 0.4542    |
-| Lemmes      | Mots outils, $\leq 2$ | 0.4541    |
+| Lemmes      | Mots outils           | 0.4564    |
+| Lemmes      | Mots outils, $\leq 2$ | 0.4538    |
+| Lemmes      | $\leq 1$              | 0.4509    |
 | Tokens      | Pas de filtre         | 0.4507    |
+| Lemmes      | Pas de filtre         | 0.4498    |
 | Tokens      | $\leq 1$              | 0.4473    |
+| Lemmes      | $\leq 2$              | 0.4460    |
 | Tokens      | Mots outils           | 0.4441    |
-| Lemmes      | $\leq 3$              | 0.4380    |
-| Lemmes      | Mots outils, $\leq 3$ | 0.4347    |
+| Lemmes      | $\leq 3$              | 0.4394    |
+| Lemmes      | Mots outils, $\leq 3$ | 0.4355    |
 | Lemmes      | Mots outils, $\leq 4$ | 0.4301    |
 | Lemmes      | $\leq 4$              | 0.4282    |
 | Tokens      | $\leq 3$              | 0.4253    |
