@@ -225,7 +225,7 @@ def get_semeval_id(element):
 
 
 def get_semeval_relevance_orgq(element):
-    """Retrieve the relevance of a semeval element.
+    """Retrieve the relevance of a semeval element, in regards with its original question.
 
     Parameters
     ----------
@@ -236,7 +236,6 @@ def get_semeval_relevance_orgq(element):
     -------
     out : str
         The relevance of the element.
-
     """
     if element.tag == 'RelQuestion':
         return element.attrib['RELQ_RELEVANCE2ORGQ']
@@ -244,6 +243,23 @@ def get_semeval_relevance_orgq(element):
         return element.attrib['RELQ_RELEVANCE2ORGQ']
     return None
 
+RELEVANT_TAGS = {'Good', 'PerfectMatch'}
+
+def is_relevant_to_orgq(element):
+    """Check if a semeval element is relevant to its original question.
+
+    Parameters
+    ----------
+    element : ET.Element
+        The related question or related comment.
+
+    Returns
+    -------
+    out : boolean
+        True if the element is relevant.
+    """
+    relevance = get_semeval_relevance_orgq(element)
+    return relevance in RELEVANT_TAGS
 
 def get_related_questions(element):
     """Retrieve the related question from an element.
