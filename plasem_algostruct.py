@@ -1,6 +1,7 @@
 import re
 import operator
 import pickle
+from statistics import mean
 
 def save_object(obj, filename):
     pickle.dump(obj, open(filename, 'wb'))
@@ -79,3 +80,46 @@ def natural_sort_key(key):
         return int(text) if text.isdigit() else text
     return [convert(c) for c in re.split('([0-9]+)', key)]
 
+
+###########
+# metrics #
+###########
+
+def average_precision(predictions):
+    """Computes the average precision of a prediction list.
+
+    Parameters
+    ----------
+    predictions : list of boolean
+        The predictions to measure.
+
+    Returns
+    -------
+    out : float
+        The average precision of the predictions.
+    """
+    precisions = []
+    correct_predictions = 0
+    for i in range(len(predictions)):
+        if predictions[i]:
+            correct_predictions += 1
+            precisions.append(correct_predictions / (i + 1))
+    if precisions:
+        #return sum(precisions) / len(precisions)
+        return mean(precisions)
+    return 0
+
+def mean_average_precision(predictions_list):
+    """Computes the mean average precision of a list of prediction lists.
+
+    Parameters
+    ----------
+    predictions_list : list of list of boolean
+        The predictions to measure.
+
+    Returns
+    -------
+    out : float
+        The MAP of the predictions.
+    """
+    return mean(map(average_precision, predictions_list))
