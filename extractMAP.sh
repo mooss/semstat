@@ -13,4 +13,5 @@ else
     fi
 fi
 
-python2 scorer/ev.py $reference $prediction | grep "^MAP" | sed 's/ \+/;/g' | cut -f 4 -d ';'
+score=$(python2 scorer/ev.py $reference $prediction | grep "^MAP" | sed 's/ \+/;/g' | cut -f 4 -d ';')
+printf "%.2f" $(echo "scale=2; $score * 100" | bc)
