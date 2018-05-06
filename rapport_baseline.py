@@ -160,19 +160,18 @@ for lenfilter in lenfilters:
     filters_partition.append((lenfilter,))
 
 filters_partition.append(('nofilter',))
-from plasem_taln import filters_baseline_similarity
-similarity = filters_baseline_similarity
+
+from plasem_taln import baseline_similarity
+similarity = baseline_similarity
 
 methodname = 'baseline'
-name = 'refnofilter'
-caption = 'Scores MAP - méthode de référence'
+caption = 'Semeval - Scores MAP - Méthode de référence'
 
-parameters = list(product(corpora, filters_partition))
-parameters_description = ('Édition', 'Filtres', 'Score MAP')
-description_functions = [lambda x: x, get_filters_descr]
+parameters = list(product(corpora))
+parameters_description = ('Édition', 'Score MAP')
+description_functions = [lambda x: x]
 
 for corpus, *rest in parameters:
-    context['filters'] = rest[0]
     from plasem_semeval import write_scores_to_file
     from plasem_taln import comparator
     
@@ -186,21 +185,14 @@ for corpus, *rest in parameters:
     
     
 
-# restable = [[corpus, *rest
-#              getmapscore(getpredfilename(methodname, corpus, *fltrs))]
-#             for corpus, fltr in product(corpora, filters_partition)]
-
 restable = [[*(description_functions[i](parameter_values[i])
                for i in range(0,len(parameter_values))),
              getmapscore(getpredfilename(methodname, *parameter_values))]
             for parameter_values in parameters]
-
-restable.sort(key=lambda x: x[2], reverse=True)
-restable.sort(key=lambda x: x[0])
+restable.sort(key=lambda x: x[1], reverse=True)
 restable.insert(0, parameters_description)
-print('#+NAME:', name)
+print('#+NAME:', methodname)
 print('#+CAPTION:', caption)
 print(orgmodetable(restable, header=True))
-#print(restable)
 
 print()
