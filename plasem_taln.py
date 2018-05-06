@@ -169,6 +169,42 @@ def baseline_similarity(context, reference, candidate):
     )
 
     return similarity
+
+def filters_baseline_similarity(context, reference, candidate):
+    """Baseline similarity using filters.
+
+    Parameters
+    ----------
+    context : Namespace
+        Necessary informations accessibles with dot notation.
+        
+    reference : Container of words
+        Document of the reference sentence.
+
+    candidate : Container of words
+        Document of the candidate sentence.
+
+    Returns
+    -------
+    out : float
+        The baseline with filters similarity score.
+    """
+    def makebag(doc):
+        return Counter(word.lower()
+                       for word in map(str, doc)
+                       if all(pred(word) for pred in context.filters))
+    
+    bagref = makebag(reference)
+    bagcan = makebag(candidate)
+    termfreq = term_frequencies(bagref + bagcan)
+    intersection = bagref & bagcan
+    
+    similarity = sum(
+        tf_idf(term, termfreq, context.inversedocfreqs, context.outofcorpusvalue)
+        for term in intersection
+    )
+
+    return similarity
     
 
 def create_unit_dict(wordex, sentex, filters, doc):

@@ -38,8 +38,16 @@
           ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
       return score.stdout.decode('utf-8').strip('\n')
 
+  from collections import Iterable
+  def flatten(*args):
+      for el in args:
+          if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+              yield from flatten(*el)
+          else:
+              yield el
+
   def getpredfilename(*args):
-      return 'predictions/rapport_' + '_'.join((*args, 'scores.pred'))
+      return 'predictions/rapport_' + '_'.join(flatten(args, 'scores.pred'))
 
   def orgmodetable(matrix, header=False):
       maxlen = [0] * len(matrix[0])
@@ -107,6 +115,8 @@
   <<bothyears>>
 
   <<loaddoctrees>>
+ 
+  <<filters>>
 #+END_SRC
 
 #+NAME: baseline_similarity
@@ -115,33 +125,126 @@
   similarity = baseline_similarity
 #+END_SRC
 
+#+NAME: filters_baseline_similarity
+#+BEGIN_SRC ipython
+  from plasem_taln import filters_baseline_similarity
+  similarity = filters_baseline_similarity
+#+END_SRC
+
 #+NAME: writescores
 #+BEGIN_SRC ipython
   from plasem_semeval import write_scores_to_file
   from plasem_taln import comparator
+
   comp = comparator(context, similarity)
   scores = make_score_tree(
       doctrees[corpus],
       comp.getscore
   )
-  predfile = getpredfilename(methodname, corpus)
+  predfile = getpredfilename(methodname, corpus, *rest)
   write_scores_to_file(scores, predfile)
+
+
 #+END_SRC
 
 #+NAME: printscores
 #+BEGIN_SRC ipython
-  restable = [[corpus,
-               getmapscore(getpredfilename(methodname, corpus))]
-              for corpus in corpora]
+  # restable = [[corpus, *rest
+  #              getmapscore(getpredfilename(methodname, corpus, *fltrs))]
+  #             for corpus, fltr in product(corpora, filters_partition)]
 
-  restable.sort(key=lambda x: x[1], reverse=True)
-  restable.insert(0, ['Corpus', 'Score MAP'])
+  restable = [[*(description_functions[i](parameter_values[i])
+                 for i in range(0,len(parameter_values))),
+               getmapscore(getpredfilename(methodname, *parameter_values))]
+              for parameter_values in parameters]
+
+  restable.sort(key=lambda x: x[2], reverse=True)
+  restable.sort(key=lambda x: x[0])
+  restable.insert(0, parameters_description)
   print('#+NAME:', name)
   print('#+CAPTION:', caption)
   print(orgmodetable(restable, header=True))
+  #print(restable)
+
   print()
 #+END_SRC
 
+** Filtres
+#+NAME: filters
+#+BEGIN_SRC ipython
+  MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
+
+  def isnotstopword(word):
+      return word not in MAPPSENT_STOPWORDS
+
+  lenfilters = {
+      'gtr1': lambda word: len(word) > 1,
+      'gtr2': lambda word: len(word) > 2,
+      'gtr3': lambda word: len(word) > 3,
+      'gtr4': lambda word: len(word) > 4,
+  }
+
+  nolenfilters = {
+      'nostopwords': isnotstopword,
+  }
+
+  filters = {}
+  filters.update(lenfilters)
+  filters.update(nolenfilters)
+  filters.update({ 'nofilter': lambda x: True })
+
+  all_filters_descr = {
+      'gtr1': '$\leq 1$',
+      'gtr2': '$\leq 2$',
+      'gtr3': '$\leq 3$',
+      'gtr4': '$\leq 4$',
+      'nostopwords': 'Mots outils',
+      'nofilter': 'Pas de filtre',
+  }
+
+  all_indicators_descr = {
+      'named_entities_text': 'Textes des entités nommées',
+      'named_entities_label': 'Étiquettes des entités nommées',
+      'tokens': 'Tokens',
+      'lemmas': 'Lemmes',
+  }
+
+  def get_filters_descr(filters):
+      return ', '.join(all_filters_descr[key] for key in filters)
+
+  def get_indicator_descr(indicator):
+      return all_indicators_descr[indicator]
+
+  def get_doctree_descr(doctree):
+      return all_doctrees_descr[doctree]
+
+  from itertools import combinations
+  def nonemptypartitions(iterable):
+      for i in range(1, len(iterable) + 1):
+          for perm in combinations(iterable, i):
+              yield perm
+
+
+  def join_predicates(iterable_preds):
+      def joinedlocal(element):
+          for pred in iterable_preds:
+              if not pred(element):
+                  return False
+          return True
+      print('joining', *(pred for pred in iterable_preds))
+      return joinedlocal
+
+
+  filters_partition = list(nonemptypartitions(nolenfilters))
+
+  for len_and_nolen in product(nolenfilters, lenfilters):
+      filters_partition.append(len_and_nolen)
+
+  for lenfilter in lenfilters:
+      filters_partition.append((lenfilter,))
+
+  filters_partition.append(('nofilter',))
+#+END_SRC
 
 * Présentation du sujet
 Avec la démocratisation d'Internet, les communautés de questions/réponses telles que StackExchange, AskUbuntu ou Quora ont proliféré, produisant ainsi une masse conséquente d'informations.
@@ -208,15 +311,23 @@ La méthode de référence que nous proposons consiste à travailler avec l'inte
 \[similarit\acute{e}_{r\acute{e}f\acute{e}rence}(Q_1, Q_2) =
 \sum_{terme \in Q_1 \cap Q_2} \var{TF-IDF}(terme, Q_1 \cup Q_2, texte_{entrainement})\]
 
-La table [[refnofilter]] indique les scores MAP de la méthode de référence sur les éditions 2016 et 2017 de SemEval.
+La table [[refnofilter]] indique les scores MAP de la méthode de référence sur les éditions 2016 et 2017 de SemEval. Les tables [[bestof2016]] et [[bestof2017]] montre respectivement les meilleurs scores MAP des éditions 2016 et 2017 de SemEval. La table [[irbaseline]] contient les scores de la IR (/Information Retrieval/) /baseline/, correspondant à conserver l'ordre initialement proposé par le moteur de recherche lors de la constitution des jeux de données.
 
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselineexec :tangle rapport_baseline.py :shebang "#!/usr/bin/env python3" :results output drawer replace
+  from itertools import product
   <<scoringboilerplate>>
+  <<filters_baseline_similarity>>
+
   methodname = 'baseline'
   name = 'refnofilter'
-  caption = 'Scores MAP - méthode de référence'
-  <<baseline_similarity>>
-  for corpus in corpora:
+  caption = 'Scores MAP - méthodes de référence'
+
+  parameters = list(product(corpora, filters_partition))
+  parameters_description = ('Édition', 'Filtres', 'Score MAP')
+  description_functions = [lambda x: x, get_filters_descr]
+
+  for corpus, *rest in parameters:
+      context['filters'] = [filters[key] for key in rest[0]]
       <<writescores>>
 
   <<printscores>>
@@ -226,28 +337,45 @@ La table [[refnofilter]] indique les scores MAP de la méthode de référence su
 :RESULTS:
 #+NAME: refnofilter
 #+CAPTION: Scores MAP - méthode de référence
-| Corpus | Score MAP |
-|--------|-----------|
-| 2016   | 0.7148    |
-| 2017   | 0.4421    |
+| Édition | Filtres               | Score MAP |
+|---------|-----------------------|-----------|
+| 2016    | Mots outils, $\leq 4$ | 73.59     |
+| 2016    | Mots outils, $\leq 2$ | 73.46     |
+| 2016    | $\leq 3$              | 73.45     |
+| 2016    | Mots outils, $\leq 1$ | 73.14     |
+| 2016    | $\leq 4$              | 73.01     |
+| 2016    | $\leq 2$              | 72.86     |
+| 2016    | Mots outils, $\leq 3$ | 72.25     |
+| 2016    | $\leq 1$              | 72.04     |
+| 2016    | Pas de filtre         | 71.48     |
+| 2016    | Mots outils           | 71.35     |
+| 2017    | Mots outils, $\leq 3$ | 45.95     |
+| 2017    | $\leq 1$              | 45.55     |
+| 2017    | Mots outils, $\leq 2$ | 45.51     |
+| 2017    | $\leq 2$              | 45.34     |
+| 2017    | Mots outils, $\leq 1$ | 45.32     |
+| 2017    | Pas de filtre         | 44.21     |
+| 2017    | Mots outils           | 44.15     |
+| 2017    | $\leq 3$              | 43.46     |
+| 2017    | Mots outils, $\leq 4$ | 42.16     |
+| 2017    | $\leq 4$              | 41.25     |
 
 :END:
 
 #+NAME: bestof2016
+#+ATTR_LATEX: :placement [p]
 #+CAPTION: Meilleurs scores MAP - SemEval 2016
-| Méthode               | Scores MAP |
-|-----------------------+------------|
-| UH-PRHLT-contrastive2 |      77.33 |
-| UH-PRHLT-primary      |      76.70 |
-| UH-PRHLT-contrastive1 |      76.56 |
+| Édition | Méthode               | Score MAP  |
+|---------+-----------------------+------------|
+|    2016 | UH-PRHLT-contrastive2 |      77.33 |
+|    2016 | UH-PRHLT-primary      |      76.70 |
+|    2016 | UH-PRHLT-contrastive1 |      76.56 |
+|    2016 | IR /baseline/         |      74.75 |
+|    2017 | KeLP-contrastive1     |      49.00 |
+|    2017 | SimBow-contrastive2   |      47.87 |
+|    2017 | SimBow-primary        |      47.22 |
+|    2017 | IR /baseline/         |      41.85 |
 
-#+NAME: bestof2017
-#+CAPTION: Meilleurs scores MAP - SemEval 2017
-| Méthode             | Scores MAP |
-|---------------------+------------|
-| KeLP-contrastive1   |      49.00 |
-| SimBow-contrastive2 |      47.87 |
-| SimBow-primary      |      47.22 |
 
 
 ** Lemmatisation

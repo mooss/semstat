@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from itertools import product
 import subprocess
 from plasem_algostruct import transformtree
 
@@ -18,8 +19,16 @@ def getmapscore(predfilename):
         ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
     return score.stdout.decode('utf-8').strip('\n')
 
+from collections import Iterable
+def flatten(*args):
+    for el in args:
+        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+            yield from flatten(*el)
+        else:
+            yield el
+
 def getpredfilename(*args):
-    return 'predictions/rapport_' + '_'.join((*args, 'scores.pred'))
+    return 'predictions/rapport_' + '_'.join(flatten(args, 'scores.pred'))
 
 def orgmodetable(matrix, header=False):
     maxlen = [0] * len(matrix[0])
@@ -78,29 +87,120 @@ outofcorpusvalue = max(inversedocfreqs.values())
 
 context = {'inversedocfreqs': inversedocfreqs,
            'outofcorpusvalue': outofcorpusvalue}
+
+MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
+
+def isnotstopword(word):
+    return word not in MAPPSENT_STOPWORDS
+
+lenfilters = {
+    'gtr1': lambda word: len(word) > 1,
+    'gtr2': lambda word: len(word) > 2,
+    'gtr3': lambda word: len(word) > 3,
+    'gtr4': lambda word: len(word) > 4,
+}
+
+nolenfilters = {
+    'nostopwords': isnotstopword,
+}
+
+filters = {}
+filters.update(lenfilters)
+filters.update(nolenfilters)
+filters.update({ 'nofilter': lambda x: True })
+
+all_filters_descr = {
+    'gtr1': '$\leq 1$',
+    'gtr2': '$\leq 2$',
+    'gtr3': '$\leq 3$',
+    'gtr4': '$\leq 4$',
+    'nostopwords': 'Mots outils',
+    'nofilter': 'Pas de filtre',
+}
+
+all_indicators_descr = {
+    'named_entities_text': 'Textes des entités nommées',
+    'named_entities_label': 'Étiquettes des entités nommées',
+    'tokens': 'Tokens',
+    'lemmas': 'Lemmes',
+}
+
+def get_filters_descr(filters):
+    return ', '.join(all_filters_descr[key] for key in filters)
+
+def get_indicator_descr(indicator):
+    return all_indicators_descr[indicator]
+
+def get_doctree_descr(doctree):
+    return all_doctrees_descr[doctree]
+
+from itertools import combinations
+def nonemptypartitions(iterable):
+    for i in range(1, len(iterable) + 1):
+        for perm in combinations(iterable, i):
+            yield perm
+
+
+def join_predicates(iterable_preds):
+    def joinedlocal(element):
+        for pred in iterable_preds:
+            if not pred(element):
+                return False
+        return True
+    print('joining', *(pred for pred in iterable_preds))
+    return joinedlocal
+
+
+filters_partition = list(nonemptypartitions(nolenfilters))
+
+for len_and_nolen in product(nolenfilters, lenfilters):
+    filters_partition.append(len_and_nolen)
+
+for lenfilter in lenfilters:
+    filters_partition.append((lenfilter,))
+
+filters_partition.append(('nofilter',))
+from plasem_taln import filters_baseline_similarity
+similarity = filters_baseline_similarity
+
 methodname = 'baseline'
 name = 'refnofilter'
 caption = 'Scores MAP - méthode de référence'
-from plasem_taln import baseline_similarity
-similarity = baseline_similarity
-for corpus in corpora:
+
+parameters = list(product(corpora, filters_partition))
+parameters_description = ('Édition', 'Filtres', 'Score MAP')
+description_functions = [lambda x: x, get_filters_descr]
+
+for corpus, *rest in parameters:
+    context['filters'] = rest[0]
     from plasem_semeval import write_scores_to_file
     from plasem_taln import comparator
+    
     comp = comparator(context, similarity)
     scores = make_score_tree(
         doctrees[corpus],
         comp.getscore
     )
-    predfile = getpredfilename(methodname, corpus)
+    predfile = getpredfilename(methodname, corpus, *rest)
     write_scores_to_file(scores, predfile)
+    
+    
 
-restable = [[corpus,
-             getmapscore(getpredfilename(methodname, corpus))]
-            for corpus in corpora]
+# restable = [[corpus, *rest
+#              getmapscore(getpredfilename(methodname, corpus, *fltrs))]
+#             for corpus, fltr in product(corpora, filters_partition)]
 
-restable.sort(key=lambda x: x[1], reverse=True)
-restable.insert(0, ['Corpus', 'Score MAP'])
+restable = [[*(description_functions[i](parameter_values[i])
+               for i in range(0,len(parameter_values))),
+             getmapscore(getpredfilename(methodname, *parameter_values))]
+            for parameter_values in parameters]
+
+restable.sort(key=lambda x: x[2], reverse=True)
+restable.sort(key=lambda x: x[0])
+restable.insert(0, parameters_description)
 print('#+NAME:', name)
 print('#+CAPTION:', caption)
 print(orgmodetable(restable, header=True))
+#print(restable)
+
 print()
