@@ -176,7 +176,7 @@ parameters_description = ('Édition', 'Score MAP')
 description_functions = [lambda x: x]
 
 for corpus, *rest in parameters:
-    from plasem_semeval import write_scores_to_file, MAP_from_semeval_relevancy
+    from plasem_semeval import write_scores_to_file
     from plasem_taln import comparator
     
     comp = comparator(context, similarity)

@@ -419,6 +419,15 @@ class xmlextract(object):
         """
         return self.merged_root.findall('OrgQuestion')
 
+    def get_rel_elements(self):
+        """Retrieve the elements of the related questions.
+
+        Returns
+        -------
+        out : list of ET.element
+        """
+        return self.merged_root.findall('OrgQuestion/Thread/RelQuestion')
+
     #######################################
     # retrieve specific elements from ids #
     #######################################

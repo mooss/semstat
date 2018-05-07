@@ -2,7 +2,7 @@ from operator import itemgetter
 import csv
 import os.path
 from plasem_algostruct import save_object, load_object, natural_sort_key, mean_average_precision
-from semeval_xml import get_semeval_id, get_related_threads, xmlextract
+from semeval_xml import get_semeval_id, get_related_threads, xmlextract, is_relevant_to_orgq
 
 def make_semeval_document_tree(original_questions, model, content_extractor):
     result = {}
@@ -58,6 +58,38 @@ def write_scores_to_file(scores, filename, verbose=False):
     with open(filename, 'w') as out:
         out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
 
+def MAP_generic(relevancy_dict, scoretree):
+    """Computes the mean average precision (MAP) from a relevancy dictionnary and a score tree.
+
+    Parameters
+    ----------
+    relevancy_dict : dict of boolean
+        Dictionnary associating question IDs to their boolean relevance.
+
+    scoretree : dict of dict of float
+        Score tree to evaluate, as produced by the make_score_tree function.
+
+    Returns
+    -------
+    out : float
+       The mean average precision of the scores.
+    """
+    def isrelevant(sorteditems):
+        return relevancy_dict[sorteditems[0]]
+
+    def sortrelated(related):
+        items = sorted(related.items(), key=lambda x: natural_sort_key(itemgetter(0)(x)))
+        items.sort(key=itemgetter(1), reverse=True)
+        return items
+
+    sorted_scores = {
+        original: list(map(isrelevant, sortrelated(related)))
+        for original, related in scoretree.items()
+    }
+    print(sorted_scores)
+    return mean_average_precision(sorted_scores.values())
+
+    
 def MAP_from_semeval_relevancy(relevancyfile, scoretree):
     """Computes the mean average precision (MAP) from a relevancy file and a score tree.
 
@@ -79,19 +111,28 @@ def MAP_from_semeval_relevancy(relevancyfile, scoretree):
         row[1]: True if row[4] == 'true' else False
         for row in rlv
     }
+    return MAP_generic(relev, scoretree)
 
-    def isrelevant(sorteditems):
-        return relev[sorteditems[0]]
 
-    def sortrelated(related):
-        items = sorted(related.items(), key=lambda x: natural_sort_key(itemgetter(0)(x)))
-        items.sort(key=itemgetter(1), reverse=True)
-        return items
+def MAP_from_semeval_xml(xmlfile, scoretree):
+    """Computes the mean average precision (MAP) from a relevancy file and a score tree.
 
-    sorted_scores = {
-        original: list(map(isrelevant, sortrelated(related)))
-        for original, related in scoretree.items()
+    Parameters
+    ----------
+    xmlfile : str
+        Reference XML file.
+
+    scoretree : dict of dict of float
+        Score tree to evaluate, as produced by the make_score_tree function.
+
+    Returns
+    -------
+    out : float
+       The mean average precision of the scores.
+    """
+    extractor = xmlextract(xmlfile)
+    relev = {
+        get_semeval_id(relquestion): is_relevant_to_orgq(relquestion)
+        for relquestion in extractor.get_rel_elements()
     }
-    return mean_average_precision(sorted_scores.values())
-
-
+    return MAP_generic(relev, scoretree)

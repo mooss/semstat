@@ -129,7 +129,7 @@
 
 #+NAME: makescores
 #+BEGIN_SRC ipython
-  from plasem_semeval import write_scores_to_file, MAP_from_semeval_relevancy
+  from plasem_semeval import write_scores_to_file
   from plasem_taln import comparator
 
   comp = comparator(context, similarity)
@@ -151,11 +151,20 @@
   print('MAP%s:' % descr, MAP_from_semeval_relevancy(relevancy[corpus], scores))
 #+END_SRC
 
-#+NAME: add_map_to_restable
+#+NAME: MAP_from_relevancy
 #+BEGIN_SRC ipython
+  from plasem_semeval import MAP_from_semeval_relevancy
   restable.append([*(description_functions[i](value)
                      for i, value in enumerate((corpus, *rest))),
                    '%.2f' % (100 * MAP_from_semeval_relevancy(relevancy[corpus], scores))])
+#+END_SRC
+
+#+NAME: MAP_from_xml
+#+BEGIN_SRC ipython
+  from plasem_semeval import MAP_from_semeval_xml
+  restable.append([*(description_functions[i](value)
+                     for i, value in enumerate((corpus, *rest))),
+                   '%.2f' % (100 * MAP_from_semeval_xml(corpora[corpus], scores))])
 #+END_SRC
 
 #+NAME: restable_viaSH
@@ -274,7 +283,7 @@
   for corpus, *rest in parameters:
       context['filters'] = [filters[key] for key in rest[0]]
       <<makescores>>
-      <<add_map_to_restable>>
+      <<MAP_from_xml>>
 
   <<print_sorted_restable>>
 #+END_SRC
@@ -283,28 +292,18 @@
 :RESULTS:
 #+NAME: baseline_filters
 #+CAPTION: Semeval - Scores MAP - Méthodes de référence
-| Édition | Filtres               | Score MAP |
-|---------|-----------------------|-----------|
-| 2016    | Mots outils, $\leq 1$ | 75.42     |
-| 2016    | Mots outils, $\leq 2$ | 75.04     |
-| 2016    | $\leq 1$              | 74.58     |
-| 2016    | $\leq 3$              | 74.42     |
-| 2016    | Mots outils, $\leq 4$ | 74.21     |
-| 2016    | $\leq 4$              | 74.06     |
-| 2016    | Mots outils, $\leq 3$ | 73.97     |
-| 2016    | $\leq 2$              | 73.87     |
-| 2016    | Mots outils           | 73.76     |
-| 2016    | Pas de filtre         | 73.19     |
-| 2017    | $\leq 1$              | 46.89     |
-| 2017    | Mots outils, $\leq 1$ | 46.35     |
-| 2017    | Mots outils, $\leq 2$ | 46.08     |
-| 2017    | $\leq 2$              | 46.07     |
-| 2017    | $\leq 3$              | 45.59     |
-| 2017    | Pas de filtre         | 45.56     |
-| 2017    | Mots outils           | 45.53     |
-| 2017    | Mots outils, $\leq 3$ | 45.46     |
-| 2017    | Mots outils, $\leq 4$ | 41.80     |
-| 2017    | $\leq 4$              | 40.47     |
+| Édition     | Filtres               | Score MAP |
+|-------------|-----------------------|-----------|
+| train2016p1 | $\leq 2$              | 28.08     |
+| train2016p1 | Pas de filtre         | 27.72     |
+| train2016p1 | $\leq 1$              | 27.18     |
+| train2016p1 | $\leq 3$              | 27.01     |
+| train2016p1 | Mots outils, $\leq 2$ | 26.81     |
+| train2016p1 | Mots outils           | 26.31     |
+| train2016p1 | Mots outils, $\leq 1$ | 26.15     |
+| train2016p1 | Mots outils, $\leq 3$ | 26.01     |
+| train2016p1 | Mots outils, $\leq 4$ | 24.32     |
+| train2016p1 | $\leq 4$              | 24.15     |
 
 :END:
 
@@ -446,7 +445,7 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
       context['filters'] = [filters[key] for key in rest[0]]
       <<makescores>>
       <<writescores>>
-      <<add_map_to_restable>>
+      <<MAP_from_relevancy>>
 
   <<print_sorted_restable>>
 #+END_SRC
