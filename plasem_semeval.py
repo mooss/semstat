@@ -1,5 +1,7 @@
+from operator import itemgetter
+import csv
 import os.path
-from plasem_algostruct import save_object, load_object, natural_sort_key
+from plasem_algostruct import save_object, load_object, natural_sort_key, mean_average_precision
 from semeval_xml import get_semeval_id, get_related_threads, xmlextract
 
 def make_semeval_document_tree(original_questions, model, content_extractor):
@@ -55,3 +57,41 @@ def write_scores_to_file(scores, filename, verbose=False):
 
     with open(filename, 'w') as out:
         out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
+
+def MAP_from_semeval_relevancy(relevancyfile, scoretree):
+    """Computes the mean average precision (MAP) from a relevancy file and a score tree.
+
+    Parameters
+    ----------
+    relevancyfile : str
+        IR SemEval .relevancy file.
+
+    scoretree : dict of dict of float
+        Score tree to evaluate, as produced by the make_score_tree function.
+
+    Returns
+    -------
+    out : float
+       The mean average precision of the scores.
+    """
+    rlv = csv.reader(open(relevancyfile), delimiter='\t')
+    relev = {
+        row[1]: True if row[4] == 'true' else False
+        for row in rlv
+    }
+
+    def isrelevant(sorteditems):
+        return relev[sorteditems[0]]
+
+    def sortrelated(related):
+        items = sorted(related.items(), key=lambda x: natural_sort_key(itemgetter(0)(x)))
+        items.sort(key=itemgetter(1), reverse=True)
+        return items
+
+    sorted_scores = {
+        original: list(map(isrelevant, sortrelated(related)))
+        for original, related in scoretree.items()
+    }
+    return mean_average_precision(sorted_scores.values())
+
+
