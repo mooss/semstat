@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 from itertools import product
+corpora = {'2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
+           '2017': 'SemEval2017-task3-English-test-input.xml',}
+
+relevancy = {'2016': 'scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy',
+             '2017': 'scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy'}
 import subprocess
 from plasem_algostruct import transformtree
 
@@ -53,9 +58,6 @@ def orgmodetable(matrix, header=False):
     return result
 
 
-corpora = {'2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
-           '2017': 'SemEval2017-task3-English-test-input.xml',}
-
 import spacy
 from plasem_taln import inverse_document_frequencies
 from plasem_semeval import make_or_load_semeval_document_tree
@@ -74,7 +76,7 @@ doctrees = {
 training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
 traindoctree = make_or_load_semeval_document_tree(
     training_file,
-    'train_2016_part1.pickle',
+    'spacy_en_train2016p1_questions.pickle',
     nlp,
     get_semeval_content)
 
@@ -161,6 +163,8 @@ for lenfilter in lenfilters:
 
 filters_partition.append(('nofilter',))
 
+restable = []
+
 from plasem_taln import baseline_similarity
 similarity = baseline_similarity
 
@@ -172,7 +176,7 @@ parameters_description = ('Édition', 'Score MAP')
 description_functions = [lambda x: x]
 
 for corpus, *rest in parameters:
-    from plasem_semeval import write_scores_to_file
+    from plasem_semeval import write_scores_to_file, MAP_from_semeval_relevancy
     from plasem_taln import comparator
     
     comp = comparator(context, similarity)
@@ -182,17 +186,16 @@ for corpus, *rest in parameters:
     )
     predfile = getpredfilename(methodname, corpus, *rest)
     write_scores_to_file(scores, predfile)
-    
-    
 
 restable = [[*(description_functions[i](parameter_values[i])
                for i in range(0,len(parameter_values))),
              getmapscore(getpredfilename(methodname, *parameter_values))]
             for parameter_values in parameters]
-restable.sort(key=lambda x: x[1], reverse=True)
+restable.sort(key=lambda x: x[-1], reverse=True)
+restable.sort(key=lambda x: x[0])
 restable.insert(0, parameters_description)
+
 print('#+NAME:', methodname)
 print('#+CAPTION:', caption)
 print(orgmodetable(restable, header=True))
-
 print()

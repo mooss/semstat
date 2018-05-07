@@ -139,7 +139,7 @@ training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
 
 training_doctree = make_or_load_semeval_document_tree(
     training_file,
-    'train_2016_part1.pickle',
+    'spacy_en_train2016p1_questions.pickle',
     models['spacy_en'],
     get_semeval_content,
     verbose=True

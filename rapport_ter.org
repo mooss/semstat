@@ -11,10 +11,18 @@
 :header-args:ipython: tangle: no :eval never
 :END:
 
+#+NAME: traincorpus
+#+BEGIN_SRC ipython
+  corpora = {'train2016p1': 'SemEval2016-Task3-CQA-QL-train-part1.xml'}
+#+END_SRC
+
 #+NAME: bothyears
 #+BEGIN_SRC ipython
   corpora = {'2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
              '2017': 'SemEval2017-task3-English-test-input.xml',}
+
+  relevancy = {'2016': 'scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy',
+               '2017': 'scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy'}
 #+END_SRC
 
 #+NAME: scoreutils
@@ -93,7 +101,7 @@
   training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
   traindoctree = make_or_load_semeval_document_tree(
       training_file,
-      'train_2016_part1.pickle',
+      'spacy_en_train2016p1_questions.pickle',
       nlp,
       get_semeval_content)
 
@@ -112,16 +120,16 @@
 #+BEGIN_SRC ipython :noweb yes
   <<scoreutils>>
 
-  <<bothyears>>
-
   <<loaddoctrees>>
  
   <<filters>>
+
+  restable = []
 #+END_SRC
 
-#+NAME: writescores
+#+NAME: makescores
 #+BEGIN_SRC ipython
-  from plasem_semeval import write_scores_to_file
+  from plasem_semeval import write_scores_to_file, MAP_from_semeval_relevancy
   from plasem_taln import comparator
 
   comp = comparator(context, similarity)
@@ -129,13 +137,28 @@
       doctrees[corpus],
       comp.getscore
   )
-  predfile = getpredfilename(methodname, corpus, *rest)
-  write_scores_to_file(scores, predfile)
-
-
 #+END_SRC
 
-#+NAME: restable
+#+NAME: writescores
+#+BEGIN_SRC ipython
+  predfile = getpredfilename(methodname, corpus, *rest)
+  write_scores_to_file(scores, predfile)
+#+END_SRC
+
+#+NAME: debugmap
+#+BEGIN_SRC ipython
+  descr = ', '.join(flatten(corpus, rest))
+  print('MAP%s:' % descr, MAP_from_semeval_relevancy(relevancy[corpus], scores))
+#+END_SRC
+
+#+NAME: add_map_to_restable
+#+BEGIN_SRC ipython
+  restable.append([*(description_functions[i](value)
+                     for i, value in enumerate((corpus, *rest))),
+                   '%.2f' % (100 * MAP_from_semeval_relevancy(relevancy[corpus], scores))])
+#+END_SRC
+
+#+NAME: restable_viaSH
 #+BEGIN_SRC ipython
   restable = [[*(description_functions[i](parameter_values[i])
                  for i in range(0,len(parameter_values))),
@@ -143,13 +166,15 @@
               for parameter_values in parameters]
 #+END_SRC
 
-#+NAME: print_restable
+#+NAME: print_sorted_restable
 #+BEGIN_SRC ipython
+  restable.sort(key=lambda x: x[-1], reverse=True)
+  restable.sort(key=lambda x: x[0])
   restable.insert(0, parameters_description)
+
   print('#+NAME:', methodname)
   print('#+CAPTION:', caption)
   print(orgmodetable(restable, header=True))
-
   print()
 #+END_SRC
 
@@ -230,6 +255,60 @@
   filters_partition.append(('nofilter',))
 #+END_SRC
 
+* Scripts                                                          :noexport:
+#+BEGIN_SRC  ipython :eval no-export :noweb yes :session ponderation :tangle ponderation.py :shebang "#!/usr/bin/env python3" :results output drawer replace
+  from itertools import product
+  <<traincorpus>>
+  <<scoringboilerplate>>
+
+  from plasem_taln import filters_baseline_similarity
+  similarity = filters_baseline_similarity
+
+  methodname = 'baseline_filters'
+  caption = 'Semeval - Scores MAP - Méthodes de référence'
+
+  parameters = list(product(corpora, filters_partition))
+  parameters_description = ('Édition', 'Filtres', 'Score MAP')
+  description_functions = [lambda x: x, get_filters_descr]
+
+  for corpus, *rest in parameters:
+      context['filters'] = [filters[key] for key in rest[0]]
+      <<makescores>>
+      <<add_map_to_restable>>
+
+  <<print_sorted_restable>>
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+NAME: baseline_filters
+#+CAPTION: Semeval - Scores MAP - Méthodes de référence
+| Édition | Filtres               | Score MAP |
+|---------|-----------------------|-----------|
+| 2016    | Mots outils, $\leq 1$ | 75.42     |
+| 2016    | Mots outils, $\leq 2$ | 75.04     |
+| 2016    | $\leq 1$              | 74.58     |
+| 2016    | $\leq 3$              | 74.42     |
+| 2016    | Mots outils, $\leq 4$ | 74.21     |
+| 2016    | $\leq 4$              | 74.06     |
+| 2016    | Mots outils, $\leq 3$ | 73.97     |
+| 2016    | $\leq 2$              | 73.87     |
+| 2016    | Mots outils           | 73.76     |
+| 2016    | Pas de filtre         | 73.19     |
+| 2017    | $\leq 1$              | 46.89     |
+| 2017    | Mots outils, $\leq 1$ | 46.35     |
+| 2017    | Mots outils, $\leq 2$ | 46.08     |
+| 2017    | $\leq 2$              | 46.07     |
+| 2017    | $\leq 3$              | 45.59     |
+| 2017    | Pas de filtre         | 45.56     |
+| 2017    | Mots outils           | 45.53     |
+| 2017    | Mots outils, $\leq 3$ | 45.46     |
+| 2017    | Mots outils, $\leq 4$ | 41.80     |
+| 2017    | $\leq 4$              | 40.47     |
+
+:END:
+
+
 * Présentation du sujet
 Avec la démocratisation d'Internet, les communautés de questions/réponses telles que StackExchange, AskUbuntu ou Quora ont proliféré, produisant ainsi une masse conséquente d'informations.
 
@@ -299,6 +378,7 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
 
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselineexec :tangle rapport_baseline.py :shebang "#!/usr/bin/env python3" :results output drawer replace
   from itertools import product
+  <<bothyears>>
   <<scoringboilerplate>>
 
   from plasem_taln import baseline_similarity
@@ -312,11 +392,11 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
   description_functions = [lambda x: x]
 
   for corpus, *rest in parameters:
+      <<makescores>>
       <<writescores>>
 
-  <<restable>>
-  restable.sort(key=lambda x: x[1], reverse=True)
-  <<print_restable>>
+  <<restable_viaSH>>
+  <<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
@@ -350,6 +430,7 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
 
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselinefiltersexec :tangle rapport_baseline_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
   from itertools import product
+  <<bothyears>>
   <<scoringboilerplate>>
 
   from plasem_taln import filters_baseline_similarity
@@ -361,16 +442,44 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
   parameters = list(product(corpora, filters_partition))
   parameters_description = ('Édition', 'Filtres', 'Score MAP')
   description_functions = [lambda x: x, get_filters_descr]
-
   for corpus, *rest in parameters:
       context['filters'] = [filters[key] for key in rest[0]]
+      <<makescores>>
       <<writescores>>
+      <<add_map_to_restable>>
 
-  <<restable>>
-  restable.sort(key=lambda x: x[2], reverse=True)
-  restable.sort(key=lambda x: x[0])
-  <<print_restable>>
+  <<print_sorted_restable>>
 #+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+NAME: baseline_filters
+#+CAPTION: Semeval - Scores MAP - Méthodes de référence
+| Édition | Filtres               | Score MAP |
+|---------|-----------------------|-----------|
+| 2016    | Mots outils, $\leq 1$ | 75.42     |
+| 2016    | Mots outils, $\leq 2$ | 75.04     |
+| 2016    | $\leq 1$              | 74.58     |
+| 2016    | $\leq 3$              | 74.42     |
+| 2016    | Mots outils, $\leq 4$ | 74.21     |
+| 2016    | $\leq 4$              | 74.06     |
+| 2016    | Mots outils, $\leq 3$ | 73.97     |
+| 2016    | $\leq 2$              | 73.87     |
+| 2016    | Mots outils           | 73.76     |
+| 2016    | Pas de filtre         | 73.19     |
+| 2017    | $\leq 1$              | 46.89     |
+| 2017    | Mots outils, $\leq 1$ | 46.35     |
+| 2017    | Mots outils, $\leq 2$ | 46.08     |
+| 2017    | $\leq 2$              | 46.07     |
+| 2017    | $\leq 3$              | 45.59     |
+| 2017    | Pas de filtre         | 45.56     |
+| 2017    | Mots outils           | 45.53     |
+| 2017    | Mots outils, $\leq 3$ | 45.46     |
+| 2017    | Mots outils, $\leq 4$ | 41.80     |
+| 2017    | $\leq 4$              | 40.47     |
+
+:END:
+
 
 ** Lemmatisation
 * Indicateurs envisagés
