@@ -186,11 +186,11 @@ for corpus, *rest in parameters:
     )
     predfile = getpredfilename(methodname, corpus, *rest)
     write_scores_to_file(scores, predfile)
+    from plasem_semeval import MAP_from_semeval_relevancy
+    restable.append([*(description_functions[i](value)
+                       for i, value in enumerate((corpus, *rest))),
+                     '%.2f' % (100 * MAP_from_semeval_relevancy(relevancy[corpus], scores))])
 
-restable = [[*(description_functions[i](parameter_values[i])
-               for i in range(0,len(parameter_values))),
-             getmapscore(getpredfilename(methodname, *parameter_values))]
-            for parameter_values in parameters]
 restable.sort(key=lambda x: x[-1], reverse=True)
 restable.sort(key=lambda x: x[0])
 restable.insert(0, parameters_description)

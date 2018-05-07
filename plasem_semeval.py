@@ -86,7 +86,6 @@ def MAP_generic(relevancy_dict, scoretree):
         original: list(map(isrelevant, sortrelated(related)))
         for original, related in scoretree.items()
     }
-    print(sorted_scores)
     return mean_average_precision(sorted_scores.values())
 
     

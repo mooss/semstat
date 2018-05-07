@@ -270,18 +270,25 @@
   <<traincorpus>>
   <<scoringboilerplate>>
 
-  from plasem_taln import filters_baseline_similarity
-  similarity = filters_baseline_similarity
+  from plasem_taln import generic_weights_scorer, noun_weighter
 
-  methodname = 'baseline_filters'
+  methodname = 'noun_ponderation'
   caption = 'Semeval - Scores MAP - Méthodes de référence'
 
-  parameters = list(product(corpora, filters_partition))
-  parameters_description = ('Édition', 'Filtres', 'Score MAP')
+  parameters = list(product(corpora))
+  parameters_description = ('Édition', 'Score MAP')
   description_functions = [lambda x: x, get_filters_descr]
 
   for corpus, *rest in parameters:
-      context['filters'] = [filters[key] for key in rest[0]]
+      def noun_weight_similarity(context, reference, candidate):
+          return generic_weights_scorer(context,
+                                        reference,
+                                        candidate,
+                                        [(0.5, noun_weighter)])
+      similarity = noun_weight_similarity
+      context['filters'] = [filters['gtr2']]
+      context['wordex'] = lambda x: str(x).lower()
+
       <<makescores>>
       <<MAP_from_xml>>
 
@@ -290,20 +297,11 @@
 
 #+RESULTS:
 :RESULTS:
-#+NAME: baseline_filters
+#+NAME: noun_ponderation
 #+CAPTION: Semeval - Scores MAP - Méthodes de référence
-| Édition     | Filtres               | Score MAP |
-|-------------|-----------------------|-----------|
-| train2016p1 | $\leq 2$              | 28.08     |
-| train2016p1 | Pas de filtre         | 27.72     |
-| train2016p1 | $\leq 1$              | 27.18     |
-| train2016p1 | $\leq 3$              | 27.01     |
-| train2016p1 | Mots outils, $\leq 2$ | 26.81     |
-| train2016p1 | Mots outils           | 26.31     |
-| train2016p1 | Mots outils, $\leq 1$ | 26.15     |
-| train2016p1 | Mots outils, $\leq 3$ | 26.01     |
-| train2016p1 | Mots outils, $\leq 4$ | 24.32     |
-| train2016p1 | $\leq 4$              | 24.15     |
+| Édition     | Score MAP |
+|-------------|-----------|
+| train2016p1 | 26.78     |
 
 :END:
 
@@ -393,8 +391,8 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
   for corpus, *rest in parameters:
       <<makescores>>
       <<writescores>>
+      <<MAP_from_relevancy>>
 
-  <<restable_viaSH>>
   <<print_sorted_restable>>
 #+END_SRC
 

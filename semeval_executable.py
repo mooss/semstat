@@ -154,7 +154,7 @@ inversedocfreqs = {
     for wordex, sentex in all_indicators.values()
 }
 
-out_of_corpus_value = max(inversedocfreqs['text_document'].values())
+outofcorpusvalue = max(inversedocfreqs['text_document'].values())
 doctrees = {
     '_'.join((model, corpus, extractor)): make_or_load_semeval_document_tree(
         corpuses[corpus],
@@ -180,7 +180,7 @@ for doctree, indicator, filterspartition in product(*bruteforce_methods):
         sentenceextractors[sentex],
         [filters[filterkey] for filterkey in filterspartition],
         inversedocfreqs[wordex + '_' + sentex],
-        out_of_corpus_value,
+        outofcorpusvalue,
         tf_idf_scorer
     )
 
@@ -202,7 +202,7 @@ for doctree, indicator, fltrs in product(*ponderated_methods):
         sentenceextractors[sentex],
         [filters[filterkey] for filterkey in fltrs],
         inversedocfreqs[wordex + '_' + sentex],
-        out_of_corpus_value,
+        outofcorpusvalue,
         lambda this, a, b : generic_weights_scorer(this, a, b, [(0.6, entity_weighter)])
     )
     scores = make_score_tree(
@@ -212,7 +212,7 @@ for doctree, indicator, fltrs in product(*ponderated_methods):
         #     wordextractors[wordex],
         #     [filters[filterkey] for filterkey in fltrs],
         #     a, b, inversedocfreqs[wordex + '_' + sentex],
-        #     out_of_corpus_value
+        #     outofcorpusvalue
         # )
     )
 

@@ -23,10 +23,10 @@ def inverse_document_frequencies(corpus, DF=None):
     return {term: math.log2(len(corpus)/docfreq)
             for term, docfreq in DF.items()}
 
-def tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value):
+def tf_idf(term, termfreq, inversedocfreq, outofcorpusvalue):
     """Term Frequency - Inverse Document Frequency of a term using dictionaries.
 
-    If the term is not in the inverse document frequency dictionary, this function will use the argument out_of_corpus_value.
+    If the term is not in the inverse document frequency dictionary, this function will use the argument outofcorpusvalue.
 
     Parameters
     ----------
@@ -47,12 +47,12 @@ def tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value):
     if term not in termfreq:
         return 0
     if term not in inversedocfreq:
-        return out_of_corpus_value
+        return outofcorpusvalue
     return termfreq[term] * inversedocfreq[term]
 
 class scorer(object):
     def __init__(self, wordex, sentex, filters,
-                 inversedocfreqs, out_of_corpus_value,
+                 inversedocfreqs, outofcorpusvalue,
                  scorerfunction):
         """All informations needed to compute a score.
         The score is computed using an external custom similarity function which works by accessing to the informations set here.
@@ -74,7 +74,7 @@ class scorer(object):
         self.sentex = sentex
         self.filters = filters
         self.inversedocfreqs = inversedocfreqs
-        self.out_of_corpus_value = out_of_corpus_value
+        self.outofcorpusvalue = outofcorpusvalue
         self.scorerfunction = scorerfunction
 
     def get_score(self, *args):
@@ -115,7 +115,7 @@ def tf_idf_scorer(self, doca, docb):
 
     inversedocfreqs : 
 
-    out_of_corpus_value : 
+    outofcorpusvalue : 
 
     Returns
     -------
@@ -134,11 +134,23 @@ def tf_idf_scorer(self, doca, docb):
         tf_idf(term,
                termfreq,
                self.inversedocfreqs,
-               self.out_of_corpus_value) * len(intersection)# * occurences
+               self.outofcorpusvalue) * len(intersection)# * occurences
         for term, occurences in intersection.items()
     )
 
-#def plain_comparator
+
+def generic_similarity(context, reference, candidate, bagmaker):
+    bagref = bagmaker(reference)
+    bagcan = bagmaker(candidate)
+    termfreq = term_frequencies(bagref + bagcan)
+    intersection = bagref & bagcan
+    
+    similarity = sum(
+        tf_idf(term, termfreq, context.inversedocfreqs, context.outofcorpusvalue)
+        for term in intersection
+    )
+    return similarity
+
 def baseline_similarity(context, reference, candidate):
     """Computes the similarity score of two questions, using only bag of words and TF-IDF.
 
@@ -158,17 +170,10 @@ def baseline_similarity(context, reference, candidate):
     out : float
         The baseline similarity score.
     """
-    bagref = Counter(str(word) for word in reference)
-    bagcan = Counter(str(word) for word in candidate)
-    termfreq = term_frequencies(bagref + bagcan)
-    intersection = bagref & bagcan
-    
-    similarity = sum(
-        tf_idf(term, termfreq, context.inversedocfreqs, context.outofcorpusvalue)
-        for term in intersection
-    )
+    def bagmaker(doc):
+        return Counter(str(word) for word in doc)
 
-    return similarity
+    return generic_similarity(context, reference, candidate, bagmaker)
 
 def filters_baseline_similarity(context, reference, candidate):
     """Baseline similarity using filters.
@@ -194,18 +199,7 @@ def filters_baseline_similarity(context, reference, candidate):
                        for word in map(str, doc)
                        if all(pred(word) for pred in context.filters))
     
-    bagref = makebag(reference)
-    bagcan = makebag(candidate)
-    termfreq = term_frequencies(bagref + bagcan)
-    intersection = bagref & bagcan
-    
-    similarity = sum(
-        tf_idf(term, termfreq, context.inversedocfreqs, context.outofcorpusvalue)
-        for term in intersection
-    )
-
-    return similarity
-    
+    return generic_similarity(context, reference, candidate, makebag)
 
 def create_unit_dict(wordex, sentex, filters, doc):
     result = defaultdict(list)
@@ -252,7 +246,7 @@ def verb_weighter(unita, unitb, weight):
 def entityweight_scorer(
         wordex, filters,
         doca, docb, inversedocfreqs,
-        out_of_corpus_value,
+        outofcorpusvalue,
         score_multiplier='interlen',
         weight=0.6):
     unitsa = create_unit_dict(wordex, lambda x: x, filters, doca)
@@ -267,16 +261,16 @@ def entityweight_scorer(
 
     if score_multiplier == 'interocc':
         for el, count in intersection.items():
-            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+            score += tf_idf(el, termfreq, inversedocfreqs, outofcorpusvalue)\
                      * count * entity_weighter(unitsa[el], unitsb[el], weight)
     else:
         for el in intersection:
-            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+            score += tf_idf(el, termfreq, inversedocfreqs, outofcorpusvalue)\
                      * len(intersection) * entity_weighter(unitsa[el], unitsb[el], weight)
     return score
 
 
-def generic_weights_scorer(self, doca, docb, weights_functions):
+def generic_weights_scorer(context, doca, docb, weights_functions):
     """
 
     Parameters
@@ -293,8 +287,8 @@ def generic_weights_scorer(self, doca, docb, weights_functions):
     out : float
         Similarity score of the documents.
     """
-    unitsa = create_unit_dict(self.wordex, lambda x: x, self.filters, doca)
-    unitsb = create_unit_dict(self.wordex, lambda x: x, self.filters, docb)
+    unitsa = create_unit_dict(context.wordex, lambda x: x, context.filters, doca)
+    unitsb = create_unit_dict(context.wordex, lambda x: x, context.filters, docb)
 
     counta = Counter(word for word, occ in unitsa.items() for _ in occ)
     countb = Counter(word for word, occ in unitsb.items() for _ in occ)
@@ -308,6 +302,7 @@ def generic_weights_scorer(self, doca, docb, weights_functions):
                           (weighter(unitsa[el], unitsb[el], weight)
                            for weight, weighter in weights_functions),
                           1)
-        tfidf = tf_idf(el, termfreq, self.inversedocfreqs, self.out_of_corpus_value)
+        tfidf = tf_idf(el, termfreq, context.inversedocfreqs, context.outofcorpusvalue)
+        print(el, intersection, tfidf, coef, context.outofcorpusvalue)
         score += tfidf * coef
-    return score * len(intersection)
+    return score
