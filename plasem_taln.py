@@ -303,6 +303,5 @@ def generic_weights_scorer(context, doca, docb, weights_functions):
                            for weight, weighter in weights_functions),
                           1)
         tfidf = tf_idf(el, termfreq, context.inversedocfreqs, context.outofcorpusvalue)
-        print(el, intersection, tfidf, coef, context.outofcorpusvalue)
         score += tfidf * coef
     return score
