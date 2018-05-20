@@ -240,7 +240,7 @@ def get_semeval_relevance_orgq(element):
     if element.tag == 'RelQuestion':
         return element.attrib['RELQ_RELEVANCE2ORGQ']
     if element.tag == 'RelComment':
-        return element.attrib['RELQ_RELEVANCE2ORGQ']
+        return element.attrib['RELC_RELEVANCE2ORGQ']
     return None
 
 RELEVANT_TAGS = {'Good', 'PerfectMatch'}
