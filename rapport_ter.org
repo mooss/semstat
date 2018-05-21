@@ -150,26 +150,35 @@
   write_scores_to_file(scores, predfile)
 #+END_SRC
 
-#+NAME: debugmap
-#+BEGIN_SRC ipython
-  descr = ', '.join(flatten(corpus, rest))
-  print('MAP%s:' % descr, MAP_from_semeval_relevancy(relevancy[corpus], scores))
-#+END_SRC
-
 #+NAME: MAP_from_relevancy
 #+BEGIN_SRC ipython
-  from plasem_semeval import MAP_from_semeval_relevancy
+  from plasem_semeval import measure_from_semeval_relevancy
+  from plasem_algostruct import mean_average_precision
+
+  MAP = measure_from_semeval_relevancy(
+      mean_average_precision,
+      relevancy[corpus],
+      scores)
+
   restable.append([*(description_functions[i](value)
                      for i, value in enumerate((corpus, *rest))),
-                   '%.2f' % (100 * MAP_from_semeval_relevancy(relevancy[corpus], scores))])
+                   '%.2f' % (100 * MAP)])
 #+END_SRC
 
 #+NAME: MAP_from_xml
 #+BEGIN_SRC ipython
-  from plasem_semeval import MAP_from_semeval_xml
+  from plasem_semeval import measure_from_semeval_relevancy
+  from plasem_algostruct import mean_average_precision
+
+  MAP = measure_from_semeval_xml(
+      mean_average_precision,
+      relevancy[corpus],
+      scores)
+
   restable.append([*(description_functions[i](value)
                      for i, value in enumerate((corpus, *rest))),
-                   '%.2f' % (100 * MAP_from_semeval_xml(corpora[corpus], scores))])
+                   '%.2f' % (100 * MAP)])
+
 #+END_SRC
 
 #+NAME: restable_viaSH
@@ -439,11 +448,13 @@ La tâche 3 est concernée par l'appariement questions/réponses, autrement dit,
 La sous-tâche B de la tâche 3 de SemEval consiste à faire de l'appariement question/question, c'est à dire étant donné deux questions, déterminer elles sont similaires.
 C'est cette sous-tâche qui est traitée dans ce TER.
 
-Les méthodes proposées par les participants des éditions 2016 et 2017 de SemEval pour résoudre cette étape sont des techniques d'apprentissage automatique allant du SVM au /deep learning/. *(pas sûr ; le rapport de semeval 2016 stipule de (Franco-Salvador et al., 2016) que "They use distributed representations of words, knowledge graphs generated with BabelNet, and frames from FrameNet.", j'ai pas l'impression que c'est du /machine learning/)*
+Les méthodes proposées par les participants des éditions 2016 et 2017 de SemEval pour résoudre cette étape sont des techniques d'apprentissage automatique allant du SVM au /deep learning/.
+# *(pas sûr ; le rapport de semeval 2016 stipule de (Franco-Salvador et al., 2016) que "They use distributed representations of words, knowledge graphs generated with BabelNet, and frames from FrameNet.", j'ai pas l'impression que c'est du /machine learning/)*
 
 Ce TER a pour but de regarder l'efficacité que pourrait avoir une approche plus simple, d'avantage ancrée dans la linguistique computationnelle que dans l'apprentissage automatique.
 Pour cela, trois objectifs sont distingués :
- - Réfléchir à la manière de détecter des questions similaires en termes de caractéristiques linguistiques.(d'indicateurs et de marqueurs linguistiques.)
+ - Réfléchir à la manière de détecter des questions similaires en termes de caractéristiques linguistiques.
+# (d'indicateurs et de marqueurs linguistiques.)
  - Mettre en oeuvre une méthode pour les détecter automatiquement.
  - Travailler sur une évaluation de l'approche proposée.
 
@@ -470,7 +481,8 @@ Un autre point commun des méthodes envisagées est qu'elles ont toutes recours 
 La TF (/Term Frequency/) d'un mot correspond à sa fréquence d'apparition dans l'ensemble des documents.
 L'IDF (/Inverse Document Frequency/) d'un mot est proportionnelle à l'inverse du nombre de documents dans lesquels il apparaît.
 La TF-IDF d'un mot présent dans le corpus correspond à une combinaison de sa TF et de son IDF.
-Si un mot est absent du corpus, sa TF-IDF est égale à l'IDF du terme le plus rare. *pas sûr que ça soit la bonne manière de faire*
+Si un mot est absent du corpus, sa TF-IDF est égale à l'IDF du terme le plus rare.
+# *pas sûr que ça soit la bonne manière de faire*
 Plus formellement,
 
 \[TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}\]
@@ -540,7 +552,6 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
 |    2017 | SimBow-primary        |      47.22 |
 |    2017 | IR /baseline/         |      41.85 |
 
-
 ** Filtres
 
 
@@ -596,7 +607,6 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
 
 :END:
 
-
 ** Lemmatisation
 * Indicateurs envisagés
 ** Nature grammaticale des mots
@@ -612,7 +622,6 @@ Les classes de ces entité comprennent des noms d'individus, des produits, des v
 
 La reconnaissance d'entités nommées est intéressante pour la problématique de ce TER car beaucoup de questions portent sur des entités nommées.
 
-
 *** Multi-ensembles d'entités nommées
 Étant donné une phrase $s$, on peut créer plusieurs multi-ensembles à partir de ses entités nommées :
  - $CAT_s$, le multi-ensemble contenant les catégories des entités nommées de la phrase $s$.
@@ -620,7 +629,6 @@ La reconnaissance d'entités nommées est intéressante pour la problématique d
 
 En prenant $s = \text{"Google and Apple headquarters are in California"}$, on a
 $CAT_s = \{\text{ORG}, \text{ORG}, \text{GPE}\}$ et $TOK_s = \{\text{Google}, \text{Apple}, \text{California}\}$
-
 
 * Pré-traitements
 L'étape de pré-traitement consiste à utiliser des techniques simples

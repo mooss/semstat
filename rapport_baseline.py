@@ -186,10 +186,17 @@ for corpus, *rest in parameters:
     )
     predfile = getpredfilename(methodname, corpus, *rest)
     write_scores_to_file(scores, predfile)
-    from plasem_semeval import MAP_from_semeval_relevancy
+    from plasem_semeval import measure_from_semeval_relevancy
+    from plasem_algostruct import mean_average_precision
+    
+    MAP = measure_from_semeval_relevancy(
+        mean_average_precision,
+        relevancy[corpus],
+        scores)
+    
     restable.append([*(description_functions[i](value)
                        for i, value in enumerate((corpus, *rest))),
-                     '%.2f' % (100 * MAP_from_semeval_relevancy(relevancy[corpus], scores))])
+                     '%.2f' % (100 * MAP)])
 
 restable.sort(key=lambda x: x[-1], reverse=True)
 restable.sort(key=lambda x: x[0])

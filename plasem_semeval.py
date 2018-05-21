@@ -1,7 +1,7 @@
 from operator import itemgetter
 import csv
 import os.path
-from plasem_algostruct import save_object, load_object, natural_sort_key, mean_average_precision
+from plasem_algostruct import save_object, load_object, natural_sort_key
 from semeval_xml import get_semeval_id, get_related_threads, xmlextract, is_relevant_to_orgq
 
 def make_semeval_document_tree(original_questions, model, content_extractor):
@@ -58,22 +58,8 @@ def write_scores_to_file(scores, filename, verbose=False):
     with open(filename, 'w') as out:
         out.write('\n'.join(['\t'.join(el) for el in linebuffer]))
 
-def MAP_generic(relevancy_dict, scoretree):
-    """Computes the mean average precision (MAP) from a relevancy dictionnary and a score tree.
-
-    Parameters
-    ----------
-    relevancy_dict : dict of boolean
-        Dictionnary associating question IDs to their boolean relevance.
-
-    scoretree : dict of dict of float
-        Score tree to evaluate, as produced by the make_score_tree function.
-
-    Returns
-    -------
-    out : float
-       The mean average precision of the scores.
-    """
+        
+def get_sorted_scores(relevancy_dict, scoretree):
     def isrelevant(sorteditems):
         return relevancy_dict[sorteditems[0]]
 
@@ -86,14 +72,43 @@ def MAP_generic(relevancy_dict, scoretree):
         original: list(map(isrelevant, sortrelated(related)))
         for original, related in scoretree.items()
     }
-    return mean_average_precision(sorted_scores.values())
-
+    return sorted_scores
     
-def MAP_from_semeval_relevancy(relevancyfile, scoretree):
-    """Computes the mean average precision (MAP) from a relevancy file and a score tree.
+def measure_generic(measure, relevancy_dict, scoretree):
+    """Compute a measure (AP or MAP) from a relevancy dictionnary and a score tree.
 
     Parameters
     ----------
+    measure : function
+        mean_average_precision for mean average precision,
+        average_precision for average precison.
+        Those functions are in plasem_algostruct.py
+
+    relevancy_dict : dict of boolean
+        Dictionnary associating question IDs to their boolean relevance.
+
+    scoretree : dict of dict of float
+        Score tree to evaluate, as produced by the make_score_tree function.
+
+    Returns
+    -------
+    out : float
+       The measure (AP or MAP) of the scores.
+    """
+    sorted_scores = get_sorted_scores(relevancy_dict, scoretree)
+    return measure(sorted_scores.values())
+
+    
+def measure_from_semeval_relevancy(measure, relevancyfile, scoretree):
+    """Computes a measure (MAP or AP) from a relevancy file and a score tree.
+
+    Parameters
+    ----------
+    measure : function
+        mean_average_precision for mean average precision,
+        average_precision for average precison.
+        Those functions are in plasem_algostruct.py
+
     relevancyfile : str
         IR SemEval .relevancy file.
 
@@ -110,14 +125,19 @@ def MAP_from_semeval_relevancy(relevancyfile, scoretree):
         row[1]: True if row[4] == 'true' else False
         for row in rlv
     }
-    return MAP_generic(relev, scoretree)
+    return measure_generic(measure, relev, scoretree)
 
 
-def MAP_from_semeval_xml(xmlfile, scoretree):
+def measure_from_semeval_xml(measure, xmlfile, scoretree):
     """Computes the mean average precision (MAP) from a relevancy file and a score tree.
 
     Parameters
     ----------
+    measure : function
+        mean_average_precision for mean average precision,
+        average_precision for average precison.
+        Those functions are in plasem_algostruct.py
+
     xmlfile : str
         Reference XML file.
 
@@ -134,4 +154,4 @@ def MAP_from_semeval_xml(xmlfile, scoretree):
         get_semeval_id(relquestion): is_relevant_to_orgq(relquestion)
         for relquestion in extractor.get_rel_elements()
     }
-    return MAP_generic(relev, scoretree)
+    return measure_generic(measure, relev, scoretree)
