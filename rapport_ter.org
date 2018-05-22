@@ -152,13 +152,14 @@
 
 #+NAME: MAP_from_relevancy
 #+BEGIN_SRC ipython
-  from plasem_semeval import measure_from_semeval_relevancy
+  from plasem_semeval import sorted_scores_from_semeval_relevancy
   from plasem_algostruct import mean_average_precision
 
-  MAP = measure_from_semeval_relevancy(
-      mean_average_precision,
-      relevancy[corpus],
-      scores)
+  MAP = mean_average_precision(
+      sorted_scores_from_semeval_relevancy(
+          relevancy[corpus],
+          scores).values()
+  )
 
   restable.append([*(description_functions[i](value)
                      for i, value in enumerate((corpus, *rest))),
@@ -167,18 +168,44 @@
 
 #+NAME: MAP_from_xml
 #+BEGIN_SRC ipython
-  from plasem_semeval import measure_from_semeval_relevancy
+  from plasem_semeval import sorted_scores_from_semeval_xml
   from plasem_algostruct import mean_average_precision
 
-  MAP = measure_from_semeval_xml(
-      mean_average_precision,
-      relevancy[corpus],
-      scores)
+  MAP = mean_average_precision(
+      sorted_scores_from_semeval_xml(
+          corpora[corpus],
+          scores).values()
+  )
 
   restable.append([*(description_functions[i](value)
                      for i, value in enumerate((corpus, *rest))),
                    '%.2f' % (100 * MAP)])
 
+#+END_SRC
+
+#+NAME: AP_from_relevancy
+#+BEGIN_SRC ipython
+  from plasem_semeval import sorted_scores_from_semeval_relevancy
+  from plasem_algostruct import average_precision, sorted_items
+  ssc = sorted_scores_from_semeval_relevancy(
+          relevancy[corpus],
+          scores)
+  aps = sorted_items({key: average_precision(value) for key, value in ssc.items()}, reverse=True)
+  nbany = 0
+  for badprediction in reversed(aps):
+      if nbany >= 5:
+          break
+      if any(ssc[badprediction[0]]):
+          print(badprediction[0], '%0.2f' % badprediction[1], ssc[badprediction[0]])
+          questions = list(map(lambda x: x[0], sorted_items(scores[badprediction[0]], reverse=True)))
+          print('\t', questions)
+          for rel, iden in zip(ssc[badprediction[0]], questions):
+              if rel:
+                  print(iden)
+          nbany += 1
+          print()
+  # print('best:', aps[0:3])
+  # print('worst:', aps[-3:])
 #+END_SRC
 
 #+NAME: restable_viaSH
@@ -513,24 +540,70 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
   similarity = baseline_similarity
 
   methodname = 'baseline'
-  caption = 'Semeval - Scores MAP - Méthode de référence'
+  caption = 'Semeval - Best-worst-AP - Méthode de référence'
 
   parameters = list(product(corpora))
   parameters_description = ('Édition', 'Score MAP')
   description_functions = [lambda x: x]
 
   for corpus, *rest in parameters:
+      print(corpus)
       <<makescores>>
       <<writescores>>
       <<MAP_from_relevancy>>
+      <<AP_from_relevancy>>
 
   <<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
 :RESULTS:
+2016
+Q387 0.10 [False, False, False, False, False, False, False, False, False, True]
+	 ['Q387_R16', 'Q387_R33', 'Q387_R30', 'Q387_R44', 'Q387_R24', 'Q387_R25', 'Q387_R41', 'Q387_R7', 'Q387_R37', 'Q387_R4']
+Q387_R4
+
+Q363 0.25 [False, False, False, True, False, False, False, False, False, False]
+	 ['Q363_R26', 'Q363_R47', 'Q363_R23', 'Q363_R10', 'Q363_R11', 'Q363_R20', 'Q363_R54', 'Q363_R65', 'Q363_R58', 'Q363_R43']
+Q363_R10
+
+Q338 0.27 [False, False, False, True, False, False, True, False, False, False]
+	 ['Q338_R27', 'Q338_R30', 'Q338_R2', 'Q338_R11', 'Q338_R69', 'Q338_R34', 'Q338_R37', 'Q338_R42', 'Q338_R67', 'Q338_R54']
+Q338_R11
+Q338_R37
+
+Q368 0.33 [False, False, True, False, False, False, False, False, False, False]
+	 ['Q368_R13', 'Q368_R20', 'Q368_R19', 'Q368_R17', 'Q368_R4', 'Q368_R22', 'Q368_R14', 'Q368_R27', 'Q368_R30', 'Q368_R28']
+Q368_R19
+
+Q324 0.33 [False, False, True, False, False, False, False, False, False, False]
+	 ['Q324_R3', 'Q324_R9', 'Q324_R21', 'Q324_R5', 'Q324_R44', 'Q324_R43', 'Q324_R35', 'Q324_R41', 'Q324_R36', 'Q324_R38']
+Q324_R21
+
+2017
+Q425 0.12 [False, False, False, False, False, False, False, True, False, False]
+	 ['Q425_R32', 'Q425_R13', 'Q425_R48', 'Q425_R31', 'Q425_R7', 'Q425_R14', 'Q425_R37', 'Q425_R40', 'Q425_R43', 'Q425_R36']
+Q425_R40
+
+Q459 0.17 [False, False, False, False, False, True, False, False, False, False]
+	 ['Q459_R33', 'Q459_R27', 'Q459_R125', 'Q459_R124', 'Q459_R72', 'Q459_R40', 'Q459_R126', 'Q459_R67', 'Q459_R11', 'Q459_R70']
+Q459_R40
+
+Q408 0.17 [False, False, False, False, False, True, False, False, False, False]
+	 ['Q408_R10', 'Q408_R77', 'Q408_R8', 'Q408_R31', 'Q408_R5', 'Q408_R73', 'Q408_R21', 'Q408_R62', 'Q408_R74', 'Q408_R33']
+Q408_R73
+
+Q400 0.20 [False, False, False, False, True, False, False, False, False, False]
+	 ['Q400_R62', 'Q400_R58', 'Q400_R43', 'Q400_R12', 'Q400_R52', 'Q400_R17', 'Q400_R73', 'Q400_R37', 'Q400_R67', 'Q400_R25']
+Q400_R52
+
+Q422 0.23 [False, False, False, False, True, False, False, True, False, False]
+	 ['Q422_R77', 'Q422_R72', 'Q422_R140', 'Q422_R166', 'Q422_R9', 'Q422_R110', 'Q422_R73', 'Q422_R6', 'Q422_R2', 'Q422_R131']
+Q422_R9
+Q422_R6
+
 #+NAME: baseline
-#+CAPTION: Semeval - Scores MAP - Méthode de référence
+#+CAPTION: Semeval - Best-worst-AP - Méthode de référence
 | Édition | Score MAP |
 |---------|-----------|
 | 2016    | 71.48     |
