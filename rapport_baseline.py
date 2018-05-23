@@ -5,6 +5,8 @@ corpora = {'2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
 
 relevancy = {'2016': 'scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy',
              '2017': 'scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy'}
+def wordextractor(tok):
+    return str(tok)
 import subprocess
 from plasem_algostruct import transformtree
 
@@ -81,7 +83,7 @@ traindoctree = make_or_load_semeval_document_tree(
     get_semeval_content)
 
 inversedocfreqs = inverse_document_frequencies(
-    [[str(tok) for tok in doc]
+    [[wordextractor(tok) for tok in doc]
      for org in traindoctree.values()
      for doc in org.values()]
 )

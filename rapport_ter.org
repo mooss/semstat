@@ -86,6 +86,18 @@
 
 #+END_SRC
 
+#+NAME: tokens
+#+BEGIN_SRC ipython
+  def wordextractor(tok):
+      return str(tok)
+#+END_SRC
+
+#+NAME: lemmes
+#+BEGIN_SRC ipython
+  def wordextractor(tok):
+      return tok.lemma_
+#+END_SRC
+
 #+NAME: loaddoctrees
 #+BEGIN_SRC ipython
   import spacy
@@ -111,7 +123,7 @@
       get_semeval_content)
 
   inversedocfreqs = inverse_document_frequencies(
-      [[str(tok) for tok in doc]
+      [[wordextractor(tok) for tok in doc]
        for org in traindoctree.values()
        for doc in org.values()]
   )
@@ -534,6 +546,7 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselineexec :tangle rapport_baseline.py :shebang "#!/usr/bin/env python3" :results output drawer replace
   from itertools import product
   <<bothyears>>
+  <<tokens>>
   <<scoringboilerplate>>
 
   from plasem_taln import baseline_similarity
@@ -631,6 +644,7 @@ Q422_R6
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselinefiltersexec :tangle rapport_baseline_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
   from itertools import product
   <<bothyears>>
+  <<tokens>>
   <<scoringboilerplate>>
 
   from plasem_taln import filters_baseline_similarity
