@@ -253,15 +253,10 @@ for corpus in corpora:
     )
     baseline[corpus] = MAP
     baselinescores[corpus] = avgtree(scores, relevancy[corpus])
-    print('année', corpus, ': %.2f' % (MAP * 100))
 
 
 print('best:', best)
 print('baseline:', baseline)
-
-from statistics import mean
-
-print(bestscores)
 
 apdiff = {
     corpus: {
@@ -270,7 +265,9 @@ apdiff = {
     }
     for corpus in corpora
 }
+
 for corpus in corpora:
+    print()
     print('corpus', corpus)
     for el in sorted(apdiff[corpus].items(), key=lambda x: x[1], reverse=True)[:3]:
         print(el[0], ':', el[1])
