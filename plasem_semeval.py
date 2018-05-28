@@ -98,17 +98,27 @@ def measure_generic(measure, relevancy_dict, scoretree):
     sorted_scores = get_sorted_scores(relevancy_dict, scoretree)
     return measure(sorted_scores.values())
 
+def relevancy_dict_relevancy(relevancyfile):
+    rlv = csv.reader(open(relevancyfile), delimiter='\t')
+    relev = {
+        row[1]: True if row[4] == 'true' else False
+        for row in rlv
+    }
+    return relev
     
-def measure_from_semeval_relevancy(measure, relevancyfile, scoretree):
-    """Computes a measure (MAP or AP) from a relevancy file and a score tree.
+def relevancy_dict_xml(xmlfile):
+    extractor = xmlextract(xmlfile)
+    relev = {
+        get_semeval_id(relquestion): is_relevant_to_orgq(relquestion)
+        for relquestion in extractor.get_rel_elements()
+    }
+    return relev
+
+def sorted_scores_from_semeval_relevancy(relevancyfile, scoretree):
+    """Computes sorted scores from a relevancy file and a score tree.
 
     Parameters
     ----------
-    measure : function
-        mean_average_precision for mean average precision,
-        average_precision for average precison.
-        Those functions are in plasem_algostruct.py
-
     relevancyfile : str
         IR SemEval .relevancy file.
 
@@ -120,24 +130,14 @@ def measure_from_semeval_relevancy(measure, relevancyfile, scoretree):
     out : float
        The mean average precision of the scores.
     """
-    rlv = csv.reader(open(relevancyfile), delimiter='\t')
-    relev = {
-        row[1]: True if row[4] == 'true' else False
-        for row in rlv
-    }
-    return measure_generic(measure, relev, scoretree)
+    return get_sorted_scores(relevancy_dict_relevancy(relevancyfile), scoretree)
 
 
-def measure_from_semeval_xml(measure, xmlfile, scoretree):
-    """Computes the mean average precision (MAP) from a relevancy file and a score tree.
+def sorted_scores_from_semeval_xml(xmlfile, scoretree):
+    """Computes sorted scores from a xml file and a score tree.
 
     Parameters
     ----------
-    measure : function
-        mean_average_precision for mean average precision,
-        average_precision for average precison.
-        Those functions are in plasem_algostruct.py
-
     xmlfile : str
         Reference XML file.
 
@@ -149,9 +149,4 @@ def measure_from_semeval_xml(measure, xmlfile, scoretree):
     out : float
        The mean average precision of the scores.
     """
-    extractor = xmlextract(xmlfile)
-    relev = {
-        get_semeval_id(relquestion): is_relevant_to_orgq(relquestion)
-        for relquestion in extractor.get_rel_elements()
-    }
-    return measure_generic(measure, relev, scoretree)
+    return get_sorted_scores(relevancy_dict_xml(xmlfile), scoretree)
