@@ -638,7 +638,7 @@ Les résultats sont bien meilleurs et se rapprochent des scores des meilleurs m�
 #+RESULTS:
 :RESULTS:
 #+NAME: baseline_filters
-#+CAPTION: Semeval - Scores MAP - Méthodes de référence
+#+CAPTION: Semeval - Scores MAP - Méthodes de référence avec filtres
 | Édition | Filtres               | Score MAP |
 |---------|-----------------------|-----------|
 | 2016    | Mots outils, $\leq 1$ | 75.42     |
