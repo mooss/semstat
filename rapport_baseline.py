@@ -171,14 +171,13 @@ from plasem_taln import baseline_similarity
 similarity = baseline_similarity
 
 methodname = 'baseline'
-caption = 'Semeval - Best-worst-AP - Méthode de référence'
+caption = 'Semeval - Scores MAP - Méthode de référence'
 
 parameters = list(product(corpora))
 parameters_description = ('Édition', 'Score MAP')
 description_functions = [lambda x: x]
 
 for corpus, *rest in parameters:
-    print(corpus)
     from plasem_semeval import write_scores_to_file
     from plasem_taln import comparator
     
@@ -201,27 +200,27 @@ for corpus, *rest in parameters:
     restable.append([*(description_functions[i](value)
                        for i, value in enumerate((corpus, *rest))),
                      '%.2f' % (100 * MAP)])
-    from plasem_semeval import sorted_scores_from_semeval_relevancy
-    from plasem_algostruct import average_precision, sorted_items
-    ssc = sorted_scores_from_semeval_relevancy(
-            relevancy[corpus],
-            scores)
-    aps = sorted_items({key: average_precision(value) for key, value in ssc.items()}, reverse=True)
-    nbany = 0
-    for badprediction in reversed(aps):
-        if nbany >= 5:
-            break
-        if any(ssc[badprediction[0]]):
-            print(badprediction[0], '%0.2f' % badprediction[1], ssc[badprediction[0]])
-            questions = list(map(lambda x: x[0], sorted_items(scores[badprediction[0]], reverse=True)))
-            print('\t', questions)
-            for rel, iden in zip(ssc[badprediction[0]], questions):
-                if rel:
-                    print(iden)
-            nbany += 1
-            print()
-    # print('best:', aps[0:3])
-    # print('worst:', aps[-3:])
+    #from plasem_semeval import sorted_scores_from_semeval_relevancy
+    #from plasem_algostruct import average_precision, sorted_items
+    #ssc = sorted_scores_from_semeval_relevancy(
+    #        relevancy[corpus],
+    #        scores)
+    #aps = sorted_items({key: average_precision(value) for key, value in ssc.items()}, reverse=True)
+    #nbany = 0
+    #for badprediction in reversed(aps):
+    #    if nbany >= 5:
+    #        break
+    #    if any(ssc[badprediction[0]]):
+    #        print(badprediction[0], '%0.2f' % badprediction[1], ssc[badprediction[0]])
+    #        questions = list(map(lambda x: x[0], sorted_items(scores[badprediction[0]], reverse=True)))
+    #        print('\t', questions)
+    #        for rel, iden in zip(ssc[badprediction[0]], questions):
+    #            if rel:
+    #                print(iden)
+    #        nbany += 1
+    #        print()
+    ## print('best:', aps[0:3])
+    ## print('worst:', aps[-3:])
 
 restable.sort(key=lambda x: x[-1], reverse=True)
 restable.sort(key=lambda x: x[0])

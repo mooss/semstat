@@ -1,11 +1,14 @@
 #+TITLE: Rapport de TER appariement de questions/réponses
 #+AUTHOR: Félix Jamet
 #+OPTIONS: tags:nil
+#+LANGUAGE: fr
 #+LATEX_HEADER: \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 #+LATEX_HEADER: \newcommand{\var}[1]{{\operatorname{\mathit{#1}}}}
 #+LATEX_HEADER: \let\oldtextbf\textbf
 #+LATEX_HEADER: \renewcommand{\textbf}[1]{\textcolor{red}{\oldtextbf{#1}}}
 #+PROPERTY: header-args:ipython :eval no-export :results output drawer replace :exports results
+
+\newpage
 * noweb                                                            :noexport:
 :PROPERTIES:
 :header-args:ipython: tangle: no :eval never

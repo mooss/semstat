@@ -320,7 +320,7 @@ def generic_weights_scorer(context, doca, docb, weights_functions):
 
     counta = Counter(word for word, occ in unitsa.items() for _ in occ)
     countb = Counter(word for word, occ in unitsb.items() for _ in occ)
-
+        
     score = 0
     intersection = counta & countb
     termfreq = term_frequencies(counta + countb)
