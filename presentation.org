@@ -1,0 +1,133 @@
+#+OPTIONS: ':nil *:t -:t ::t <:t H:2 \n:nil ^:t arch:headline
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:t title:t toc:t todo:t |:t
+#+TITLE: Soutenance TER
+#+SUBTITLE: Appariement Questions/Questions
+#+DATE: 30 mai 2018
+#+AUTHOR: Félix Jamet
+#+EMAIL: felix.jamet@etu.univ-nantes.fr
+#+LANGUAGE: fr
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 25.3.1 (Org mode 9.1.12)
+
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger,fleqn]
+#+BEAMER_FRAME_LEVEL: 2
+# or 2
+#+COLUMNS: %20ITEM %13BEAMER_env(Env) %6BEAMER_envargs(Args) %4BEAMER_col(Col) %7BEAMER_extra(Extra)
+
+#+BEAMER_THEME: Madrid
+
+#+LATEX_HEADER: \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+#+LATEX_HEADER: \newcommand{\var}[1]{{\operatorname{\mathit{#1}}}}
+#+LATEX_HEADER: \uselanguage{French}
+#+LATEX_HEADER: \languagepath{French}
+
+* Présentation du sujet
+** Appariement de questions/questions
+ - Communautés de questions / réponses (AskUbuntu, StackExchange)
+ - Beaucoup de données (questions dupliquées)
+ - Intéressant de pouvoir évaluer la similarité de questions
+
+** SemEval
+ - /Workshop/
+ - Évaluation de systèmes d'analyse de sémantique computationnelle
+ - Organisé en tâches
+
+** Tâche 3
+ - Similarité question / réponse
+ - Sous-tâche 3B : similarité question / question
+ - Données extraites du forum Quatar Living
+
+** Organisation des données
+ - $N$ questions originales
+ - $N \times 10$ questions reliées
+ - Dans un fichier XML
+# *** Code :B_column:BMCOL:
+# :PROPERTIES:
+# :BEAMER_env: column
+# :BEAMER_col: 0.66
+# :END:
+
+# #+BEGIN_SRC xml
+#   <OrgQuestion ORGQ_ID="Q1">
+#     <OrgQSubject>A question example</OrgQSubject>
+#   </OrgQuestion> 
+# #+END_SRC
+
+** Difficultés
+- Fautes de frappe ou langage abbrégé
+- Parties non pertinentes à la sémantique (ex: remerciements)
+
+* Approches explorées
+** Vocabulaire
+*** Document :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+- Texte à analyser (en l'occurence des questions)
+*** Corpus :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+- Ensemble de documents
+# *** Token :B_block:
+# :PROPERTIES:
+# :BEAMER_env: block
+# :END:
+# - Suite atomiques de caractères extraite d'un document
+*** Sac de mots :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+- Approche d'analyse de document en tant que multi-ensemble de tokens
+
+** TF-IDF
+- /Term Frequency/ - /Inverse Document Frequency/
+- Donne une idée de l'importance d'un terme dans un document et dans un corpus
+\[TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}\]
+\[IDF(terme, corpus) = log \left( \frac{taille(corpus)}
+{\norm{\{doc / doc \in corpus \land terme \in doc\}}} \right)\]
+\[\begin{split}
+&\var{TF-IDF}(terme, document, corpus) =\\
+&\quad\begin{cases}
+TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
+\max(\{IDF(el, corpus) / el \in corpus\}) & \text{sinon}
+\end{cases}
+\end{split}\]
+
+** Méthode de référence
+ - Somme des valeurs TF-IDF des tokens du sac de mots
+ - Corpus : les questions originales et reliées mises bout à bout
+ - Document : les deux questions contaténées
+
+\begin{equation*}
+\begin{split}
+&similarit\acute{e}R\acute{e}f\acute{e}rence(Q_1, Q_2) =\\
+&\quad\sum_{terme \in Q_1 \cap Q_2} \var{TF-IDF}(terme, Q_1 \cup Q_2, corpus)
+\end{split}
+\end{equation*}
+
+** Méthode de référence - Scores
+
+#+NAME: refmap
+#+ATTR_LATEX: :placement [p]
+#+CAPTION: SemEval - Meilleurs scores MAP
+| Édition | Méthode               |      Score MAP |
+|---------+-----------------------+----------------|
+|    2016 | UH-PRHLT-contrastive2 |          77.33 |
+|    2016 | UH-PRHLT-primary      |          76.70 |
+|    2016 | UH-PRHLT-contrastive1 |          76.56 |
+|    2016 | /IR baseline/         |          74.75 |
+|    2016 | \textbf{Référence}    | \textbf{71.48} |
+|    2017 | KeLP-contrastive1     |          49.00 |
+|    2017 | SimBow-contrastive2   |          47.87 |
+|    2017 | SimBow-primary        |          47.22 |
+|    2017 | /IR baseline/         |          41.85 |
+|    2017 | \textbf{Référence}    | \textbf{44.21} |
+
+
