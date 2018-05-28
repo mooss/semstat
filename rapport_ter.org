@@ -491,12 +491,10 @@ La sous-tâche B de la tâche 3 de SemEval consiste à faire de l'appariement qu
 C'est cette sous-tâche qui est traitée dans ce TER.
 
 Les méthodes proposées par les participants des éditions 2016 et 2017 de SemEval pour résoudre cette étape sont des techniques d'apprentissage automatique allant du SVM au /deep learning/.
-# *(pas sûr ; le rapport de semeval 2016 stipule de (Franco-Salvador et al., 2016) que "They use distributed representations of words, knowledge graphs generated with BabelNet, and frames from FrameNet.", j'ai pas l'impression que c'est du /machine learning/)*
 
 Ce TER a pour but de regarder l'efficacité que pourrait avoir une approche plus simple, d'avantage ancrée dans la linguistique computationnelle que dans l'apprentissage automatique.
 Pour cela, trois objectifs sont distingués :
  - Réfléchir à la manière de détecter des questions similaires en termes de caractéristiques linguistiques.
-# (d'indicateurs et de marqueurs linguistiques.)
  - Mettre en oeuvre une méthode pour les détecter automatiquement.
  - Travailler sur une évaluation de l'approche proposée.
 
@@ -524,7 +522,6 @@ La TF (/Term Frequency/) d'un mot correspond à sa fréquence d'apparition dans 
 L'IDF (/Inverse Document Frequency/) d'un mot est proportionnelle à l'inverse du nombre de documents dans lesquels il apparaît.
 La TF-IDF d'un mot présent dans le corpus correspond à une combinaison de sa TF et de son IDF.
 Si un mot est absent du corpus, sa TF-IDF est égale à l'IDF du terme le plus rare.
-# *pas sûr que ça soit la bonne manière de faire*
 Plus formellement,
 
 \[TF(terme, document) = \frac{occurences(terme, document)}{taille(document)}\]
@@ -546,6 +543,9 @@ La méthode de référence que nous proposons consiste à travailler avec l'inte
 
 La table [[baseline]] indique les scores MAP de la méthode de référence sur les éditions 2016 et 2017 de SemEval. La table [[best_scores]] montre les meilleurs scores MAP des éditions 2016 et 2017 de SemEval, ainsi que les scores de la IR (/Information Retrieval/) /baseline/, correspondant à conserver l'ordre initialement proposé par le moteur de recherche lors de la constitution des jeux de données.
 
+Les résultats sont meilleurs que la /IR baseline/ pour 2017 mais moins bons que celle ci pour 2016.
+De plus, les résultats sont nettement en-dessous des méthodes proposées par les participants à SemEval.
+Une manière simple d'obtenir de meilleurs résultats est d'appliquer des filtres.
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselineexec :tangle rapport_baseline.py :shebang "#!/usr/bin/env python3" :results output drawer replace
   from itertools import product
   <<bothyears>>
@@ -556,70 +556,25 @@ La table [[baseline]] indique les scores MAP de la méthode de référence sur l
   similarity = baseline_similarity
 
   methodname = 'baseline'
-  caption = 'Semeval - Best-worst-AP - Méthode de référence'
+  caption = 'Semeval - Scores MAP - Méthode de référence'
 
   parameters = list(product(corpora))
   parameters_description = ('Édition', 'Score MAP')
   description_functions = [lambda x: x]
 
   for corpus, *rest in parameters:
-      print(corpus)
       <<makescores>>
       <<writescores>>
       <<MAP_from_relevancy>>
-      <<AP_from_relevancy>>
+      #<<AP_from_relevancy>>
 
   <<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
 :RESULTS:
-2016
-Q387 0.10 [False, False, False, False, False, False, False, False, False, True]
-	 ['Q387_R16', 'Q387_R33', 'Q387_R30', 'Q387_R44', 'Q387_R24', 'Q387_R25', 'Q387_R41', 'Q387_R7', 'Q387_R37', 'Q387_R4']
-Q387_R4
-
-Q363 0.25 [False, False, False, True, False, False, False, False, False, False]
-	 ['Q363_R26', 'Q363_R47', 'Q363_R23', 'Q363_R10', 'Q363_R11', 'Q363_R20', 'Q363_R54', 'Q363_R65', 'Q363_R58', 'Q363_R43']
-Q363_R10
-
-Q338 0.27 [False, False, False, True, False, False, True, False, False, False]
-	 ['Q338_R27', 'Q338_R30', 'Q338_R2', 'Q338_R11', 'Q338_R69', 'Q338_R34', 'Q338_R37', 'Q338_R42', 'Q338_R67', 'Q338_R54']
-Q338_R11
-Q338_R37
-
-Q368 0.33 [False, False, True, False, False, False, False, False, False, False]
-	 ['Q368_R13', 'Q368_R20', 'Q368_R19', 'Q368_R17', 'Q368_R4', 'Q368_R22', 'Q368_R14', 'Q368_R27', 'Q368_R30', 'Q368_R28']
-Q368_R19
-
-Q324 0.33 [False, False, True, False, False, False, False, False, False, False]
-	 ['Q324_R3', 'Q324_R9', 'Q324_R21', 'Q324_R5', 'Q324_R44', 'Q324_R43', 'Q324_R35', 'Q324_R41', 'Q324_R36', 'Q324_R38']
-Q324_R21
-
-2017
-Q425 0.12 [False, False, False, False, False, False, False, True, False, False]
-	 ['Q425_R32', 'Q425_R13', 'Q425_R48', 'Q425_R31', 'Q425_R7', 'Q425_R14', 'Q425_R37', 'Q425_R40', 'Q425_R43', 'Q425_R36']
-Q425_R40
-
-Q459 0.17 [False, False, False, False, False, True, False, False, False, False]
-	 ['Q459_R33', 'Q459_R27', 'Q459_R125', 'Q459_R124', 'Q459_R72', 'Q459_R40', 'Q459_R126', 'Q459_R67', 'Q459_R11', 'Q459_R70']
-Q459_R40
-
-Q408 0.17 [False, False, False, False, False, True, False, False, False, False]
-	 ['Q408_R10', 'Q408_R77', 'Q408_R8', 'Q408_R31', 'Q408_R5', 'Q408_R73', 'Q408_R21', 'Q408_R62', 'Q408_R74', 'Q408_R33']
-Q408_R73
-
-Q400 0.20 [False, False, False, False, True, False, False, False, False, False]
-	 ['Q400_R62', 'Q400_R58', 'Q400_R43', 'Q400_R12', 'Q400_R52', 'Q400_R17', 'Q400_R73', 'Q400_R37', 'Q400_R67', 'Q400_R25']
-Q400_R52
-
-Q422 0.23 [False, False, False, False, True, False, False, True, False, False]
-	 ['Q422_R77', 'Q422_R72', 'Q422_R140', 'Q422_R166', 'Q422_R9', 'Q422_R110', 'Q422_R73', 'Q422_R6', 'Q422_R2', 'Q422_R131']
-Q422_R9
-Q422_R6
-
 #+NAME: baseline
-#+CAPTION: Semeval - Best-worst-AP - Méthode de référence
+#+CAPTION: Semeval - Scores MAP - Méthode de référence
 | Édition | Score MAP |
 |---------|-----------|
 | 2016    | 71.48     |
@@ -635,14 +590,26 @@ Q422_R6
 |    2016 | UH-PRHLT-contrastive2 |      77.33 |
 |    2016 | UH-PRHLT-primary      |      76.70 |
 |    2016 | UH-PRHLT-contrastive1 |      76.56 |
-|    2016 | IR /baseline/         |      74.75 |
+|    2016 | /IR baseline/         |      74.75 |
 |    2017 | KeLP-contrastive1     |      49.00 |
 |    2017 | SimBow-contrastive2   |      47.87 |
 |    2017 | SimBow-primary        |      47.22 |
-|    2017 | IR /baseline/         |      41.85 |
+|    2017 | /IR baseline/         |      41.85 |
 
 ** Filtres
+Les filtres consistent à définir des règles pour exclure certains mots lors de la comparaison de deux documents.
+Deux types de filtres sont envisagés, se basant sur les mots outils et la longueur des mots.
 
+Les mots outils sont des mots considérés comme n'ayant que peu d'impact sur la sémantique d'une phrase.
+Les mots outils utilisés ici proviennent de MappSent[fn:mappsent].
+
+
+Les mots de longueur entre 1 et 4 sont considérés comme des candidats pour être filtrés.
+Les mots de longueur 5 et plus ne sont pas filtrés car les résultats ont tendance à diminuer dès la longueur 4.
+Intuitivement, les mots de petite longueur sont des mots communs et transportant très peu de sémantique.
+
+Les filtres des mots outils sont combinés avec les filtres de longueur $N$ dans la table [[baseline_filters]].
+Les résultats sont bien meilleurs et se rapprochent des scores des meilleurs méthodes de SemEval.
 
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselinefiltersexec :tangle rapport_baseline_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
   from itertools import product
@@ -654,7 +621,7 @@ Q422_R6
   similarity = filters_baseline_similarity
 
   methodname = 'baseline_filters'
-  caption = 'Semeval - Scores MAP - Méthodes de référence'
+  caption = 'Semeval - Scores MAP - Méthodes de référence avec filtres'
 
   parameters = list(product(corpora, filters_partition))
   parameters_description = ('Édition', 'Filtres', 'Score MAP')
@@ -698,7 +665,152 @@ Q422_R6
 :END:
 
 ** Lemmatisation
-* Indicateurs envisagés
+Le but de la lemmatisation est de modifier un mot afin d'en obtenir une forme simplifiée.
+Cette forme simplifiée permet d'associer des mots dérivant d'une même racine.
+
+Un lemmatisateur génère un lemme, correspondant à un terme d'usage.
+Par exemple, le mot "chercher" sera lemmatisé en "cherche".
+
+Cette technique a son utilité dans la tâche de modifier des textes afin de mieux pouvoir les comparer, car elle permet d'une part de donner une forme commune à des termes proches, les rendant ainsi directement comparable, et d'autre part de réduire la diversité linguistique tout en préservant la semantique.
+
+L'approche considérée ici consiste à comparer les documents en utilisant les lemmes de chaque mot, et en appliquant les filtres décrits précédemment. Les filtres sont appliqués sur les mots avant lemmatisation car les résultats sont meilleurs ainsi. La raison est que la lemmatisation a tendance à raccourcir les mots. Ainsi, les mots sont davantage susceptibles d'être filtrés selon leur longueur. De plus comme leur forme change, il ne sont plus comparables à ceux de la liste des mots-outils.
+
+La table [[lemmas_filters]] contient les résultats de cette approche. Les scores se rapprochent considérablement des meilleurs scores de la table [[best_scores]]. Cependant, Les méthodes qui marchent le mieux sont très différentes d'une année à l'autre, et comme les données d'entrainement sont les mêmes pour les deux années, il est difficile de savoir quelle méthode va fonctionner le mieux sans au préalable évaluer sur le jeu de test.
+
+#+BEGIN_SRC ipython :eval no-export :noweb yes :session lemmasfiltersexec :tangle rapport_lemmas_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
+  from itertools import product
+  <<bothyears>>
+  <<tokens>>
+  <<scoringboilerplate>>
+
+  from plasem_taln import filters_lemmas_similarity
+  similarity = filters_lemmas_similarity
+
+  methodname = 'lemmas_filters'
+  caption = 'Semeval - Scores MAP - Lemmes'
+
+  parameters = list(product(corpora, filters_partition))
+  parameters_description = ('Édition', 'Filtres', 'Score MAP')
+  description_functions = [lambda x: x, get_filters_descr]
+  for corpus, *rest in parameters:
+      context['filters'] = [filters[key] for key in rest[0]]
+      <<makescores>>
+      <<writescores>>
+      <<MAP_from_relevancy>>
+
+  <<print_sorted_restable>>
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+NAME: lemmas_filters
+#+CAPTION: Semeval - Scores MAP - Lemmes avec Filtres
+| Édition | Filtres               | Score MAP |
+|---------|-----------------------|-----------|
+| 2016    | Mots outils, $\leq 2$ | 76.48     |
+| 2016    | Mots outils, $\leq 3$ | 75.87     |
+| 2016    | Mots outils, $\leq 1$ | 75.56     |
+| 2016    | Mots outils, $\leq 4$ | 75.38     |
+| 2016    | $\leq 4$              | 75.31     |
+| 2016    | $\leq 1$              | 73.64     |
+| 2016    | $\leq 2$              | 73.38     |
+| 2016    | Pas de filtre         | 73.38     |
+| 2016    | $\leq 3$              | 72.95     |
+| 2016    | Mots outils           | 72.14     |
+| 2017    | Mots outils, $\leq 1$ | 47.70     |
+| 2017    | Mots outils, $\leq 2$ | 46.61     |
+| 2017    | Mots outils, $\leq 3$ | 46.16     |
+| 2017    | $\leq 1$              | 45.92     |
+| 2017    | Pas de filtre         | 45.82     |
+| 2017    | $\leq 3$              | 45.17     |
+| 2017    | Mots outils           | 44.23     |
+| 2017    | $\leq 2$              | 42.82     |
+| 2017    | Mots outils, $\leq 4$ | 41.87     |
+| 2017    | $\leq 4$              | 41.16     |
+
+:END:
+
+** Nature grammaticale
+Identifier la nature grammaticale d'un mot peut donner un indice sur sa pertinence.
+Une hypothèse vraisemblable est qu'un nom participera davantage au sens d'une phrase, tandis qu'un adjectif aura moins d'impact.
+La nature d'un mot peut être détectée à l'aide d'étiqueteurs morpho-syntaxiques.
+
+La table [[pos_lemmas_filters]] rapporte les scores obtenus en associant une pondération aux mots selon leur nature grammaticale, en utilisant également les lemmes et les filtres.
+
+Les noms ont une pondération de =0.52= tandis que les autres éléments ont une pondération de =0.48=.
+Il s'agit de la meilleure pondération trouvée en faisant varier manuellement les coefficients de pondération, ce qui suggère que un nom a tendance à être sémantiquement plus important que ce qui n'est pas un nom, mais que la différence n'est pas fortement prononcée.
+
+Il serait intéressant de rechercher une technique plus élaborée permettant de prendre en compte la nature grammaticale des mots d'une manière plus exhaustive.
+De plus, bien qu'une amélioration des scores est constatée, celle-ci reste très faible, et il est donc difficile d'affirmer si elle est significative.
+
+#+BEGIN_SRC ipython :eval no-export :noweb yes :session poslemmasfiltersexec :tangle rapport_pos_lemmas_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
+  from itertools import product
+  <<bothyears>>
+  <<tokens>>
+  <<scoringboilerplate>>
+
+  from plasem_taln import generic_weights_scorer, noun_weighter
+  def similarity(context, doca, docb):
+      return generic_weights_scorer(context, doca, docb,
+                                    [(0.52, noun_weighter)])
+  #similarity = filters_lemmas_similarity
+
+  methodname = 'pos_lemmas_filters'
+  caption = 'Semeval - Scores MAP - Lemmes avec pondération grammaticale'
+
+  parameters = list(product(corpora, filters_partition))
+  parameters_description = ('Édition', 'Filtres', 'Score MAP')
+  description_functions = [lambda x: x, get_filters_descr]
+  for corpus, *rest in parameters:
+      context['filters'] = [filters[key] for key in rest[0]]
+      context['wordex'] = lambda x: x.lemma_
+      <<makescores>>
+      <<writescores>>
+      <<MAP_from_relevancy>>
+
+  <<print_sorted_restable>>
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+NAME: pos_lemmas_filters
+#+CAPTION: Semeval - Scores MAP - Lemmes avec pondération grammaticale
+| Édition | Filtres               | Score MAP |
+|---------|-----------------------|-----------|
+| 2016    | Mots outils, $\leq 2$ | 76.61     |
+| 2016    | Mots outils, $\leq 1$ | 76.32     |
+| 2016    | Mots outils, $\leq 3$ | 75.97     |
+| 2016    | Mots outils, $\leq 4$ | 75.32     |
+| 2016    | $\leq 4$              | 75.30     |
+| 2016    | Pas de filtre         | 73.73     |
+| 2016    | $\leq 1$              | 73.45     |
+| 2016    | $\leq 2$              | 73.04     |
+| 2016    | $\leq 3$              | 72.97     |
+| 2016    | Mots outils           | 72.07     |
+| 2017    | Mots outils, $\leq 1$ | 47.81     |
+| 2017    | Mots outils, $\leq 2$ | 46.63     |
+| 2017    | $\leq 1$              | 45.97     |
+| 2017    | Mots outils, $\leq 3$ | 45.66     |
+| 2017    | Pas de filtre         | 45.57     |
+| 2017    | $\leq 3$              | 45.09     |
+| 2017    | Mots outils           | 44.04     |
+| 2017    | $\leq 2$              | 43.59     |
+| 2017    | Mots outils, $\leq 4$ | 42.02     |
+| 2017    | $\leq 4$              | 41.27     |
+
+:END:
+
+
+* Conclusion et perspectives
+Les expériences présentées ici montrent qu'il est possible d'atteindre des résultats proches de l'état de l'art en utilisant des caractéristiques linguistiques simples. De telles approches ont l'avantage d'être plus aisément interprétables que des approches boite noire.
+
+Les techniques présentées ne couvrent qu'une petite partie des techniques de traitement automatiques du langage naturel. D'autres approches peuvent être envisagées.
+
+Une caractéristique qui semble prometteuse pour comparer des phrase est l'utilisation d'un dictionnaire de synonymes. En effet, les méthodes présentées ici comparent les mots caractère par caractère pour attester de leur similarité. Ainsi, des synonymes sont considérés par ces méthodes comme n'ayant rien en commun.
+
+Un autre problème dérivé de la comparaison des mots est que une faute, si minime soit elle, a pour conséquence que deux termes sémantiquement identiques sont considérés différents par le système. Une manière d'introduire de la tolérance dans le système serait d'utiliser une mesure de distance d'édition comme la distance de Levenshtein.
+
+* Indicateurs envisagés                                            :noexport:
 ** Nature grammaticale des mots
 Identifier la nature grammaticale d'un mot peut donner un indice sur sa pertinence.
 Une hypothèse vraisemblable est qu'un nom participera davantage au sens d'une phrase, tandis qu'un adjectif aura moins d'impact.
@@ -720,16 +832,7 @@ La reconnaissance d'entités nommées est intéressante pour la problématique d
 En prenant $s = \text{"Google and Apple headquarters are in California"}$, on a
 $CAT_s = \{\text{ORG}, \text{ORG}, \text{GPE}\}$ et $TOK_s = \{\text{Google}, \text{Apple}, \text{California}\}$
 
-* Pré-traitements
-L'étape de pré-traitement consiste à utiliser des techniques simples
-
-** Mots-outils
-
-** Filtres
-
-** Majuscules
-
-* Techniques de TALN (à incorporer au fur et à mesure de l'écriture)
+* Techniques de TALN (à incorporer au fur et à mesure de l'écriture) :noexport:
 
 ** Racinisation (/stemming/) et lemmatisation
 Le but des ces deux techniques est de modifier un mot (typiquement d'ôter des suffixes) afin d'en obtenir une forme simplifiée.
@@ -741,15 +844,4 @@ Par exemple, le mot "chercher" pourra être racinisé en "cherch", mais sera lem
 
 Cette technique a son utilité dans la tâche de modifier des textes afin de mieux pouvoir les comparer, car elle permet d'une part de donner une forme commune à des termes proches, les rendant ainsi directement comparable, et d'autre part de réduire la diversité linguistique tout en préservant la semantique.
 
-* Perspectives
-
-** Dictionnaire de synonymes (wordnet)
-
-** Suppression de bruit
-Signatures, nombres, "utilisation créative des signes de ponctuation", détection de fautes, obligations sociales et remerciements, abbréviations
-
-** Vocabulaire spécifique
-Comparer avec d'autres corpus (corpora ?) pour voir quels termes sont spécifiques à quatar living et réfléchir à comment traiter les termes spécifiques
-
-** Forme interrogative
-La forme interrogative est à priori simple à détecter en anglais et pourrait être un bon critère pour extraire les passages les plus importants.
+[fn:mappsent] https://github.com/hazemAmir/MappSent
