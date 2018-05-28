@@ -182,8 +182,9 @@ bestmeth = {'2016': 'zero',
             '2017': 'zero'}
 best = {'2016': 0,
         '2017': 0}
-bestscores = {'2016': 0,
-              '2017': 0}
+bestaps = {'2016': 0,
+           '2017': 0}
+bestscores = {}
 
 def avgtree(tree, relevfile):
     sscores = sorted_scores_from_semeval_relevancy(relevfile, tree)
@@ -214,7 +215,8 @@ for corpus, *rest in parameters:
     if MAP > best[corpus]:
         best[corpus] = MAP
         bestmeth[corpus] = rest[0]
-        bestscores[corpus] = avgtree(scores, relevancy[corpus])
+        bestaps[corpus] = avgtree(scores, relevancy[corpus])
+        bestscores[corpus] = scores
 
 #     restable.append([*(description_functions[i](value)
 #                        for i, value in enumerate((corpus, *rest))),
@@ -234,6 +236,7 @@ baseline = dict()
 
 baselineaps = {'2016': 0,
               '2017': 0}
+baselinescores = {}
 for corpus in corpora:
     
     comp = comparator(context, baseline_similarity)
@@ -253,6 +256,7 @@ for corpus in corpora:
     )
     baseline[corpus] = MAP
     baselineaps[corpus] = avgtree(scores, relevancy[corpus])
+    baselinescores[corpus] = scores
 
 print('2016 best is', get_filters_descr(bestmeth['2016']))
 print('2017 best is', get_filters_descr(bestmeth['2017']))
@@ -261,7 +265,7 @@ print('baseline:', baseline)
 
 apdiff = {
     corpus: {
-        org: bestscores[corpus][org] - baselineaps[corpus][org]
+        org: bestaps[corpus][org] - baselineaps[corpus][org]
         for org in baselineaps[corpus]
     }
     for corpus in corpora
@@ -277,7 +281,7 @@ for corpus in corpora:
     print('corpus', corpus)
     for el in apdiff[corpus][:3]:
         print(el[0], ':', el[1])
-        print('\tbest', bestscores[corpus][el[0]], '-', baselineaps[corpus][el[0]])
+        print('\tbest', bestaps[corpus][el[0]], '-', baselineaps[corpus][el[0]])
 
 print()
 print('length analysis:')
