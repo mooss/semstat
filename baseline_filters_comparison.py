@@ -272,3 +272,34 @@ for corpus in corpora:
     for el in sorted(apdiff[corpus].items(), key=lambda x: x[1], reverse=True)[:3]:
         print(el[0], ':', el[1])
         print('\tbest', bestscores[corpus][el[0]], '-', baselinescores[corpus][el[0]])
+
+print()
+print('length analysis:')
+
+def tokeniter(corpus):
+    for orgval in doctrees[corpus].values():
+        for doc in orgval.values():
+            for tok in doc:
+                yield tok
+
+from collections import defaultdict
+
+for corpus in corpora:
+    toklen = defaultdict(int)
+    for tok in tokeniter(corpus):
+        toklen[len(tok)] += 1
+    print('%s:' % corpus)
+
+    threshold = 4
+    more = 0
+    lessoreq = 0
+    for length, occ in sorted(toklen.items()):
+        print('\t', length, ' ->\t', occ, sep='')
+        if length > threshold:
+            more += occ
+        else:
+            lessoreq += occ
+
+    print('>', threshold, ':', more)
+    print('<=', threshold, ':', lessoreq)
+    
