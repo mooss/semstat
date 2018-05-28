@@ -190,4 +190,49 @@ TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 | Mots outils, $\leq 4$ |          41.80 |
 | $\leq 4$              |          40.47 |
 
-** Comparaison référence avec et sans filtres
+** Comparaison pratique avec et sans filtres (2016)
+*** Question 387 \hfill Score AP = 0.1                       :B_exampleblock:
+:PROPERTIES:
+:BEAMER_env: exampleblock
+:END:
+" Mall of Asia in Qatar soon to open ? . " " Is it true that there is Mall of Asia opening in Doha ; Qatar? .. If yes? .. Then ; is it in justice if I 'll will just receive 1000riyal monthly?excluding the commission . "
+
+*** Question 387 après filtrage \hfill Score AP = 1          :B_exampleblock:
+:PROPERTIES:
+:BEAMER_env: exampleblock
+:END:
+Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then justice 'll receive 1000riyal monthly?excluding commission
+
+*** Comment :B_ignoreheading:
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+- Filtres appliqués : :: mots-outils et mots de longueur 1
+
+** Comparaison pratique avec et sans filtres (2017)
+*** Question 448 \hfill Score AP = 0.5 :B_exampleblock:
+:PROPERTIES:
+:BEAMER_env: exampleblock
+:END:
+household clearance companies . Anyone know of a company that can clear your house of furniture / appliances / misc when leaving Doha ?
+
+*** Question 448 après filtrage \hfill Score AP = 1 :B_exampleblock:
+:PROPERTIES:
+:BEAMER_env: exampleblock
+:END:
+household clearance companies Anyone know of company that can clear your house of furniture appliances misc when leaving Doha
+
+*** Comment :B_ignoreheading:
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+- Filtre appliqué: :: mots de longueur 1
+# \usepackage{stringstrings}
+
+# \newcommand*{\strC}[1]{%
+# \catcode`\ =12%
+# \strCB{#1}%
+# \catcode`\ =13%
+# }
