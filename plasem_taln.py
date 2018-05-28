@@ -201,10 +201,38 @@ def filters_baseline_similarity(context, reference, candidate):
     
     return generic_similarity(context, reference, candidate, makebag)
 
+
+def filters_lemmas_similarity(context, reference, candidate):
+    """Lemmas similarity using filters.
+
+    Parameters
+    ----------
+    context : Namespace
+        Necessary informations accessibles with dot notation.
+        
+    reference : Container of words
+        Document of the reference sentence.
+
+    candidate : Container of words
+        Document of the candidate sentence.
+
+    Returns
+    -------
+    out : float
+        The lemmas similarity score with filters.
+    """
+    def makebag(doc):
+        return Counter(word.lemma_
+                       for word in doc
+                       if all(pred(str(word)) for pred in context.filters))
+    
+    return generic_similarity(context, reference, candidate, makebag)
+
+
 def create_unit_dict(wordex, sentex, filters, doc):
     result = defaultdict(list)
     for unit in sentex(doc):
-        if all(flt(wordex(unit)) for flt in filters):
+        if all(flt(str(unit)) for flt in filters):
             result[wordex(unit)].append(unit)
     return result
 
