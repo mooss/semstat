@@ -232,7 +232,7 @@ for corpus, *rest in parameters:
 
 baseline = dict()
 
-baselinescores = {'2016': 0,
+baselineaps = {'2016': 0,
               '2017': 0}
 for corpus in corpora:
     
@@ -252,26 +252,32 @@ for corpus in corpora:
             scores).values()
     )
     baseline[corpus] = MAP
-    baselinescores[corpus] = avgtree(scores, relevancy[corpus])
+    baselineaps[corpus] = avgtree(scores, relevancy[corpus])
 
-
+print('2016 best is', get_filters_descr(bestmeth['2016']))
+print('2017 best is', get_filters_descr(bestmeth['2017']))
 print('best:', best)
 print('baseline:', baseline)
 
 apdiff = {
     corpus: {
-        org: bestscores[corpus][org] - baselinescores[corpus][org]
-        for org in baselinescores[corpus]
+        org: bestscores[corpus][org] - baselineaps[corpus][org]
+        for org in baselineaps[corpus]
     }
+    for corpus in corpora
+}
+
+apdiff = {
+    corpus: sorted(apdiff[corpus].items(), key=lambda x: x[1], reverse=True)
     for corpus in corpora
 }
 
 for corpus in corpora:
     print()
     print('corpus', corpus)
-    for el in sorted(apdiff[corpus].items(), key=lambda x: x[1], reverse=True)[:3]:
+    for el in apdiff[corpus][:3]:
         print(el[0], ':', el[1])
-        print('\tbest', bestscores[corpus][el[0]], '-', baselinescores[corpus][el[0]])
+        print('\tbest', bestscores[corpus][el[0]], '-', baselineaps[corpus][el[0]])
 
 print()
 print('length analysis:')
@@ -303,3 +309,22 @@ for corpus in corpora:
     print('>', threshold, ':', more)
     print('<=', threshold, ':', lessoreq)
     
+
+qnum = 3
+
+for corpus, qoffset in product(corpora, range(0, qnum)):
+    besttoks = []
+    rawtoks = []
+    orgq = apdiff[corpus][qoffset][0]
+    for tok in doctrees[corpus][orgq]['org']:
+        if all(filters[flt](str(tok)) for flt in bestmeth[corpus]):
+            besttoks.append(str(tok))
+        rawtoks.append(str(tok))
+
+    print()
+    print('orgq:', orgq, 'offset:', qoffset)
+    print('tokenisation baseline', corpus)
+    print(' '.join(rawtoks))
+    print()
+    print('tokenisation meilleurs réponses', corpus)
+    print(' '.join(besttoks))
