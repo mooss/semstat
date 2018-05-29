@@ -29,32 +29,77 @@
 
 * Présentation du sujet
 ** Appariement de questions/questions
+*** Appariement de questions/questions :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
  - Communautés de questions / réponses (AskUbuntu, StackExchange)
  - Beaucoup de données (questions dupliquées)
  - Intéressant de pouvoir évaluer la similarité de questions
-
 ** SemEval
+*** SemEval :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
  - /Workshop/
  - Évaluation de systèmes d'analyse de sémantique computationnelle
  - Organisé en tâches
 
-** Tâche 3
+*** Tâche 3 :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
  - Similarité question / réponse
  - Sous-tâche 3B : similarité question / question
  - Données extraites du forum Quatar Living
 
-** Organisation des données
+*** Organisation des données :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
  - $N$ questions originales
  - $N \times 10$ questions reliées
+   - Attribut : pertinence vis-à-vis de la question originale
  - Dans un fichier XML
-
-
-
 | Année | Nombre de questions originales |
 |-------+--------------------------------|
 |  2016 |                             70 |
 |  2017 |                             88 |
 
+**** But :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+ordonner les questions selon leur pertinence
+
+
+
+
+
+** Mesures
+*** Average Precision (AP) :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
+ - Associe un score à une liste ordonnée de documents
+ - Les documents ont une pertinence booléenne : pertinent ou non pertinent
+**** Formule AP :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+\[AP = \frac{1}{\vert R \vert} \times \sum_{i=1}^{n}{Precision(i) \times Pertinence(i)}\]
+- $\vert R \vert$ : nombre total de documents pertinents
+- $Precision(i)$ : précision au rang $i$
+- $Pertinence(i)$ : $\begin{cases}1 & \text{si pertinent} \\ 0 & \text{sinon}\end{cases}$
+*** Exemple Average Precision :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
+
+*** Mean Average Precision (MAP) :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
 
 # *** Code :B_column:BMCOL:
 # :PROPERTIES:
@@ -339,7 +384,7 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 :END:
 - Hypothèse : la nature grammaticale d'un mot a une influence sur son importance sémantique
 - Détectable via l'étiquetage morpho-syntaxique
-- Approche : pondérer les noms
+- Approche : appliquer une pondération sur les noms (0.52)
 
 *** Scores 2016 :B_frame:
 :PROPERTIES:
@@ -382,6 +427,50 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 | $\leq 2$              |     73.04 |
 | $\leq 3$              |     72.97 |
 | Mots outils           |     72.07 |
+
+*** Scores 2017                                                     :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
+\fontsize{8pt}{9.4pt}\selectfont
+**** lemmes :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env: column
+:BEAMER_col: 0.45
+:END:
+#+CAPTION: Scores SemEval 2017 - Lemmes
+| Filtres               | Score MAP |
+|-----------------------+-----------|
+| Mots outils, $\leq 1$ |     47.70 |
+| Mots outils, $\leq 2$ |     46.61 |
+| Mots outils, $\leq 3$ |     46.16 |
+| $\leq 1$              |     45.92 |
+| Pas de filtre         |     45.82 |
+| $\leq 3$              |     45.17 |
+| Mots outils           |     44.23 |
+| $\leq 2$              |     42.82 |
+| Mots outils, $\leq 4$ |     41.87 |
+| $\leq 4$              |     41.16 |
+**** lemmes + noms :B_column:BMCOL:
+:PROPERTIES:
+:BEAMER_env: column
+:BEAMER_col: 0.45
+:END:
+#+CAPTION: Scores SemEval 2017 - Lemmes et pondération
+| Filtres               | Score MAP |
+|-----------------------+-----------|
+| Mots outils, $\leq 1$ |     47.81 |
+| Mots outils, $\leq 2$ |     46.63 |
+| $\leq 1$              |     45.97 |
+| Mots outils, $\leq 3$ |     45.66 |
+| Pas de filtre         |     45.57 |
+| $\leq 3$              |     45.09 |
+| Mots outils           |     44.04 |
+| $\leq 2$              |     43.59 |
+| Mots outils, $\leq 4$ |     42.02 |
+| $\leq 4$              |     41.27 |
+
+
 
 ** Difficultés
 - Fautes de frappe ou langage abbrégé
