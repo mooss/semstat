@@ -4,7 +4,7 @@
 #+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
 #+OPTIONS: timestamp:t title:t toc:t todo:t |:t
 #+TITLE: Soutenance TER
-#+SUBTITLE: Appariement Questions/Questions
+#+SUBTITLE: Appariement de questions/questions
 #+DATE: 30 mai 2018
 #+AUTHOR: Félix Jamet
 #+EMAIL: felix.jamet@etu.univ-nantes.fr
@@ -72,34 +72,35 @@
 :END:
 ordonner les questions selon leur pertinence
 
-
-
-
-
 ** Mesures
-*** Average Precision (AP) :B_frame:
+*** /Average Precision/ (AP)                                        :B_frame:
 :PROPERTIES:
 :BEAMER_env: frame
 :END:
  - Associe un score à une liste ordonnée de documents
- - Les documents ont une pertinence booléenne : pertinent ou non pertinent
+# - Les documents ont une pertinence booléenne : pertinent ou non pertinent
 **** Formule AP :B_block:
 :PROPERTIES:
 :BEAMER_env: block
 :END:
 \[AP = \frac{1}{\vert R \vert} \times \sum_{i=1}^{n}{Precision(i) \times Pertinence(i)}\]
 - $\vert R \vert$ : nombre total de documents pertinents
-- $Precision(i)$ : précision au rang $i$
+- $Precision(i)$ : précision au rang $i$ (Proportion de documents pertinents dans les $i$ premiers rangs)
 - $Pertinence(i)$ : $\begin{cases}1 & \text{si pertinent} \\ 0 & \text{sinon}\end{cases}$
-*** Exemple Average Precision :B_frame:
+*** Exemples /Average Precision/                                    :B_frame:
 :PROPERTIES:
 :BEAMER_env: frame
 :END:
-
-*** Mean Average Precision (MAP) :B_frame:
+ - $AP(Vrai, Faux, Faux) = 1$
+ - $AP(Faux, Vrai) = 0.5$
+ - $AP(Faux, Faux, Vrai) = \frac{1}{3}$
+ - $AP(Vrai, Faux, Faux, Faux, Vrai) = \frac{1}{2} \times (1 + 0 + 0 + 0 + \frac{2}{5}) = 0.7$
+*** /Mean Average Precision/ (MAP)                                  :B_frame:
 :PROPERTIES:
 :BEAMER_env: frame
 :END:
+- La moyenne de l'/Average Precision/
+- En l'occurence la moyenne des /Average Precision/ des $N$ questions originales
 
 # *** Code :B_column:BMCOL:
 # :PROPERTIES:
@@ -130,6 +131,7 @@ ordonner les questions selon leur pertinence
 :BEAMER_env: definition
 :END:
 - Unité lexicale extraite d'une phrase
+# Tokenizing means splitting your text into minimal meaningful units
 *** Sac de mots :B_definition:
 :PROPERTIES:
 :BEAMER_env: definition
@@ -156,8 +158,8 @@ TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 :PROPERTIES:
 :BEAMER_env: frame
 :END:
- - Somme des valeurs TF-IDF des tokens du sac de mots
- - Corpus : les questions originales et reliées mises bout à bout
+ - Somme des valeurs TF-IDF des tokens communs au sac de mots
+ - Corpus : toutes les questions
  - Document : les deux questions contaténées
 
 \begin{equation*}
@@ -184,8 +186,8 @@ TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 |    2017 | KeLP-contrastive1     |          49.00 |
 |    2017 | SimBow-contrastive2   |          47.87 |
 |    2017 | SimBow-primary        |          47.22 |
-|    2017 | /IR baseline/         |          41.85 |
 |    2017 | \textbf{Référence}    | \textbf{44.21} |
+|    2017 | /IR baseline/         |          41.85 |
 
 ** Filtres
 *** Méthode de référence avec filtres :B_frame:
