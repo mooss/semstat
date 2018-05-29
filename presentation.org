@@ -475,7 +475,8 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 | $\leq 4$              |     41.27 |
 
 
-
+* Conclusion
+** Conclusion
 ** Difficultés
 - Fautes de frappe ou langage abbrégé
 - Parties non pertinentes à la sémantique (ex: remerciements)
