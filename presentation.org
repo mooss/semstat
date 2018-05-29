@@ -6,7 +6,7 @@
 #+TITLE: Soutenance TER
 #+SUBTITLE: Appariement de questions/questions
 #+DATE: 30 mai 2018
-#+AUTHOR: Félix Jamet
+#+AUTHOR: Félix Jamet \newline Encadré par Amir Hazem
 #+EMAIL: felix.jamet@etu.univ-nantes.fr
 #+LANGUAGE: fr
 #+SELECT_TAGS: export
@@ -26,6 +26,9 @@
 #+LATEX_HEADER: \newcommand{\var}[1]{{\operatorname{\mathit{#1}}}}
 #+LATEX_HEADER: \uselanguage{French}
 #+LATEX_HEADER: \languagepath{French}
+
+# footer hack
+#+BEAMER_HEADER: \input{myfooter}
 
 * Présentation du sujet
 ** Appariement de questions/questions
@@ -385,7 +388,6 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 :BEAMER_env: frame
 :END:
 - Hypothèse : la nature grammaticale d'un mot a une influence sur son importance sémantique
-- Détectable via l'étiquetage morpho-syntaxique
 - Approche : appliquer une pondération sur les noms (0.52)
 
 *** Scores 2016 :B_frame:
