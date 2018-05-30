@@ -108,7 +108,7 @@ ordonner les questions selon leur pertinence
 | Pertinence(i) | 0 | 0 | 0 | 0 |             1 |
 | Précision(i)  | 0 | 0 | 0 | 0 | $\frac{1}{5}$ |
 
-\hskip 0.5em $AP = 1 \times \frac{1}{5} = \frac{1}{5}$
+\hskip 0.5em $AP = 1 \times \frac{1}{5} = \frac{1}{5} = 0.2$
 \vfill
 #+ATTR_LaTeX: :center nil
 | Pertinence(i) | 1 |             0 |             0 |             0 |             1 |
@@ -147,11 +147,11 @@ ordonner les questions selon leur pertinence
 :BEAMER_env: definition
 :END:
 - Ensemble de documents
-*** Token :B_definition:
+*** Tokenisation                                               :B_definition:
 :PROPERTIES:
 :BEAMER_env: definition
 :END:
-- Unité lexicale extraite d'une phrase
+- Procédé de séparation d'un document en unités appelées tokens
 # Tokenizing means splitting your text into minimal meaningful units
 *** Sac de mots :B_definition:
 :PROPERTIES:
@@ -291,7 +291,7 @@ TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 :PROPERTIES:
 :BEAMER_env: exampleblock
 :END:
-Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then justice 'll receive 1000riyal monthly?excluding commission
+Mall Asia Qatar open true Mall Asia opening Doha Qatar? .. yes? .. justice 'll receive 1000riyal monthly?excluding commission
 
 **** Comment                                                :B_ignoreheading:
 :PROPERTIES:
@@ -500,7 +500,7 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 
 # ** Difficultés
 # - Fautes de frappe ou langage abbrégé
-# - Parties non pertinentes à la sémantique (ex: remerciements)
+# - Parties non pertinentes à la sémantique (ex: remerciements, signatures)
 # - Outils de TALN faillibles
 
 
@@ -508,6 +508,7 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 - Construction d'une liste de mots outils spécifique au corpus
 - Utilisation d'un dictionnaire de synonymes
 - Utilisation d'une distance d'édition pour contrebalancer les fautes
+- Tester sur d'autres corpus
 - Arbres de décision
 
 ** Fin de la présentation
