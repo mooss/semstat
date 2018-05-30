@@ -28,7 +28,7 @@
 #+LATEX_HEADER: \languagepath{French}
 
 # footer hack
-#+BEAMER_HEADER: \input{myfooter}
+#+BEAMER_HEADER: \input{beamercustomisation}
 
 * Présentation du sujet
 ** Appariement de questions/questions
@@ -123,7 +123,7 @@ ordonner les questions selon leur pertinence
 :PROPERTIES:
 :BEAMER_env: definition
 :END:
-- Texte à analyser (en l'occurence des questions)
+- Texte à analyser
 *** Corpus :B_definition:
 :PROPERTIES:
 :BEAMER_env: definition
@@ -201,7 +201,7 @@ TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 - Il existe potentiellement des mots trop communs pour être intéressants (mots-outils)
 - Une amélioration simple de la méthode de référence consiste à filtrer ces mots
 #+CAPTION: Nombre de mots de longueur inférieure et supérieure ou égale à 4
- | corpus | # tokens tq. len(token) > 4 | # tokens tq. len(token) <= 4 |
+ | corpus | # mots tq. len(mot) > 4 | # mots tq. len(mot) <= 4 |
  |--------+-----------------------------+------------------------------|
  |   2016 |                       13552 |                        31331 |
  |   2017 |                       19013 |                        41787 |
@@ -477,10 +477,13 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 
 * Conclusion
 ** Conclusion
-** Difficultés
-- Fautes de frappe ou langage abbrégé
-- Parties non pertinentes à la sémantique (ex: remerciements)
-- Outils de TALN faillibles
+- Possible d'appareiller des questions avec des caractéristiques linguistiques simples
+- Approche perfectible
+
+# ** Difficultés
+# - Fautes de frappe ou langage abbrégé
+# - Parties non pertinentes à la sémantique (ex: remerciements)
+# - Outils de TALN faillibles
 
 
 ** Perspectives
@@ -488,3 +491,6 @@ Mall Asia Qatar open Is true Mall Asia opening Doha Qatar? .. If yes? .. Then ju
 - Utilisation d'un dictionnaire de synonymes
 - Utilisation d'une distance d'édition pour contrebalancer les fautes
 - Arbres de décision
+
+** Fin de la présentation
+\LARGE \center Questions ?
