@@ -60,10 +60,10 @@
 :PROPERTIES:
 :BEAMER_env: frame
 :END:
+ - Dans un fichier XML
  - $N$ questions originales
  - $N \times 10$ questions reliées
    - Attribut : pertinence vis-à-vis de la question originale
- - Dans un fichier XML
 | Année | Nombre de questions originales |
 |-------+--------------------------------|
 |  2016 |                             70 |
@@ -508,7 +508,6 @@ Mall Asia Qatar open true Mall Asia opening Doha Qatar? .. yes? .. justice 'll r
 
 
 ** Perspectives
-- Construction d'une liste de mots outils spécifique au corpus
 - Utilisation d'un dictionnaire de synonymes
 - Utilisation d'une distance d'édition pour contrebalancer les fautes
 - Tester sur d'autres corpus
