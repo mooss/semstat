@@ -235,7 +235,7 @@ TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 :BEAMER_env: column
 :BEAMER_col: 0.45
 :END:
-#+CAPTION: Scores SemEval 2016 - Filtres
+#+CAPTION: \fontsize{8pt}{9.4pt}\selectfont Scores SemEval 2016 - Filtres
 | Méthode               |      Score MAP |
 |-----------------------+----------------|
 | UH-PRHLT-contrastive2 |          77.33 |
@@ -259,7 +259,7 @@ TF(terme, document) \times IDF(terme, corpus) & \text{si } terme \in corpus \\
 :BEAMER_env: column
 :END:
 
-#+CAPTION: Scores SemEval 2017 - Filtres
+#+CAPTION: \fontsize{8pt}{9.4pt}\selectfont Scores SemEval 2017 - Filtres
 | Méthode               |      Score MAP |
 |-----------------------+----------------|
 | KeLP-contrastive1     |          49.00 |
@@ -357,48 +357,51 @@ Mall Asia Qatar open true Mall Asia opening Doha Qatar? .. yes? .. justice 'll r
 :BEAMER_col: 0.45
 :END:
 
-#+CAPTION: Scores SemEval 2016 - Lemmes
-| Méthode                       |      Score MAP |
-|-------------------------------+----------------|
-| UH-PRHLT-contrastive2         |          77.33 |
-| UH-PRHLT-primary              |          76.70 |
-| UH-PRHLT-contrastive1         |          76.56 |
-| Lemmes, Mots outils, $\leq 2$ |          76.48 |
-| Lemmes, Mots outils, $\leq 3$ |          75.87 |
-| Lemmes, Mots outils, $\leq 1$ |          75.56 |
-| Lemmes, Mots outils, $\leq 4$ |          75.38 |
-| Lemmes, $\leq 4$              |          75.31 |
-| /IR baseline/                 |          74.75 |
-| Lemmes, $\leq 1$              |          73.64 |
-| Lemmes, $\leq 2$              |          73.38 |
-| Lemmes                        |          73.38 |
-| Lemmes, $\leq 3$              |          72.95 |
-| Lemmes, Mots outils           |          72.14 |
-| \textbf{Référence}            | \textbf{71.48} |
+#+CAPTION: \fontsize{8pt}{9.4pt}\selectfont Scores SemEval 2016 - Lemmes
+| Méthode                                                 |      Score MAP |
+|---------------------------------------------------------+----------------|
+| UH-PRHLT-contrastive2                                   |          77.33 |
+| UH-PRHLT-primary                                        |          76.70 |
+| UH-PRHLT-contrastive1                                   |          76.56 |
+| Lemmes, Mots outils, $\leq 2$                           |          76.48 |
+| Lemmes, Mots outils, $\leq 3$                           |          75.87 |
+| Lemmes, Mots outils, $\leq 1$                           |          75.56 |
+| \textbf{Mots outils, }$\boldsymbol{\leq} \boldsymbol{1}$ | \textbf{75.42} |
+| Lemmes, Mots outils, $\leq 4$                           |          75.38 |
+| Lemmes, $\leq 4$                                        |          75.31 |
+| /IR baseline/                                           |          74.75 |
+| Lemmes, $\leq 1$                                        |          73.64 |
+| Lemmes, $\leq 2$                                        |          73.38 |
+| Lemmes                                                  |          73.38 |
+| Lemmes, $\leq 3$                                        |          72.95 |
+| Lemmes, Mots outils                                     |          72.14 |
+| \textbf{Référence}                                      | \textbf{71.48} |
+
 
 **** 2017 :B_column:BMCOL:
 :PROPERTIES:
 :BEAMER_env: column
 :BEAMER_col: 0.45
 :END:
-#+CAPTION: Scores SemEval 2017 - Lemmes
-| Méthode                       |      Score MAP |
-|-------------------------------+----------------|
-| KeLP-contrastive1             |          49.00 |
-| SimBow-contrastive2           |          47.87 |
-| Lemmes, Mots outils, $\leq 1$ |          47.70 |
-| SimBow-primary                |          47.22 |
-| Lemmes, Mots outils, $\leq 2$ |          46.61 |
-| Lemmes, Mots outils, $\leq 3$ |          46.16 |
-| Lemmes, $\leq 1$              |          45.92 |
-| Lemmes                        |          45.82 |
-| Lemmes, $\leq 3$              |          45.17 |
-| Lemmes, Mots outils           |          44.23 |
-| \textbf{Référence}            | \textbf{44.21} |
-| Lemmes, $\leq 2$              |          42.82 |
-| Lemmes, Mots outils, $\leq 4$ |          41.87 |
-| /IR baseline/                 |          41.85 |
-| Lemmes, $\leq 4$              |          41.16 |
+#+CAPTION: \fontsize{8pt}{9.4pt}\selectfont Scores SemEval 2017 - Lemmes
+| Méthode                            |      Score MAP |
+|------------------------------------+----------------|
+| KeLP-contrastive1                  |          49.00 |
+| SimBow-contrastive2                |          47.87 |
+| Lemmes, Mots outils, $\leq 1$      |          47.70 |
+| SimBow-primary                     |          47.22 |
+| $\boldsymbol{\leq} \boldsymbol{1}$ | \textbf{46.89} |
+| Lemmes, Mots outils, $\leq 2$      |          46.61 |
+| Lemmes, Mots outils, $\leq 3$      |          46.16 |
+| Lemmes, $\leq 1$                   |          45.92 |
+| Lemmes                             |          45.82 |
+| Lemmes, $\leq 3$                   |          45.17 |
+| Lemmes, Mots outils                |          44.23 |
+| \textbf{Référence}                 | \textbf{44.21} |
+| Lemmes, $\leq 2$                   |          42.82 |
+| Lemmes, Mots outils, $\leq 4$      |          41.87 |
+| /IR baseline/                      |          41.85 |
+| Lemmes, $\leq 4$                   |          41.16 |
 
 ** Nature grammaticale
 *** Nature grammaticale :B_frame:
