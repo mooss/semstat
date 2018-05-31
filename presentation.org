@@ -54,7 +54,7 @@
 :END:
  - Similarité question / réponse
  - Sous-tâche 3B : similarité question / question
- - Données extraites du forum Quatar Living
+ - Données extraites du forum Qatar Living
 
 *** Organisation des données :B_frame:
 :PROPERTIES:
