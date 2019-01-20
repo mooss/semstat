@@ -5,8 +5,8 @@
 :END:
 ** Imports
 #+BEGIN_SRC ipython
-  import re
-  import operator
+import re
+import operator
 #+END_SRC
 
 ** Arbres
@@ -14,97 +14,102 @@
 Il s'agit ici d'appliquer récursivement une fonction à chacune des feuilles d'un arbre.
 
 #+BEGIN_SRC ipython
-  def transformtree_deep(func, tree):
-      """Transform a tree by applying a function to its leaves.
+def transformtree_deep(func, tree):
+    """Transform a tree by applying a function to its leaves.
 
-      Parameters
-      ----------
-      func : function
-          The function that will transform each leaf.
+    Parameters
+    ----------
+    func : function
+        The function that will transform each leaf.
 
-      tree : recursive dict
-          The tree to transform.
+    tree : recursive dict
+        The tree to transform.
 
-      Returns
-      -------
-      out : recursive dict
-          The transformed tree.
-      """
-      return {
-          key: transformtree_deep(func, value)
-          if isinstance(value, dict)
-          else func(value)
-          for key, value in tree.items()
-      }
+    Returns
+    -------
+    out : recursive dict
+        The transformed tree.
+    """
+    return {
+        key: transformtree_deep(func, value)
+        if isinstance(value, dict)
+        else func(value)
+        for key, value in tree.items()
+    }
 #+END_SRC
 
 *** Transformation sur $N$ niveaux
 L'inconvénient de =transformtree_deep= est qu'elle parcourt l'arbre entièrement, tandis qu'il serait parfois utile de ne parcourir que les $N$ premiers niveaux.
 
 #+BEGIN_SRC ipython
-  def transformtree_n(func, tree, n):
-      """Transform a tree up to a maximum depth by applying a function to its leaves.
+def transformtree_n(func, tree, n):
+    """Transform a tree up to a maximum depth by applying a function to its leaves.
 
-      Once the maximum depth is reached, the function is applied, even if it is not a leaf.
+    Once the maximum depth is reached, the function is applied, even if it is not a leaf.
 
-      Parameters
-      ----------
-      func : function
-          The function that will transform each leaf, as well as the final depth.
+    Parameters
+    ----------
+    func : function
+        The function that will transform each leaf, as well as the final depth.
 
-      tree : recursive dict
-          The tree to transform.
+    tree : recursive dict
+        The tree to transform.
 
-      n : int
-          The maximum depth
+    n : int
+        The maximum depth
 
-      Returns
-      -------
-      out : recursive dict
-          The transformed tree.
-      """
-      if n > 0:
-          return {
-              key: transformtree_n(func, value, n - 1)
-              if isinstance(value, dict)
-              else func(value)
-              for key, value in tree.items()
-          }
-      else:
-          return { key: func(value) for key, value in tree.items() }
+    Returns
+    -------
+    out : recursive dict
+        The transformed tree.
+    """
+    if n > 0:
+        return {
+            key: transformtree_n(func, value, n - 1)
+            if isinstance(value, dict)
+            else func(value)
+            for key, value in tree.items()
+        }
+    else:
+        return { key: func(value) for key, value in tree.items() }
 #+END_SRC
 
 *** Transformation générique
 Une sémantique intéressante pour la transformation d'arbre est de considérer que transformer un arbre jusqu'au niveau $-1$ revient à le transformer sans limite de profondeur.
 
 #+BEGIN_SRC ipython
-  def transformtree(func, tree, n=-1):
-      if n < 0:
-          return transformtree_deep(func, tree)
-      else:
-          return transformtree_n(func, tree, n)
+def transformtree(func, tree, n=-1):
+    if n < 0:
+        return transformtree_deep(func, tree)
+    else:
+        return transformtree_n(func, tree, n)
 #+END_SRC
 
 ** Tris
 *** Dictionnaire
 Par défaut, le tri sur les entrées d'un dictionnaire se fait sur les clés. On propose la fonction =sorted_items= pour faire un tri sur les valeurs.
 #+BEGIN_SRC ipython
-  def sorted_items(dictionary, key=operator.itemgetter(1), reverse=False):
-      return sorted(dictionary.items(), key=key, reverse=reverse)
+def sorted_items(dictionary, key=operator.itemgetter(1), reverse=False):
+    return sorted(dictionary.items(), key=key, reverse=reverse)
 #+END_SRC
 
 *** Tri naturel
 Il n'y a pas de support natif dans python pour trier des éléments dans l'ordre naturel. La fonction =natural_sort_key= permet d'atteindre ce résultat, lorsque utilisée comme le paramètre =key= d'une fonction de tri.
 
 #+BEGIN_SRC ipython
-  def natural_sort_key(key):
-      """Transform a key in order to achieve natural sort.
-      from https://blog.codinghorror.com/sorting-for-humans-natural-sort-order/
-      """
-      def convert(text):
-          return int(text) if text.isdigit() else text
-      return [convert(c) for c in re.split('([0-9]+)', key)]
+def natural_sort_key(key):
+  """Transform a key in order to achieve natural sort.
+  from https://blog.codinghorror.com/sorting-for-humans-natural-sort-order/
+  """
+  def convert(text):
+      return int(text) if text.isdigit() else text
+  return [convert(c) for c in re.split('([0-9]+)', key)]
 #+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[1]:
+:END:
 
 * Fonctionnalités de support (=semeval_util.py=)
 :PROPERTIES:
@@ -113,18 +118,18 @@ Il n'y a pas de support natif dans python pour trier des éléments dans l'ordre
 
 ** Imports
 #+BEGIN_SRC ipython
-  import pickle
+import pickle
 #+END_SRC
 
 ** Sauvegarde et chargement d'objets sur le disque
 On utilise pickle pour sauvegarder et charger des objets qu'il serait long de reconstruire à chaque execution d'un script.
 #+BEGIN_SRC ipython
 
-  def save_object(obj, filename):
-      pickle.dump(obj, open(filename, 'wb'))
+def save_object(obj, filename):
+    pickle.dump(obj, open(filename, 'wb'))
 
-  def load_object(filename):
-      return pickle.load(open(filename, 'rb'))
+def load_object(filename):
+    return pickle.load(open(filename, 'rb'))
 #+END_SRC
 
 * Traitement du langage naturel (=semeval_taln.py=)
@@ -133,13 +138,13 @@ On utilise pickle pour sauvegarder et charger des objets qu'il serait long de re
 :END:
 ** Imports
 #+BEGIN_SRC ipython
-  import os.path
-  import math
-  from itertools import chain
-  from functools import reduce
-  from collections import Counter, defaultdict
-  from semeval_xml import get_semeval_id, get_related_threads, xmlextract
-  from semeval_util import save_object, load_object
+import os.path
+import math
+from itertools import chain
+from functools import reduce
+from collections import Counter, defaultdict
+from semeval_xml import get_semeval_id, get_related_threads, xmlextract
+from semeval_util import save_object, load_object
 #+END_SRC
 
 La classe =Counter= est une sous-classe de =dict=, permettant de compter les occurences d'une clé. Elle est ici utilisée pour représenter des sacs de mots.
@@ -155,40 +160,40 @@ La fonction =make_document_tree= permet de construire l'arbre des documents, à 
  - d'une fonction d'extraction de contenu (=content_extractor=)
 
 #+BEGIN_SRC ipython
-  def make_document_tree(original_questions, model, content_extractor):
-      result = {}
-      for org in original_questions:
-          orgid = get_semeval_id(org)
-          result[orgid] = {
-              get_semeval_id(rel): model(content_extractor(rel))
-              for rel in get_related_threads(org)
-          }
-          result[orgid]['org'] = model(content_extractor(org))
-      return result
+def make_document_tree(original_questions, model, content_extractor):
+    result = {}
+    for org in original_questions:
+        orgid = get_semeval_id(org)
+        result[orgid] = {
+            get_semeval_id(rel): model(content_extractor(rel))
+            for rel in get_related_threads(org)
+        }
+        result[orgid]['org'] = model(content_extractor(org))
+    return result
 #+END_SRC
 
 L'analyse d'une phrase par un modèle étant une opération possiblement coûteuse, les documents liés aux questions vont être sauvegardées sur le disque afin de ne pas avoir à refaire tous les calculs à chaque fois.
 
 #+BEGIN_SRC ipython
-  def make_or_load_document_tree(xml_source, saved_path, model, content_extractor, verbose=False):
-      if os.path.isfile(saved_path):
-          if verbose:
-              print('Loading document tree from', saved_path)
-          result = load_object(saved_path)
-          return result
-      else:
-          if verbose:
-              print('Creating document tree. This might take a while...')
+def make_or_load_document_tree(xml_source, saved_path, model, content_extractor, verbose=False):
+    if os.path.isfile(saved_path):
+        if verbose:
+            print('Loading document tree from', saved_path)
+        result = load_object(saved_path)
+        return result
+    else:
+        if verbose:
+            print('Creating document tree. This might take a while...')
 
-          extractor = xmlextract(xml_source)
-          result = make_document_tree(
-              extractor.get_org_elements(), model, content_extractor)
+        extractor = xmlextract(xml_source)
+        result = make_document_tree(
+            extractor.get_org_elements(), model, content_extractor)
 
-          if verbose:
-              print('Saving document tree to', saved_path)
-          save_object(result, saved_path)
+        if verbose:
+            print('Saving document tree to', saved_path)
+        save_object(result, saved_path)
 
-          return result
+        return result
 #+END_SRC
 
 ** Pondération de termes
@@ -206,12 +211,12 @@ Plutôt que de calculer la TF d'un terme dans un document à chaque fois que né
 
 #+BEGIN_SRC ipython
 
-  def term_frequencies(bag):
-      documentlen = sum(bag.values())
-      return {
-          term: occurrences / documentlen
-          for term, occurrences in bag.items()
-      }
+def term_frequencies(bag):
+    documentlen = sum(bag.values())
+    return {
+        term: occurrences / documentlen
+        for term, occurrences in bag.items()
+    }
 #+END_SRC
 
 *** /Inverse Document Frequency/
@@ -226,18 +231,18 @@ De la même manière que pour la TF, l'IDF de tous les termes du corpus est stoc
 
 #+BEGIN_SRC ipython
 
-  def document_frequencies(corpus):
-      result = Counter()
-      for document in corpus:
-          result.update({term for term in document})
-      return result
+def document_frequencies(corpus):
+    result = Counter()
+    for document in corpus:
+        result.update({term for term in document})
+    return result
 
 
-  def inverse_document_frequencies(corpus, DF=None):
-      if DF == None:
-          DF = document_frequencies(corpus)
-      return {term: math.log2(len(corpus)/docfreq)
-              for term, docfreq in DF.items()}
+def inverse_document_frequencies(corpus, DF=None):
+    if DF == None:
+        DF = document_frequencies(corpus)
+    return {term: math.log2(len(corpus)/docfreq)
+            for term, docfreq in DF.items()}
 #+END_SRC
 
 *** /Term Frequency - Inverse Document Frequency/ 
@@ -248,33 +253,33 @@ La TF-IDF d'un terme est implémentée comme une fonction utilisant des dictionn
 
 #+BEGIN_SRC ipython
 
-  def tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value):
-      """Term Frequency - Inverse Document Frequency of a term using dictionaries.
+def tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value):
+    """Term Frequency - Inverse Document Frequency of a term using dictionaries.
 
-      If the term is not in the inverse document frequency dictionary, this function will use the argument out_of_corpus_value.
+    If the term is not in the inverse document frequency dictionary, this function will use the argument out_of_corpus_value.
 
-      Parameters
-      ----------
-      term : str
-          The term.
+    Parameters
+    ----------
+    term : str
+        The term.
 
-      termfreq : dict
-          The term frequencies of the document.
+    termfreq : dict
+        The term frequencies of the document.
 
-      inversedocfreq : dict
-          The inverse document frequencies of the corpus.
+    inversedocfreq : dict
+        The inverse document frequencies of the corpus.
 
-      Returns
-      -------
-      out : float
-          The TF-IDF value of the term.
-      """
-      if term not in termfreq:
-          return 0
-      if term not in inversedocfreq:
-          return out_of_corpus_value
+    Returns
+    -------
+    out : float
+        The TF-IDF value of the term.
+    """
+    if term not in termfreq:
+        return 0
+    if term not in inversedocfreq:
+        return out_of_corpus_value
 
-      return termfreq[term] * inversedocfreq[term]
+    return termfreq[term] * inversedocfreq[term]
 #+END_SRC
 
 **** Sacs de mots
@@ -285,9 +290,9 @@ $$\var{score_{TF-IDF}}(sac, document, corpus) =
 
 #+BEGIN_SRC ipython
 
-  def tf_idf_bow(bag, termfreq, inversedocfreq, out_of_corpus_value):
-      return sum(tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value) * occurences
-                 for term, occurences in bag.items())
+def tf_idf_bow(bag, termfreq, inversedocfreq, out_of_corpus_value):
+    return sum(tf_idf(term, termfreq, inversedocfreq, out_of_corpus_value) * occurences
+               for term, occurences in bag.items())
 #+END_SRC
 
 ** Similarité de documents
@@ -295,182 +300,182 @@ La classe =scorer= regroupe les informations nécessaires pour comparer deux doc
 
 #+BEGIN_SRC ipython
 
-  class scorer(object):
-      def __init__(self, wordex, sentex, filters,
-                   inversedocfreqs, out_of_corpus_value,
-                   scorerfunction):
-          """
+class scorer(object):
+    def __init__(self, wordex, sentex, filters,
+                 inversedocfreqs, out_of_corpus_value,
+                 scorerfunction):
+        """
 
-          Parameters
-          ----------
-          wordex : 
+        Parameters
+        ----------
+        wordex : 
 
-          sentex : 
+        sentex : 
 
-          filters : 
+        filters : 
 
-          Returns
-          -------
-          out : 
+        Returns
+        -------
+        out : 
 
-          """
-          self.wordex = wordex
-          self.sentex = sentex
-          self.filters = filters
-          self.inversedocfreqs = inversedocfreqs
-          self.out_of_corpus_value = out_of_corpus_value
-          self.scorerfunction = scorerfunction
+        """
+        self.wordex = wordex
+        self.sentex = sentex
+        self.filters = filters
+        self.inversedocfreqs = inversedocfreqs
+        self.out_of_corpus_value = out_of_corpus_value
+        self.scorerfunction = scorerfunction
 
-      def get_score(self, *args):
-          return self.scorerfunction(self, *args)
+    def get_score(self, *args):
+        return self.scorerfunction(self, *args)
 #+END_SRC
 
 *** Bruteforce
 
 #+BEGIN_SRC ipython
-  def tf_idf_scorer(self, doca, docb):
-      """
-      Parameters
-      ----------
-      doca : 
+def tf_idf_scorer(self, doca, docb):
+    """
+    Parameters
+    ----------
+    doca : 
 
-      docb : 
+    docb : 
 
-      inversedocfreqs : 
+    inversedocfreqs : 
 
-      out_of_corpus_value : 
+    out_of_corpus_value : 
 
-      Returns
-      -------
-      out : 
-      """
-      def bag_maker(doc):
-          return Counter(word
-                  for word in map(self.wordex, self.sentex(doc))
-                  if all(flt(word) for flt in self.filters))
-      baga = bag_maker(doca)
-      bagb = bag_maker(docb)
-      intersection = baga & bagb
-      termfreq = term_frequencies(baga + bagb)
+    Returns
+    -------
+    out : 
+    """
+    def bag_maker(doc):
+        return Counter(word
+                for word in map(self.wordex, self.sentex(doc))
+                if all(flt(word) for flt in self.filters))
+    baga = bag_maker(doca)
+    bagb = bag_maker(docb)
+    intersection = baga & bagb
+    termfreq = term_frequencies(baga + bagb)
 
-      return sum(
-          tf_idf(term,
-                 termfreq,
-                 self.inversedocfreqs,
-                 self.out_of_corpus_value) * len(intersection)# * occurences
-          for term, occurences in intersection.items()
-      )
+    return sum(
+        tf_idf(term,
+               termfreq,
+               self.inversedocfreqs,
+               self.out_of_corpus_value) * len(intersection)# * occurences
+        for term, occurences in intersection.items()
+    )
 #+END_SRC
 
 *** Pondération des entités nommées
 
 #+BEGIN_SRC ipython
-  def create_unit_dict(wordex, sentex, filters, doc):
-      result = defaultdict(list)
-      for unit in sentex(doc):
-          if all(flt(wordex(unit)) for flt in filters):
-              result[wordex(unit)].append(unit)
-      return result
+def create_unit_dict(wordex, sentex, filters, doc):
+    result = defaultdict(list)
+    for unit in sentex(doc):
+        if all(flt(wordex(unit)) for flt in filters):
+            result[wordex(unit)].append(unit)
+    return result
 
 
-  def entity_weighter(unita, unitb, weight):
-      entcount = 0
-      for tok in chain(unita, unitb):
-          if tok.ent_type != 0:
-              entcount += 1
-      if entcount > 0:
-          return weight
-      else:
-          return 1-weight
+def entity_weighter(unita, unitb, weight):
+    entcount = 0
+    for tok in chain(unita, unitb):
+        if tok.ent_type != 0:
+            entcount += 1
+    if entcount > 0:
+        return weight
+    else:
+        return 1-weight
 
-  def generic_weighter(unita, unitb, weight, predicat):
-      for tok in chain(unita, unitb):
-          if predicat(tok):
-              return weight
-      return 1 - weight
+def generic_weighter(unita, unitb, weight, predicat):
+    for tok in chain(unita, unitb):
+        if predicat(tok):
+            return weight
+    return 1 - weight
 
-  def noun_weighter(unita, unitb, weight):
-      return generic_weighter(
-          unita, unitb, weight,
-          lambda x: x.pos_ == 'NOUN'
-      )
+def noun_weighter(unita, unitb, weight):
+    return generic_weighter(
+        unita, unitb, weight,
+        lambda x: x.pos_ == 'NOUN'
+    )
 
-  def adjective_weighter(unita, unitb, weight):
-      return generic_weighter(
-          unita, unitb, weight,
-          lambda x: x.pos_ == 'ADJ'
-      )
+def adjective_weighter(unita, unitb, weight):
+    return generic_weighter(
+        unita, unitb, weight,
+        lambda x: x.pos_ == 'ADJ'
+    )
 
-  def verb_weighter(unita, unitb, weight):
-      return generic_weighter(
-          unita, unitb, weight,
-          lambda x: x.pos_ == 'VERB'
-      )
+def verb_weighter(unita, unitb, weight):
+    return generic_weighter(
+        unita, unitb, weight,
+        lambda x: x.pos_ == 'VERB'
+    )
 
-  def entityweight_scorer(
-          wordex, filters,
-          doca, docb, inversedocfreqs,
-          out_of_corpus_value,
-          score_multiplier='interlen',
-          weight=0.6):
-      unitsa = create_unit_dict(wordex, lambda x: x, filters, doca)
-      unitsb = create_unit_dict(wordex, lambda x: x, filters, docb)
+def entityweight_scorer(
+        wordex, filters,
+        doca, docb, inversedocfreqs,
+        out_of_corpus_value,
+        score_multiplier='interlen',
+        weight=0.6):
+    unitsa = create_unit_dict(wordex, lambda x: x, filters, doca)
+    unitsb = create_unit_dict(wordex, lambda x: x, filters, docb)
 
-      counta = Counter(word for word, occ in unitsa.items() for _ in occ)
-      countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+    counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+    countb = Counter(word for word, occ in unitsb.items() for _ in occ)
 
-      score = 0
-      intersection = counta & countb
-      termfreq = term_frequencies(counta + countb)
+    score = 0
+    intersection = counta & countb
+    termfreq = term_frequencies(counta + countb)
 
-      if score_multiplier == 'interocc':
-          for el, count in intersection.items():
-              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                       ,* count * entity_weighter(unitsa[el], unitsb[el], weight)
-      else:
-          for el in intersection:
-              score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
-                       ,* len(intersection) * entity_weighter(unitsa[el], unitsb[el], weight)
-      return score
+    if score_multiplier == 'interocc':
+        for el, count in intersection.items():
+            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                     ,* count * entity_weighter(unitsa[el], unitsb[el], weight)
+    else:
+        for el in intersection:
+            score += tf_idf(el, termfreq, inversedocfreqs, out_of_corpus_value)\
+                     ,* len(intersection) * entity_weighter(unitsa[el], unitsb[el], weight)
+    return score
 
 
-  def generic_weights_scorer(self, doca, docb, weights_functions):
-      """
+def generic_weights_scorer(self, doca, docb, weights_functions):
+    """
 
-      Parameters
-      ----------
-      doca : document
+    Parameters
+    ----------
+    doca : document
 
-      docb : document
+    docb : document
 
-      weights_functions : list(tuple(float, function))
-          List of weights and functions to which they apply.
+    weights_functions : list(tuple(float, function))
+        List of weights and functions to which they apply.
 
-      Returns
-      -------
-      out : float
-          Similarity score of the documents.
-      """
-      unitsa = create_unit_dict(self.wordex, lambda x: x, self.filters, doca)
-      unitsb = create_unit_dict(self.wordex, lambda x: x, self.filters, docb)
+    Returns
+    -------
+    out : float
+        Similarity score of the documents.
+    """
+    unitsa = create_unit_dict(self.wordex, lambda x: x, self.filters, doca)
+    unitsb = create_unit_dict(self.wordex, lambda x: x, self.filters, docb)
 
-      counta = Counter(word for word, occ in unitsa.items() for _ in occ)
-      countb = Counter(word for word, occ in unitsb.items() for _ in occ)
+    counta = Counter(word for word, occ in unitsa.items() for _ in occ)
+    countb = Counter(word for word, occ in unitsb.items() for _ in occ)
 
-      score = 0
-      intersection = counta & countb
-      termfreq = term_frequencies(counta + countb)
+    score = 0
+    intersection = counta & countb
+    termfreq = term_frequencies(counta + countb)
 
-      for el in intersection:
-          coef = reduce(lambda x, y: x * y,
-                            (weighter(unitsa[el], unitsb[el], weight)
-                             for weight, weighter in weights_functions),
-                            1)
-          tfidf = tf_idf(el, termfreq, self.inversedocfreqs, self.out_of_corpus_value)
-          # print('el =', el, 'coef =', coef, 'tfidf =', tfidf, 'oov', self.out_of_corpus_value)
-          # print(inversedocfreqs)
-          score += tfidf * coef
-      # print('score', score, intersection, 'weight == ', weights_functions)
-      return score * len(intersection)
+    for el in intersection:
+        coef = reduce(lambda x, y: x * y,
+                          (weighter(unitsa[el], unitsb[el], weight)
+                           for weight, weighter in weights_functions),
+                          1)
+        tfidf = tf_idf(el, termfreq, self.inversedocfreqs, self.out_of_corpus_value)
+        # print('el =', el, 'coef =', coef, 'tfidf =', tfidf, 'oov', self.out_of_corpus_value)
+        # print(inversedocfreqs)
+        score += tfidf * coef
+    # print('score', score, intersection, 'weight == ', weights_functions)
+    return score * len(intersection)
 #+END_SRC
 

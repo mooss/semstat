@@ -16,354 +16,354 @@
 
 #+NAME: traincorpus
 #+BEGIN_SRC ipython
-  corpora = {'train2016p1': 'SemEval2016-Task3-CQA-QL-train-part1.xml'}
+corpora = {'train2016p1': 'SemEval2016-Task3-CQA-QL-train-part1.xml'}
 #+END_SRC
 
 #+NAME: devcorpus
 #+BEGIN_SRC ipython
-  corpora = {'dev': 'SemEval2017-Task3-CQA-QL-dev.xml'}
+corpora = {'dev': 'SemEval2017-Task3-CQA-QL-dev.xml'}
 #+END_SRC
 
 #+NAME: bothyears
 #+BEGIN_SRC ipython
-  corpora = {'2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
-             '2017': 'SemEval2017-task3-English-test-input.xml',}
+corpora = {'2016': 'SemEval2016-Task3-CQA-QL-test-input.xml',
+           '2017': 'SemEval2017-task3-English-test-input.xml',}
 
-  relevancy = {'2016': 'scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy',
-               '2017': 'scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy'}
+relevancy = {'2016': 'scorer/SemEval2016-Task3-CQA-QL-test.xml.subtaskB.relevancy',
+             '2017': 'scorer/SemEval2017-Task3-CQA-QL-test.xml.subtaskB.relevancy'}
 #+END_SRC
 
 #+NAME: scoreutils
 #+BEGIN_SRC ipython
-  import subprocess
-  from plasem_algostruct import transformtree
+import subprocess
+from plasem_algostruct import transformtree
 
-  def compute_relqs_scores(orgqnode, scorer):
-      return {relid: scorer(orgqnode['org'], orgqnode[relid])
-              for relid in orgqnode.keys() - {'org'}}
+def compute_relqs_scores(orgqnode, scorer):
+    return {relid: scorer(orgqnode['org'], orgqnode[relid])
+            for relid in orgqnode.keys() - {'org'}}
 
-  def make_score_tree(document_tree, scorer):
-      return transformtree(
-          lambda x: compute_relqs_scores(x, scorer),
-          document_tree,
-          0
-      )
+def make_score_tree(document_tree, scorer):
+    return transformtree(
+        lambda x: compute_relqs_scores(x, scorer),
+        document_tree,
+        0
+    )
 
-  def getmapscore(predfilename):
-      score = subprocess.run(
-          ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
-      return score.stdout.decode('utf-8').strip('\n')
+def getmapscore(predfilename):
+    score = subprocess.run(
+        ['./extractMAP.sh', predfilename], stdout=subprocess.PIPE)
+    return score.stdout.decode('utf-8').strip('\n')
 
-  from collections import Iterable
-  def flatten(*args):
-      for el in args:
-          if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
-              yield from flatten(*el)
-          else:
-              yield el
+from collections import Iterable
+def flatten(*args):
+    for el in args:
+        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+            yield from flatten(*el)
+        else:
+            yield el
 
-  def getpredfilename(*args):
-      return 'predictions/rapport_' + '_'.join(flatten(args, 'scores.pred'))
+def getpredfilename(*args):
+    return 'predictions/rapport_' + '_'.join(flatten(args, 'scores.pred'))
 
-  def orgmodetable(matrix, header=False):
-      maxlen = [0] * len(matrix[0])
-      for line in matrix:
-          for i, cell in enumerate(line):
-              if len(maxlen) <= i or len(str(cell)) > maxlen[i]:
-                  maxlen[i] = len(str(cell))
+def orgmodetable(matrix, header=False):
+    maxlen = [0] * len(matrix[0])
+    for line in matrix:
+        for i, cell in enumerate(line):
+            if len(maxlen) <= i or len(str(cell)) > maxlen[i]:
+                maxlen[i] = len(str(cell))
 
-      def orgmodeline(line, fill=' '):
-          joinsep = fill + '|' + fill
-          return '|' + fill + joinsep.join(
-              str(cell) + fill * (mlen - len(str(cell)))
-              for cell, mlen in zip(line, maxlen)
-          ) + fill + '|'
+    def orgmodeline(line, fill=' '):
+        joinsep = fill + '|' + fill
+        return '|' + fill + joinsep.join(
+            str(cell) + fill * (mlen - len(str(cell)))
+            for cell, mlen in zip(line, maxlen)
+        ) + fill + '|'
 
-      result = ''
-      if header:
-          result = orgmodeline(matrix[0]) + '\n' + \
-              orgmodeline(('-') * len(maxlen), fill='-') + '\n'
-          matrix = matrix[1:]
-      result += '\n'.join(orgmodeline(line) for line in matrix)
-      return result
+    result = ''
+    if header:
+        result = orgmodeline(matrix[0]) + '\n' + \
+            orgmodeline(('-') * len(maxlen), fill='-') + '\n'
+        matrix = matrix[1:]
+    result += '\n'.join(orgmodeline(line) for line in matrix)
+    return result
 
 #+END_SRC
 
 #+NAME: tokens
 #+BEGIN_SRC ipython
-  def wordextractor(tok):
-      return str(tok)
+def wordextractor(tok):
+    return str(tok)
 #+END_SRC
 
 #+NAME: lemmes
 #+BEGIN_SRC ipython
-  def wordextractor(tok):
-      return tok.lemma_
+def wordextractor(tok):
+    return tok.lemma_
 #+END_SRC
 
 #+NAME: loaddoctrees
 #+BEGIN_SRC ipython
-  import spacy
-  from plasem_taln import inverse_document_frequencies
-  from plasem_semeval import make_or_load_semeval_document_tree
-  from semeval_xml import get_semeval_content
+import spacy
+from plasem_taln import inverse_document_frequencies
+from plasem_semeval import make_or_load_semeval_document_tree
+from semeval_xml import get_semeval_content
 
-  nlp = spacy.load('en')
-  doctrees = {
-      corpus: make_or_load_semeval_document_tree(
-          corpusxml,
-          'spacy_en_' + corpus + '_questions.pickle',
-          nlp,
-          get_semeval_content)
-      for corpus, corpusxml in corpora.items()
-  }
+nlp = spacy.load('en')
+doctrees = {
+    corpus: make_or_load_semeval_document_tree(
+        corpusxml,
+        'spacy_en_' + corpus + '_questions.pickle',
+        nlp,
+        get_semeval_content)
+    for corpus, corpusxml in corpora.items()
+}
 
-  training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
-  traindoctree = make_or_load_semeval_document_tree(
-      training_file,
-      'spacy_en_train2016p1_questions.pickle',
-      nlp,
-      get_semeval_content)
+training_file = 'SemEval2016-Task3-CQA-QL-train-part1.xml'
+traindoctree = make_or_load_semeval_document_tree(
+    training_file,
+    'spacy_en_train2016p1_questions.pickle',
+    nlp,
+    get_semeval_content)
 
-  inversedocfreqs = inverse_document_frequencies(
-      [[wordextractor(tok) for tok in doc]
-       for org in traindoctree.values()
-       for doc in org.values()]
-  )
-  outofcorpusvalue = max(inversedocfreqs.values())
+inversedocfreqs = inverse_document_frequencies(
+    [[wordextractor(tok) for tok in doc]
+     for org in traindoctree.values()
+     for doc in org.values()]
+)
+outofcorpusvalue = max(inversedocfreqs.values())
 
-  context = {'inversedocfreqs': inversedocfreqs,
-             'outofcorpusvalue': outofcorpusvalue}
+context = {'inversedocfreqs': inversedocfreqs,
+           'outofcorpusvalue': outofcorpusvalue}
 #+END_SRC
 
 #+NAME: scoringboilerplate
 #+BEGIN_SRC ipython :noweb yes
-  <<scoreutils>>
+<<scoreutils>>
 
-  <<loaddoctrees>>
+<<loaddoctrees>>
  
-  <<filters>>
+<<filters>>
 
-  restable = []
+restable = []
 #+END_SRC
 
 #+NAME: makescores
 #+BEGIN_SRC ipython
-  from plasem_semeval import write_scores_to_file
-  from plasem_taln import comparator
+from plasem_semeval import write_scores_to_file
+from plasem_taln import comparator
 
-  comp = comparator(context, similarity)
-  scores = make_score_tree(
-      doctrees[corpus],
-      comp.getscore
-  )
+comp = comparator(context, similarity)
+scores = make_score_tree(
+    doctrees[corpus],
+    comp.getscore
+)
 #+END_SRC
 
 #+NAME: writescores
 #+BEGIN_SRC ipython
-  predfile = getpredfilename(methodname, corpus, *rest)
-  write_scores_to_file(scores, predfile)
+predfile = getpredfilename(methodname, corpus, *rest)
+write_scores_to_file(scores, predfile)
 #+END_SRC
 
 #+NAME: MAP_from_relevancy
 #+BEGIN_SRC ipython
-  from plasem_semeval import sorted_scores_from_semeval_relevancy
-  from plasem_algostruct import mean_average_precision
+from plasem_semeval import sorted_scores_from_semeval_relevancy
+from plasem_algostruct import mean_average_precision
 
-  MAP = mean_average_precision(
-      sorted_scores_from_semeval_relevancy(
-          relevancy[corpus],
-          scores).values()
-  )
+MAP = mean_average_precision(
+    sorted_scores_from_semeval_relevancy(
+        relevancy[corpus],
+        scores).values()
+)
 
-  restable.append([*(description_functions[i](value)
-                     for i, value in enumerate((corpus, *rest))),
-                   '%.2f' % (100 * MAP)])
+restable.append([*(description_functions[i](value)
+                   for i, value in enumerate((corpus, *rest))),
+                 '%.2f' % (100 * MAP)])
 #+END_SRC
 
 #+NAME: MAP_from_xml
 #+BEGIN_SRC ipython
-  from plasem_semeval import sorted_scores_from_semeval_xml
-  from plasem_algostruct import mean_average_precision
+from plasem_semeval import sorted_scores_from_semeval_xml
+from plasem_algostruct import mean_average_precision
 
-  MAP = mean_average_precision(
-      sorted_scores_from_semeval_xml(
-          corpora[corpus],
-          scores).values()
-  )
+MAP = mean_average_precision(
+    sorted_scores_from_semeval_xml(
+        corpora[corpus],
+        scores).values()
+)
 
-  restable.append([*(description_functions[i](value)
-                     for i, value in enumerate((corpus, *rest))),
-                   '%.2f' % (100 * MAP)])
+restable.append([*(description_functions[i](value)
+                   for i, value in enumerate((corpus, *rest))),
+                 '%.2f' % (100 * MAP)])
 
 #+END_SRC
 
 #+NAME: AP_from_relevancy
 #+BEGIN_SRC ipython
-  from plasem_semeval import sorted_scores_from_semeval_relevancy
-  from plasem_algostruct import average_precision, sorted_items
-  ssc = sorted_scores_from_semeval_relevancy(
-          relevancy[corpus],
-          scores)
-  aps = sorted_items({key: average_precision(value) for key, value in ssc.items()}, reverse=True)
-  nbany = 0
-  for badprediction in reversed(aps):
-      if nbany >= 5:
-          break
-      if any(ssc[badprediction[0]]):
-          print(badprediction[0], '%0.2f' % badprediction[1], ssc[badprediction[0]])
-          questions = list(map(lambda x: x[0], sorted_items(scores[badprediction[0]], reverse=True)))
-          print('\t', questions)
-          for rel, iden in zip(ssc[badprediction[0]], questions):
-              if rel:
-                  print(iden)
-          nbany += 1
-          print()
-  # print('best:', aps[0:3])
-  # print('worst:', aps[-3:])
+from plasem_semeval import sorted_scores_from_semeval_relevancy
+from plasem_algostruct import average_precision, sorted_items
+ssc = sorted_scores_from_semeval_relevancy(
+        relevancy[corpus],
+        scores)
+aps = sorted_items({key: average_precision(value) for key, value in ssc.items()}, reverse=True)
+nbany = 0
+for badprediction in reversed(aps):
+    if nbany >= 5:
+        break
+    if any(ssc[badprediction[0]]):
+        print(badprediction[0], '%0.2f' % badprediction[1], ssc[badprediction[0]])
+        questions = list(map(lambda x: x[0], sorted_items(scores[badprediction[0]], reverse=True)))
+        print('\t', questions)
+        for rel, iden in zip(ssc[badprediction[0]], questions):
+            if rel:
+                print(iden)
+        nbany += 1
+        print()
+# print('best:', aps[0:3])
+# print('worst:', aps[-3:])
 #+END_SRC
 
 #+NAME: restable_viaSH
 #+BEGIN_SRC ipython
-  restable = [[*(description_functions[i](parameter_values[i])
-                 for i in range(0,len(parameter_values))),
-               getmapscore(getpredfilename(methodname, *parameter_values))]
-              for parameter_values in parameters]
+restable = [[*(description_functions[i](parameter_values[i])
+               for i in range(0,len(parameter_values))),
+             getmapscore(getpredfilename(methodname, *parameter_values))]
+            for parameter_values in parameters]
 #+END_SRC
 
 #+NAME: print_sorted_restable
 #+BEGIN_SRC ipython
-  restable.sort(key=lambda x: x[-1], reverse=True)
-  restable.sort(key=lambda x: x[0])
-  restable.insert(0, parameters_description)
+restable.sort(key=lambda x: x[-1], reverse=True)
+restable.sort(key=lambda x: x[0])
+restable.insert(0, parameters_description)
 
-  print('#+NAME:', methodname)
-  print('#+CAPTION:', caption)
-  print(orgmodetable(restable, header=True))
-  print()
+print('#+NAME:', methodname)
+print('#+CAPTION:', caption)
+print(orgmodetable(restable, header=True))
+print()
 #+END_SRC
 
 ** Filtres
 #+NAME: filters
 #+BEGIN_SRC ipython
-  MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
+MAPPSENT_STOPWORDS = set(open('stopwords_en.txt', 'r').read().splitlines())
 
-  def isnotstopword(word):
-      return word not in MAPPSENT_STOPWORDS
+def isnotstopword(word):
+    return word not in MAPPSENT_STOPWORDS
 
-  lenfilters = {
-      'gtr1': lambda word: len(word) > 1,
-      'gtr2': lambda word: len(word) > 2,
-      'gtr3': lambda word: len(word) > 3,
-      'gtr4': lambda word: len(word) > 4,
-  }
+lenfilters = {
+    'gtr1': lambda word: len(word) > 1,
+    'gtr2': lambda word: len(word) > 2,
+    'gtr3': lambda word: len(word) > 3,
+    'gtr4': lambda word: len(word) > 4,
+}
 
-  nolenfilters = {
-      'nostopwords': isnotstopword,
-  }
+nolenfilters = {
+    'nostopwords': isnotstopword,
+}
 
-  filters = {}
-  filters.update(lenfilters)
-  filters.update(nolenfilters)
-  filters.update({ 'nofilter': lambda x: True })
+filters = {}
+filters.update(lenfilters)
+filters.update(nolenfilters)
+filters.update({ 'nofilter': lambda x: True })
 
-  all_filters_descr = {
-      'gtr1': '$\leq 1$',
-      'gtr2': '$\leq 2$',
-      'gtr3': '$\leq 3$',
-      'gtr4': '$\leq 4$',
-      'nostopwords': 'Mots outils',
-      'nofilter': 'Pas de filtre',
-  }
+all_filters_descr = {
+    'gtr1': '$\leq 1$',
+    'gtr2': '$\leq 2$',
+    'gtr3': '$\leq 3$',
+    'gtr4': '$\leq 4$',
+    'nostopwords': 'Mots outils',
+    'nofilter': 'Pas de filtre',
+}
 
-  all_indicators_descr = {
-      'named_entities_text': 'Textes des entités nommées',
-      'named_entities_label': 'Étiquettes des entités nommées',
-      'tokens': 'Tokens',
-      'lemmas': 'Lemmes',
-  }
+all_indicators_descr = {
+    'named_entities_text': 'Textes des entités nommées',
+    'named_entities_label': 'Étiquettes des entités nommées',
+    'tokens': 'Tokens',
+    'lemmas': 'Lemmes',
+}
 
-  def get_filters_descr(filters):
-      return ', '.join(all_filters_descr[key] for key in filters)
+def get_filters_descr(filters):
+    return ', '.join(all_filters_descr[key] for key in filters)
 
-  def get_indicator_descr(indicator):
-      return all_indicators_descr[indicator]
+def get_indicator_descr(indicator):
+    return all_indicators_descr[indicator]
 
-  def get_doctree_descr(doctree):
-      return all_doctrees_descr[doctree]
+def get_doctree_descr(doctree):
+    return all_doctrees_descr[doctree]
 
-  from itertools import combinations
-  def nonemptypartitions(iterable):
-      for i in range(1, len(iterable) + 1):
-          for perm in combinations(iterable, i):
-              yield perm
-
-
-  def join_predicates(iterable_preds):
-      def joinedlocal(element):
-          for pred in iterable_preds:
-              if not pred(element):
-                  return False
-          return True
-      print('joining', *(pred for pred in iterable_preds))
-      return joinedlocal
+from itertools import combinations
+def nonemptypartitions(iterable):
+    for i in range(1, len(iterable) + 1):
+        for perm in combinations(iterable, i):
+            yield perm
 
 
-  filters_partition = list(nonemptypartitions(nolenfilters))
+def join_predicates(iterable_preds):
+    def joinedlocal(element):
+        for pred in iterable_preds:
+            if not pred(element):
+                return False
+        return True
+    print('joining', *(pred for pred in iterable_preds))
+    return joinedlocal
 
-  for len_and_nolen in product(nolenfilters, lenfilters):
-      filters_partition.append(len_and_nolen)
 
-  for lenfilter in lenfilters:
-      filters_partition.append((lenfilter,))
+filters_partition = list(nonemptypartitions(nolenfilters))
 
-  filters_partition.append(('nofilter',))
+for len_and_nolen in product(nolenfilters, lenfilters):
+    filters_partition.append(len_and_nolen)
+
+for lenfilter in lenfilters:
+    filters_partition.append((lenfilter,))
+
+filters_partition.append(('nofilter',))
 #+END_SRC
 
 * Scripts                                                          :noexport:
 #+BEGIN_SRC  ipython :eval no-export :noweb yes :session ponderation :tangle ponderation.py :shebang "#!/usr/bin/env python3" :results output drawer replace
-  from itertools import product, count
-  # <<traincorpus>>
-  # <<devcorpus>>
-  <<bothyears>>
-  <<scoringboilerplate>>
+from itertools import product, count
+# <<traincorpus>>
+# <<devcorpus>>
+<<bothyears>>
+<<scoringboilerplate>>
 
-  from plasem_taln import generic_weights_scorer, noun_weighter
+from plasem_taln import generic_weights_scorer, noun_weighter
 
-  methodname = 'noun_ponderation'
-  caption = 'Semeval - Scores MAP - Méthodes de référence'
+methodname = 'noun_ponderation'
+caption = 'Semeval - Scores MAP - Méthodes de référence'
 
-  def frange(start, end=None, inc=1.0):
-      if end is None:
-          end = start + 0.0 # Ensure a float value for 'end'
-          start = 0.0
-      for i in count():
-          next = start + i * inc
-          if (inc>0.0 and next>=end) or (inc<0.0 and next<=end):
-              break
-          yield next
+def frange(start, end=None, inc=1.0):
+    if end is None:
+        end = start + 0.0 # Ensure a float value for 'end'
+        start = 0.0
+    for i in count():
+        next = start + i * inc
+        if (inc>0.0 and next>=end) or (inc<0.0 and next<=end):
+            break
+        yield next
 
-  ponderations = list(frange(0, 1, 0.02))
+ponderations = list(frange(0, 1, 0.02))
 
-  parameters = list(product(corpora, ponderations))
-  parameters_description = ('Édition', 'Ponderation', 'Score MAP')
-  description_functions = [lambda x: x, lambda x: '%.2f' % (x)]
+parameters = list(product(corpora, ponderations))
+parameters_description = ('Édition', 'Ponderation', 'Score MAP')
+description_functions = [lambda x: x, lambda x: '%.2f' % (x)]
 
-  for corpus, *rest in parameters:
-      def noun_weight_similarity(context, reference, candidate):
-          return generic_weights_scorer(context,
-                                        reference,
-                                        candidate,
-                                        [(rest[0], noun_weighter)])
-      similarity = noun_weight_similarity
-      context['filters'] = [filters['gtr2']]
-      context['wordex'] = lambda x: str(x).lower()
+for corpus, *rest in parameters:
+    def noun_weight_similarity(context, reference, candidate):
+        return generic_weights_scorer(context,
+                                      reference,
+                                      candidate,
+                                      [(rest[0], noun_weighter)])
+    similarity = noun_weight_similarity
+    context['filters'] = [filters['gtr2']]
+    context['wordex'] = lambda x: str(x).lower()
 
-      <<makescores>>
-      # <<MAP_from_xml>>
-      <<MAP_from_relevancy>>
+    <<makescores>>
+    # <<MAP_from_xml>>
+    <<MAP_from_relevancy>>
 
-  <<print_sorted_restable>>
+<<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
@@ -547,28 +547,28 @@ Les résultats sont meilleurs que la /IR baseline/ pour 2017 mais moins bons que
 De plus, les résultats sont nettement en-dessous des méthodes proposées par les participants à SemEval.
 Une manière simple d'obtenir de meilleurs résultats est d'appliquer des filtres.
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselineexec :tangle rapport_baseline.py :shebang "#!/usr/bin/env python3" :results output drawer replace
-  from itertools import product
-  <<bothyears>>
-  <<tokens>>
-  <<scoringboilerplate>>
+from itertools import product
+<<bothyears>>
+<<tokens>>
+<<scoringboilerplate>>
 
-  from plasem_taln import baseline_similarity
-  similarity = baseline_similarity
+from plasem_taln import baseline_similarity
+similarity = baseline_similarity
 
-  methodname = 'baseline'
-  caption = 'Semeval - Scores MAP - Méthode de référence'
+methodname = 'baseline'
+caption = 'Semeval - Scores MAP - Méthode de référence'
 
-  parameters = list(product(corpora))
-  parameters_description = ('Édition', 'Score MAP')
-  description_functions = [lambda x: x]
+parameters = list(product(corpora))
+parameters_description = ('Édition', 'Score MAP')
+description_functions = [lambda x: x]
 
-  for corpus, *rest in parameters:
-      <<makescores>>
-      <<writescores>>
-      <<MAP_from_relevancy>>
-      #<<AP_from_relevancy>>
+for corpus, *rest in parameters:
+    <<makescores>>
+    <<writescores>>
+    <<MAP_from_relevancy>>
+    #<<AP_from_relevancy>>
 
-  <<print_sorted_restable>>
+<<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
@@ -612,27 +612,27 @@ Les filtres des mots outils sont combinés avec les filtres de longueur $N$ dans
 Les résultats sont bien meilleurs et se rapprochent des scores des meilleurs méthodes de SemEval.
 
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session baselinefiltersexec :tangle rapport_baseline_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
-  from itertools import product
-  <<bothyears>>
-  <<tokens>>
-  <<scoringboilerplate>>
+from itertools import product
+<<bothyears>>
+<<tokens>>
+<<scoringboilerplate>>
 
-  from plasem_taln import filters_baseline_similarity
-  similarity = filters_baseline_similarity
+from plasem_taln import filters_baseline_similarity
+similarity = filters_baseline_similarity
 
-  methodname = 'baseline_filters'
-  caption = 'Semeval - Scores MAP - Méthodes de référence avec filtres'
+methodname = 'baseline_filters'
+caption = 'Semeval - Scores MAP - Méthodes de référence avec filtres'
 
-  parameters = list(product(corpora, filters_partition))
-  parameters_description = ('Édition', 'Filtres', 'Score MAP')
-  description_functions = [lambda x: x, get_filters_descr]
-  for corpus, *rest in parameters:
-      context['filters'] = [filters[key] for key in rest[0]]
-      <<makescores>>
-      <<writescores>>
-      <<MAP_from_relevancy>>
+parameters = list(product(corpora, filters_partition))
+parameters_description = ('Édition', 'Filtres', 'Score MAP')
+description_functions = [lambda x: x, get_filters_descr]
+for corpus, *rest in parameters:
+    context['filters'] = [filters[key] for key in rest[0]]
+    <<makescores>>
+    <<writescores>>
+    <<MAP_from_relevancy>>
 
-  <<print_sorted_restable>>
+<<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
@@ -678,27 +678,27 @@ L'approche considérée ici consiste à comparer les documents en utilisant les 
 La table [[lemmas_filters]] contient les résultats de cette approche. Les scores se rapprochent considérablement des meilleurs scores de la table [[best_scores]]. Cependant, Les méthodes qui marchent le mieux sont très différentes d'une année à l'autre, et comme les données d'entrainement sont les mêmes pour les deux années, il est difficile de savoir quelle méthode va fonctionner le mieux sans au préalable évaluer sur le jeu de test.
 
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session lemmasfiltersexec :tangle rapport_lemmas_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
-  from itertools import product
-  <<bothyears>>
-  <<tokens>>
-  <<scoringboilerplate>>
+from itertools import product
+<<bothyears>>
+<<tokens>>
+<<scoringboilerplate>>
 
-  from plasem_taln import filters_lemmas_similarity
-  similarity = filters_lemmas_similarity
+from plasem_taln import filters_lemmas_similarity
+similarity = filters_lemmas_similarity
 
-  methodname = 'lemmas_filters'
-  caption = 'Semeval - Scores MAP - Lemmes'
+methodname = 'lemmas_filters'
+caption = 'Semeval - Scores MAP - Lemmes'
 
-  parameters = list(product(corpora, filters_partition))
-  parameters_description = ('Édition', 'Filtres', 'Score MAP')
-  description_functions = [lambda x: x, get_filters_descr]
-  for corpus, *rest in parameters:
-      context['filters'] = [filters[key] for key in rest[0]]
-      <<makescores>>
-      <<writescores>>
-      <<MAP_from_relevancy>>
+parameters = list(product(corpora, filters_partition))
+parameters_description = ('Édition', 'Filtres', 'Score MAP')
+description_functions = [lambda x: x, get_filters_descr]
+for corpus, *rest in parameters:
+    context['filters'] = [filters[key] for key in rest[0]]
+    <<makescores>>
+    <<writescores>>
+    <<MAP_from_relevancy>>
 
-  <<print_sorted_restable>>
+<<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
@@ -744,31 +744,31 @@ Il serait intéressant de rechercher une technique plus élaborée permettant de
 De plus, bien qu'une amélioration des scores est constatée, celle-ci reste très faible, et il est donc difficile d'affirmer si elle est significative.
 
 #+BEGIN_SRC ipython :eval no-export :noweb yes :session poslemmasfiltersexec :tangle rapport_pos_lemmas_filters.py :shebang "#!/usr/bin/env python3" :results output drawer replace
-  from itertools import product
-  <<bothyears>>
-  <<tokens>>
-  <<scoringboilerplate>>
+from itertools import product
+<<bothyears>>
+<<tokens>>
+<<scoringboilerplate>>
 
-  from plasem_taln import generic_weights_scorer, noun_weighter
-  def similarity(context, doca, docb):
-      return generic_weights_scorer(context, doca, docb,
-                                    [(0.52, noun_weighter)])
-  #similarity = filters_lemmas_similarity
+from plasem_taln import generic_weights_scorer, noun_weighter
+def similarity(context, doca, docb):
+    return generic_weights_scorer(context, doca, docb,
+                                  [(0.52, noun_weighter)])
+#similarity = filters_lemmas_similarity
 
-  methodname = 'pos_lemmas_filters'
-  caption = 'Semeval - Scores MAP - Lemmes avec pondération grammaticale'
+methodname = 'pos_lemmas_filters'
+caption = 'Semeval - Scores MAP - Lemmes avec pondération grammaticale'
 
-  parameters = list(product(corpora, filters_partition))
-  parameters_description = ('Édition', 'Filtres', 'Score MAP')
-  description_functions = [lambda x: x, get_filters_descr]
-  for corpus, *rest in parameters:
-      context['filters'] = [filters[key] for key in rest[0]]
-      context['wordex'] = lambda x: x.lemma_
-      <<makescores>>
-      <<writescores>>
-      <<MAP_from_relevancy>>
+parameters = list(product(corpora, filters_partition))
+parameters_description = ('Édition', 'Filtres', 'Score MAP')
+description_functions = [lambda x: x, get_filters_descr]
+for corpus, *rest in parameters:
+    context['filters'] = [filters[key] for key in rest[0]]
+    context['wordex'] = lambda x: x.lemma_
+    <<makescores>>
+    <<writescores>>
+    <<MAP_from_relevancy>>
 
-  <<print_sorted_restable>>
+<<print_sorted_restable>>
 #+END_SRC
 
 #+RESULTS:
